@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1780039707 source:c:\users\administrator\desktop\programming\ispace\main.cpp
+	<iostream>
+	<string>
+	<cstdlib>
+	<fstream>
+	<windows.h>
+
