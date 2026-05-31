@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <windows.h>
+#include <iomanip> // niadd ko for alignment
 using namespace std;
 
 
@@ -92,7 +93,8 @@ void auth(Officer* officers, Faculty* faculty, int size, int& role, int& officer
             askRole(officers,faculty,size,role,officerCount);
         }
     } else {
-        cout << "[!] File doesn't exist yet. Start your account.\n";
+        //spacing nito binago ko hehe para mas clean and readble tingnan:>
+        cout << "\n\n" << right << setw(55) << "[!] File doesn't exist yet. Start your account.\n\n";
         pauseScreen();
 
         // ask for role
@@ -101,7 +103,14 @@ void auth(Officer* officers, Faculty* faculty, int size, int& role, int& officer
 }
 
 void askRole(Officer* officers, Faculty* faculty, int size, int& role, int& count){
-    cout << "\nRoles: 1 = Student, 2 = Officer, 3 = Faculty";
+    // I also change the alignment here para malinis at readble tingnan:>
+    system("cls");
+    displayHeader();
+    cout << "\n" << right << setw(36) << " ---------------";
+    cout << "\n" << right << setw(36) << ">>> Roles <<<\n";
+    cout << right << setw(37) << " ---------------\n";
+
+    cout << "\n[1]-Student \n[2]-Officer \n[3]-Faculty";
     cout << "\n\nEnter your role: ";
     cin >> role;
     cin.ignore();
@@ -125,12 +134,16 @@ void askRole(Officer* officers, Faculty* faculty, int size, int& role, int& coun
 }
 
 void createAccount(Officer* officers, Faculty* faculty, int size, int role, int& count){
-    cout << "\n-----------------------\n";
-    cout << "Create Account\n";
-    cout << "Enter required details.\n";
+    system("cls");
+    displayHeader();
+    cout << "\n" << right << setw(42) << " >>> Create Account <<<\n";
+    cout << right << setw(43) <<" Enter required details.\n";
 
     if(role == 2){
-        cout << "\nRole: Officer\n\n";
+        cout << "\n-----------------------------------------------------------\n";
+        cout << right << setw(40) << ">>> Role: Officer <<<" << "\n";
+        cout << "-----------------------------------------------------------\n\n";
+
 
         enterPrompt("Enter ID: ",officers[count].ID);
         enterPrompt("Enter Name: ",officers[count].name);
@@ -153,7 +166,9 @@ void createAccount(Officer* officers, Faculty* faculty, int size, int role, int&
 
         officers[count].passcode = createPasscode();
     } else if(role == 3){
-        cout << "\nRole: Faculty\n\n";
+        cout << "\n-----------------------------------------------------------\n";
+        cout << right << setw(39) << ">>> Role: Faculty <<<" << "\n";
+        cout << "-----------------------------------------------------------\n\n";
 
         enterPrompt("Enter ID: ",faculty[count].ID);
         enterPrompt("Enter Name: ",faculty[count].name);
@@ -163,9 +178,10 @@ void createAccount(Officer* officers, Faculty* faculty, int size, int role, int&
 }
 
 string createPasscode(){
-    cout << "\n-----------------------\n";
-    cout << "Create your passcode.\n";
-    cout << "\033[3mNote: Passcode must be minimum of characters\033[0m\n";
+    cout << "\n-----------------------------------------------------------\n";
+    cout <<  right << setw(45) << "*** Create your passcode ***\n";
+    cout << right << setw(60) <<"\033[3mNote: Passcode must be minimum of characters\033[0m" << "\n";
+    cout << "-----------------------------------------------------------\n\n";
 
     string passcode = "";
     enterPrompt("\nEnter passcode: ",passcode);
