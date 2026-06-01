@@ -81,8 +81,9 @@ int main(){
 /// function definition
 
 void displayHeader(){
+    SetConsoleOutputCP(CP_UTF8);
     cout << "+---------------------------------------------------------+\n";
-    cout << "|_________________________iSPACE:_________________________|\n";
+    cout << "|__________________--✨ iSPACE PORTAL ✨--________________|\n";
     cout << "|               IBITS Portal for Announcements,           |\n";
     cout << "|                 Communication and Events                |\n";
     cout << "+---------------------------------------------------------+\n";
@@ -90,7 +91,8 @@ void displayHeader(){
 
 void auth(Officer* officers, Faculty* faculty, int size, int& role, int& officerCount, int& facultyCount){
     if(officerFile.is_open() || facultyFile.is_open()){
-        cout << right << setw(55) << "\n[/] File successfully opened.\n";
+        SetConsoleOutputCP(CP_UTF8);
+        cout << right << setw(55) << "\n[📂] File successfully opened\n";
 
         char hasAccount;
         cout << "\nAlready have an account? (Y/N): ";
@@ -117,11 +119,13 @@ void auth(Officer* officers, Faculty* faculty, int size, int& role, int& officer
 void askRole(Officer* officers, Faculty* faculty, int size, int& role, int& officerCount, int& facultyCount){
     system("cls");
     displayHeader();
+    SetConsoleOutputCP(CP_UTF8);
     cout << "\n" << right << setw(36) << " ---------------";
-    cout << "\n" << right << setw(36) << ">>> Roles <<<\n";
+    cout << "\n" << right << setw(42) << "🚀>>> Roles <<<🚀\n";
     cout << right << setw(37) << " ---------------\n";
 
-    cout << "\n[1] - Student \n[2] - Officer \n[3] - Faculty";
+    SetConsoleOutputCP(CP_UTF8);
+    cout << "\n[1-👩‍🚀] Student \n[2-🧑‍🎓]️Officer \n[3-🧑‍🏫] Faculty";
     enterPrompt("\n\nEnter role: ", role);
 
     while(role > 3){
@@ -152,31 +156,33 @@ void askRole(Officer* officers, Faculty* faculty, int size, int& role, int& offi
 void createAccount(Officer* officers, Faculty* faculty, int size, int role, int& officerCount, int& facultyCount){
     system("cls");
     displayHeader();
-    cout << "\n" << right << setw(42) << " >>> Create Account <<<\n";
+    SetConsoleOutputCP(CP_UTF8);
+    cout << "\n" << right << setw(49) << "📋 >>> Create Account <<< 📋\n";
     cout << right << setw(43) <<" Enter required details.\n";
 
     if(role == 2){
+        SetConsoleOutputCP(CP_UTF8);
         cout << "\n-----------------------------------------------------------\n";
         cout << right << setw(40) << ">>> Role: Officer <<<" << "\n";
         cout << "-----------------------------------------------------------\n\n";
 
-        enterPrompt("Enter ID: ",officers[officerCount].ID,17);
-        enterPrompt("Enter Name: ",officers[officerCount].name,17);
+        enterPrompt("🆔 Enter ID: ",officers[officerCount].ID,26);
+        enterPrompt("👤 Enter Name: ",officers[officerCount].name,26);
 
-        enterPrompt("Enter Program: ",officers[officerCount].program,  17);
+        enterPrompt("💻 Enter Program: ",officers[officerCount].program,  26);
         while(officers[officerCount].program != "BSIT" && officers[officerCount].program != "DIT"  &&
               officers[officerCount].program != "bsit" && officers[officerCount].program != "dit"){
-            cout << "\n[!] Program must be BSIT or DIT only.\n";
-            enterPrompt("Enter Program: ", officers[officerCount].program, 17);
+            cout << "\n[!] Program must be BSIT or DIT only.\n\n";
+            enterPrompt("💻 Enter Program: ", officers[officerCount].program, 26);
         }
 
-        enterPrompt("Enter Year Level: ",officers[officerCount].yearLevel,17);
+        enterPrompt("📈 Enter Year Level: ",officers[officerCount].yearLevel,26);
         while(officers[officerCount].yearLevel >= 5){
-            cout << "\n[!] Valid year level are Years 1 to 4 only.\n";
-            enterPrompt("Enter Year Level: ",officers[officerCount].yearLevel,17);
+            cout << "\n[!] Valid year level are Years 1 to 4 only.\n\n";
+            enterPrompt("📈 Enter Year Level: ",officers[officerCount].yearLevel,26);
         }
 
-        enterPrompt("Enter Position: ",officers[officerCount].position,17);
+        enterPrompt("🎖️ Enter Position: ",officers[officerCount].position,26);
 
         officers[officerCount].passcode = createPasscode();
 
@@ -186,12 +192,13 @@ void createAccount(Officer* officers, Faculty* faculty, int size, int role, int&
         officerCount++;
 
     } else if(role == 3){
+        SetConsoleOutputCP(CP_UTF8);
         cout << "\n-----------------------------------------------------------\n";
         cout << right << setw(39) << ">>> Role: Faculty <<<" << "\n";
         cout << "-----------------------------------------------------------\n\n";
 
-        enterPrompt("Enter ID: ",   faculty[facultyCount].ID,   17);
-        enterPrompt("Enter Name: ", faculty[facultyCount].name, 17);
+        enterPrompt("🆔 Enter ID: ",   faculty[facultyCount].ID,   25);
+        enterPrompt("👤 Enter Name: ", faculty[facultyCount].name, 25);
 
         faculty[facultyCount].passcode = createPasscode();
 
@@ -205,24 +212,24 @@ void createAccount(Officer* officers, Faculty* faculty, int size, int role, int&
 string createPasscode(){
     cout << "\n-----------------------------------------------------------\n";
     cout <<  right << setw(45) << "*** Create your passcode ***\n";
-    cout << right << setw(60) <<"\033[3mNote: Passcode must be minimum of characters\033[0m" << "\n";
+    cout << right << setw(60) <<"\033[3m📌 Note: Passcode must be minimum of characters\033[0m" << "\n";
     cout << "-----------------------------------------------------------\n\n";
 
     string passcode = "";
-    enterPrompt("Enter passcode: ", passcode);
+    enterPrompt("🔑 Enter passcode: ", passcode);
     while(passcode.length() < 8){
         cout << "\n[!] Must be 8 or more characters.\n";
-        enterPrompt("\nEnter passcode: ", passcode);
+        enterPrompt("\n🔑 Enter passcode: ", passcode);
     }
 
     string confirm = "";
-    enterPrompt("Confirm passcode: ", confirm);
+    enterPrompt("🔄 Confirm passcode: ", confirm);
     while(confirm != passcode){
         cout << "\n[!] Wrong passcode. Try again.\n";
-        enterPrompt("\nConfirm passcode: ", confirm);
+        enterPrompt("\n🔄 Confirm passcode: ", confirm);
     }
 
-    cout << "\n[/] Passcode created.\n";
+    cout << "\n[🔒] Passcode created.\n";
     return passcode;
 }
 
@@ -258,12 +265,14 @@ void login(Officer* officers, Faculty* faculty, int size, int role, int& officer
 
     //babaguhin mo ui dito for log in
     cout << "\n============== >>> Login to your account <<< ==============\n";
+   // cout << "|" << right << setw(45) << ">>> Login to your account <<< " << right << setw(14) << "| \n";
+
 
     // officers login
     string id   = "";
     string pass = "";
 
-    cout << "\n[1] - Student \n[2] - Officer \n[3] - Faculty";
+    cout << "\n[1-👩‍🚀] Student \n[2-🧑‍🎓]️Officer \n[3-🧑‍🏫] Faculty";
     enterPrompt("\n\nEnter role: ", role);
 
     while(role > 3){
@@ -304,7 +313,7 @@ void officerLogin(Officer* officers, Faculty* faculty, int size, int role, int& 
 
     // ID Validation Loop
     while(!idFound){
-        enterPrompt("\nEnter ID: ", id);
+        enterPrompt("\n🪪 Enter ID: ", id);
 
         for(int j = 0; j < loadedCount; j++){
             if(tempOfficer[j].ID == id){
@@ -325,7 +334,7 @@ void officerLogin(Officer* officers, Faculty* faculty, int size, int role, int& 
 
     // Passcode Validation Loop
     while(!passFound){
-        enterPrompt("Enter passcode: ", pass);
+        enterPrompt("🔑 Enter passcode: ", pass);
 
         for(int j = 0; j < loadedCount; j++){
             if(tempOfficer[j].ID == id && tempOfficer[j].passcode == pass){
@@ -362,7 +371,7 @@ void facultyLogin(Officer* officers, Faculty* faculty, int size, int role, int& 
 
     // ID Validation Loop
     while(!idFound){
-        enterPrompt("\nEnter ID: ", id);
+        enterPrompt("\n🪪 Enter ID: ", id);
 
         for(int j = 0; j < loadedCount; j++){
             if(tempFaculty[j].ID == id){
@@ -383,7 +392,7 @@ void facultyLogin(Officer* officers, Faculty* faculty, int size, int role, int& 
 
     // Passcode Validation Loop
     while(!passFound){
-        enterPrompt("Enter passcode: ", pass);
+        enterPrompt("🔑 Enter passcode: ", pass);
 
         for(int j = 0; j < loadedCount; j++){
             if(tempFaculty[j].ID == id && tempFaculty[j].passcode == pass){
