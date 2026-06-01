@@ -84,7 +84,7 @@ void displayHeader(){
     cout << "+---------------------------------------------------------+\n";
     cout << "|_________________________iSPACE:_________________________|\n";
     cout << "|               IBITS Portal for Announcements,           |\n";
-    cout << "|                  Communication, and Events              |\n";
+    cout << "|                 Communication and Events                |\n";
     cout << "+---------------------------------------------------------+\n";
 }
 
@@ -122,11 +122,11 @@ void askRole(Officer* officers, Faculty* faculty, int size, int& role, int& offi
     cout << right << setw(37) << " ---------------\n";
 
     cout << "\n[1] - Student \n[2] - Officer \n[3] - Faculty";
-    enterPrompt("\nEnter role: ", role);
+    enterPrompt("\n\nEnter role: ", role);
 
     while(role > 3){
         cout << "\n[!] Invalid role. Select only from role choices.\n";
-        enterPrompt("\nEnter role: ", role);
+        enterPrompt("\n\nEnter role: ", role);
     }
 
     switch(role){
@@ -252,7 +252,12 @@ void saveAccountToCSV(Officer* officers, Faculty* faculty, int role, int count, 
 }
 
 void login(Officer* officers, Faculty* faculty, int size, int role, int& officerCount, int& facultyCount){
-    cout << "\nLogin to your account.\n";
+    pauseScreen();
+    clScreen();
+    displayHeader();
+
+    //babaguhin mo ui dito for log in
+    cout << "\n============== >>> Login to your account <<< ==============\n";
 
     // officers login
     string id   = "";
@@ -269,8 +274,16 @@ void login(Officer* officers, Faculty* faculty, int size, int role, int& officer
     if(role == 1){
         // student login
     } else if(role == 2){
+        system("cls");
+        displayHeader();
+        cout << "\n============== >>> Login to your account <<< ==============\n";
+        cout << "\n                   ==> Role: Officer <==\n";
         officerLogin(officers,faculty,size,role,officerCount,facultyCount);
     } else if(role == 3){
+        system("cls");
+        displayHeader();
+        cout << "\n============== >>> Login to your account <<< ==============\n";
+        cout << "\n                   ==> Role: Faculty <==\n";
         facultyLogin(officers,faculty,size,role,officerCount,facultyCount);
     }
 }
