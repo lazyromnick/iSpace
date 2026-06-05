@@ -145,7 +145,7 @@ int main(){
                 clScreen();
 
                 do{
-                    displayHeader();
+                    displayHeader2();
                     facultyMenu();
                     enterChoice("\nEnter choice: ",choice);
                     clScreen();
@@ -907,6 +907,7 @@ void searchFunction(){
 
 /// faculty module
 void facultyMenu(){
+    cout << "\n" << right << setw(40) << ">>> Role: faculty <<<" << "\n";
     cout << "\n[1] Announcement Management";
     cout << "\n[2] View Students";
     cout << "\n[3] View Officers";
@@ -919,22 +920,27 @@ void facultySwitch(int choice){
     switch(choice){
         case 1:
             // announcement management
+            displayHeader2();
             break;
 
         case 2:
             // view students
+            displayHeader2();
             break;
 
         case 3:
             // view officers
+            displayHeader2();
             break;
 
         case 4:
             // search
+            displayHeader2();
             break;
 
         case 5:
             // view feedbacks
+            displayHeader2();
             break;
 
         case 0:
