@@ -35,6 +35,7 @@ const int MAX_OFFICER = 50;
 const int MAX_FACULTY = 10;
 
 void displayHeader();
+void displayHeader2();
 
 // authentication
 void auth(Officer* officers, Faculty* faculty, int& role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
@@ -129,7 +130,8 @@ int main(){
                 clScreen();
 
                 do{
-                    displayHeader();
+                    //displayHeader();
+                    displayHeader2();
                     officerMenu();
                     enterChoice("\nEnter choice: ",choice);
                     clScreen();
@@ -161,9 +163,17 @@ void displayHeader(){
     SetConsoleOutputCP(CP_UTF8);
     cout << "+---------------------------------------------------------+\n";
     cout << "|__________________--✨ iSPACE PORTAL ✨--________________|\n";
-    cout << "|               IBITS Portal for Announcements,            |\n";
-    cout << "|                  Communication and Events                |\n";
+    cout << "|               IBITS Portal for Announcements,           |\n";
+    cout << "|                  Communication and Events               |\n";
     cout << "+---------------------------------------------------------+\n";
+}
+void displayHeader2() {
+   cout << "==========================================================";
+    cout << "\n|" << right << setw(39) << " __✨ iSpace ✨__" << right << setw(21) << "|\n";
+    cout << "|" << right << setw(58) << "|\n";
+    cout << "|" << right << setw(48) << "⚙️ MANAGEMENT OVERVIEW 📊 " << right << setw(16) << "|\n";
+    cout << "|" << right << setw(57) << "|";
+    cout << "\n==========================================================\n";
 }
 
 void auth(Officer* officers, Faculty* faculty, int& role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn){
@@ -263,7 +273,7 @@ void createAccount(Officer* officers, Faculty* faculty, int role, int& officerCo
             enterPrompt("📈 Enter Year Level: ",officers[officerCount].yearLevel,26);
         }
 
-        enterPrompt("🎖️ Enter Position: ",officers[officerCount].position,26);
+        enterPrompt("🎖️ Enter Position: ",officers[officerCount].position,29);
 
         officers[officerCount].passcode = createPasscode();
 
@@ -608,32 +618,40 @@ void displayWelcome(string name){
 
 /// officer's module
 void officerMenu(){
-    cout << "\n[1] Member Management";
-    cout << "\n[2] Announcement Management";
-    cout << "\n[3] Activity Management";
-    cout << "\n[4] Search";
-    cout << "\n[0] Log Out\n";
+    cout << "\n" << right << setw(40) << ">>> Role: Officer <<<" << "\n";
+    cout << "\n[1] 👥 Member Management";
+    cout << "\n[2] 📢 Announcement Management";
+    cout << "\n[3] 📅 Activity Management";
+    cout << "\n[4] 🔍 Search\n";
+    cout << "[0] 🚪 Log Out\n";
+
+
+
 }
 
 void officerSwitch(int choice,Student* students, int& studentCount){
     switch(choice){
         case 1:
             // member management
+            displayHeader2();
             memberManagement(students,studentCount);
             break;
 
         case 2:
             // announcement management
+            displayHeader2();
             announcementManagement();
             break;
 
         case 3:
             // activity management
+            displayHeader2();
             activityManagement();
             break;
 
         case 4:
             // search
+            displayHeader2();
             searchFunction();
             break;
 
@@ -645,6 +663,7 @@ void officerSwitch(int choice,Student* students, int& studentCount){
         default:
             cout << "\n[!] Invalid choice. Try again.\n";
     }
+
 }
 
 // member management
@@ -652,7 +671,9 @@ void memberManagement(Student* students, int& studentCount){
     int memberChoice = 0;
 
     do{
-        displayHeader();
+       cout << "\n" << right << setw(42) << "-----------------------";
+        cout << "\n" << right << setw(46) << "👥 Member Management 👥" << "\n";
+        cout << right << setw(42) << "-----------------------" << "\n";
         cout << "\n[1] Add Member";
         cout << "\n[2] View Member";
         cout << "\n[3] Edit Member";
@@ -664,19 +685,23 @@ void memberManagement(Student* students, int& studentCount){
         switch(memberChoice){
             case 1:
                 // add member
+                displayHeader2();
                 addMember(students,studentCount);
                 break;
 
             case 2:
                 // view member
+                displayHeader2();
                 break;
 
             case 3:
                 // edit member
+                displayHeader2();
                 break;
 
             case 4:
                 // remove member
+                displayHeader2();
                 break;
 
             case 0:
@@ -687,10 +712,16 @@ void memberManagement(Student* students, int& studentCount){
                 cout << "\n[!] Invalid choice. Try again.\n";
         }
     } while(memberChoice != 0);
+
+    clScreen();
 }
 
 /** Member management functions **/
 void addMember(Student* students, int& studentCount){
+    clScreen();
+    cout << "\n" << right << setw(38) << "----------------";
+    cout << "\n" << right << setw(42) << "👥 Add Member 👥" << "\n";
+    cout << right << setw(38) << "----------------" << "\n";
     enterPrompt("\nEnter Student ID: ", students[studentCount].ID);
     enterPrompt("Enter Student Name: ", students[studentCount].name);
 
@@ -723,13 +754,19 @@ void addMember(Student* students, int& studentCount){
     saveAccountToCSV("students.csv",students,studentCount);
 
     delete[] code;
+
+    pauseScreen();
+    clScreen();
 }
 
 void announcementManagement(){
     int announcementChoice = 0;
 
     do{
-        displayHeader();
+        cout << "\n" << right << setw(43) << "--------------------------";
+        cout << "\n" << right << setw(49) << "📢 Announcement Management 📢" << "\n";
+        cout << right << setw(43) << "--------------------------" << "\n";
+
         cout << "\n[1] Propose Announcement";
         cout << "\n[2] View Announcement";
         cout << "\n[3] Edit Announcement";
@@ -742,10 +779,12 @@ void announcementManagement(){
         switch(announcementChoice){
             case 1:
                 // propose
+                displayHeader2();
                 break;
 
             case 2:
                 // view announcement
+                displayHeader2();
                 break;
 
             case 3:
@@ -754,10 +793,12 @@ void announcementManagement(){
 
             case 4:
                 // remove
+                displayHeader2();
                 break;
 
             case 5:
                 // pin / urgent
+                displayHeader2();
                 break;
 
             case 0:
@@ -768,13 +809,17 @@ void announcementManagement(){
                 cout << "\n[!] Invalid choice. Try again.\n";
         }
     } while(announcementChoice != 0);
+    clScreen();
+
 }
 
 void activityManagement(){
     int activityChoice = 0;
 
     do{
-        displayHeader();
+        cout << "\n" << right << setw(44) << "--------------------------";
+        cout << "\n" << right << setw(47) << "📅 Activity Management 📅" << "\n";
+        cout << right << setw(44) << "--------------------------" << "\n";
         cout << "\n[1] Add Activity";
         cout << "\n[2] View Activities";
         cout << "\n[3] Update Activity";
@@ -786,18 +831,22 @@ void activityManagement(){
         switch(activityChoice){
             case 1:
                 // add activity
+                displayHeader2();
                 break;
 
             case 2:
                 // view
+                displayHeader2();
                 break;
 
             case 3:
                 // edit
+                displayHeader2();
                 break;
 
             case 4:
                 // remove
+                displayHeader2();
                 break;
 
             case 0:
@@ -808,13 +857,17 @@ void activityManagement(){
                 cout << "\n[!] Invalid choice. Try again.\n";
         }
     } while(activityChoice != 0);
+
+    clScreen();
 }
 
 void searchFunction(){
     int searchChoice = 0;
 
     do{
-        displayHeader();
+        cout << "\n" << right << setw(43) << "--------------------------";
+        cout << "\n" << right << setw(46) << "🔍 Search Management 🔍" << "\n";
+        cout << right << setw(43) << "--------------------------" << "\n";
         cout << "\n[1] Search Member";
         cout << "\n[2] Search Announcement";
         cout << "\n[3] Search Activity";
@@ -826,11 +879,13 @@ void searchFunction(){
             case 1:
                 // search member
                 // conditional - id or name?
+                displayHeader2();
                 break;
 
             case 2:
                 // search announcement
                 // conditional - id or name?
+                displayHeader2();
                 break;
 
             case 3:
@@ -846,6 +901,8 @@ void searchFunction(){
                 cout << "\n[!] Invalid choice. Try again.\n";
         }
     } while(searchChoice != 0);
+
+    clScreen();
 }
 
 /// faculty module
