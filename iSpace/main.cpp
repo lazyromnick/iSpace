@@ -73,11 +73,11 @@ void searchFunction(Student* students, int studentCount);
 void addMember(Student* students, int& studentCount);
 void viewMembers(Student* students, int studentCount);
 void sortMember(Student* students, int studentCount, int method);
-void editMember(Student* students, int studentCount);
+void editMember(Student* students, int& studentCount);
 
 /* search */
 int searchMember(Student* students, int studentCount, string target, string searchValue="");
-void displayFoundMember(Student* students, int index);
+void displayMember(Student* students, int index=0);
 
 // faculty module
 void facultyMenu();
@@ -85,10 +85,9 @@ void facultyMenu();
 /// utility function
 void pauseScreen();
 void clScreen();
-void enterPrompt(string prompt, string& val, int width = 0);
-void enterPrompt(string prompt, int& val, int width = 0);
-void enterPrompt(string prompt, char& val, int width = 0);
-void enterChoice(string prompt, int& val);
+void enterPrompt(string prompt, string& val);
+void enterPrompt(string prompt, int& val);
+void enterPrompt(string prompt, char& val);
 bool isEmpty(string str);
 
 /// utility function template
@@ -143,10 +142,10 @@ int main(){
                     //displayHeader();
                     displayHeader2();
                     officerMenu();
-                    enterChoice("\nEnter choice: ",choice);
+                    enterPrompt("\nEnter choice: ",choice);
                     clScreen();
                     officerSwitch(choice,students,studentCount);
-                } while(choice != 0);
+                } while(choice != 5);
 
                 break;
 
@@ -157,7 +156,7 @@ int main(){
                 do{
                     displayHeader2();
                     facultyMenu();
-                    enterChoice("\nEnter choice: ",choice);
+                    enterPrompt("\nEnter choice: ",choice);
                     clScreen();
                 }  while(choice != 0);
 
@@ -283,23 +282,23 @@ void createAccount(Officer* officers, Faculty* faculty, int role, int& officerCo
         cout << right << setw(40) << ">>> Role: Officer <<<" << "\n";
         cout << "-----------------------------------------------------------\n\n";
 
-        enterPrompt("🆔 Enter ID: ",officers[officerCount].ID,26);
-        enterPrompt("👤 Enter Name: ",officers[officerCount].name,26);
+        enterPrompt("🆔 Enter ID: ",officers[officerCount].ID);
+        enterPrompt("👤 Enter Name: ",officers[officerCount].name);
 
-        enterPrompt("💻 Enter Program: ",officers[officerCount].program,  26);
+        enterPrompt("💻 Enter Program: ",officers[officerCount].program);
         while(officers[officerCount].program != "BSIT" && officers[officerCount].program != "DIT"  &&
               officers[officerCount].program != "bsit" && officers[officerCount].program != "dit"){
             cout << "\n[!] Program must be BSIT or DIT only.\n\n";
-            enterPrompt("💻 Enter Program: ", officers[officerCount].program, 26);
+            enterPrompt("💻 Enter Program: ", officers[officerCount].program);
         }
 
-        enterPrompt("📈 Enter Year Level: ",officers[officerCount].yearLevel,26);
+        enterPrompt("📈 Enter Year Level: ",officers[officerCount].yearLevel);
         while(officers[officerCount].yearLevel >= 5){
             cout << "\n[!] Valid year level are Years 1 to 4 only.\n\n";
-            enterPrompt("📈 Enter Year Level: ",officers[officerCount].yearLevel,26);
+            enterPrompt("📈 Enter Year Level: ",officers[officerCount].yearLevel);
         }
 
-        enterPrompt("🎖️ Enter Position: ",officers[officerCount].position,29);
+        enterPrompt("🎖️ Enter Position: ",officers[officerCount].position);
 
         officers[officerCount].passcode = createPasscode();
 
@@ -314,8 +313,8 @@ void createAccount(Officer* officers, Faculty* faculty, int role, int& officerCo
         cout << right << setw(39) << ">>> Role: Faculty <<<" << "\n";
         cout << "-----------------------------------------------------------\n\n";
 
-        enterPrompt("🆔 Enter ID: ",   faculty[facultyCount].ID,   25);
-        enterPrompt("👤 Enter Name: ", faculty[facultyCount].name, 25);
+        enterPrompt("🆔 Enter ID: ",   faculty[facultyCount].ID);
+        enterPrompt("👤 Enter Name: ", faculty[facultyCount].name);
 
         faculty[facultyCount].passcode = createPasscode();
 
@@ -627,7 +626,7 @@ void updateStudentsCSV(string file, Student* students, int studentCount){
     ofstream outFile(file, ios::trunc);
 
     if(outFile.is_open()){
-        cout << "ID,Name,Program,Year Level\n";
+        outFile << "ID,Name,Program,Year Level\n";
         for(int i = 0; i < studentCount;i++){
             outFile << students[i].ID << ',';
             outFile << students[i].name << ',';
@@ -802,7 +801,7 @@ void officerMenu(){
     cout << "\n[2] 📢 Announcement Management";
     cout << "\n[3] 📅 Activity Management";
     cout << "\n[4] 🔍 Search\n";
-    cout << "[0] 🚪 Log Out\n";
+    cout << "[5] 🚪 Log Out\n";
 }
 
 void officerSwitch(int choice,Student* students, int& studentCount){
@@ -833,7 +832,7 @@ void officerSwitch(int choice,Student* students, int& studentCount){
             searchFunction(students,studentCount);
             break;
 
-        case 0:
+        case 5:
             // log out
             // go back to landing page
             break;
@@ -856,9 +855,9 @@ void memberManagement(Student* students, int& studentCount){
         cout << "\n[2] View Member";
         cout << "\n[3] Edit Member";
         cout << "\n[4] Remove Member";
-        cout << "\n[0] Return to Main Menu\n";
+        cout << "\n[5] Return to Main Menu\n";
 
-        enterChoice("\nEnter choice: ",memberChoice);
+        enterPrompt("\nEnter choice: ",memberChoice);
 
         switch(memberChoice){
             case 1:
@@ -870,6 +869,9 @@ void memberManagement(Student* students, int& studentCount){
             case 2:
                 // view member
                 displayHeader2();
+                if(studentCount <= 0){
+                    cout << "\n[!] No students record yet. Go to Add Member.\n";
+                }
                 viewMembers(students,studentCount);
                 break;
 
@@ -884,14 +886,14 @@ void memberManagement(Student* students, int& studentCount){
                 displayHeader2();
                 break;
 
-            case 0:
+            case 5:
                 // return to menu
                 break;
 
             default:
                 cout << "\n[!] Invalid choice. Try again.\n";
         }
-    } while(memberChoice != 0);
+    } while(memberChoice != 5);
 
     clScreen();
 }
@@ -915,7 +917,7 @@ void addMember(Student* students, int& studentCount){
     enterPrompt("Enter Year Level: ", students[studentCount].yearLevel);
     while(students[studentCount].yearLevel >= 5){
             cout << "\n[!] Valid year level are Years 1 to 4 only.\n\n";
-            enterPrompt("\n📈 Enter Year Level: ",students[studentCount].yearLevel,26);
+            enterPrompt("\n📈 Enter Year Level: ",students[studentCount].yearLevel);
     }
 
     cout << "\nPress Enter to generate passcode.\n";
@@ -941,30 +943,36 @@ void addMember(Student* students, int& studentCount){
 }
 
 void viewMembers(Student* students, int studentCount){
-    clScreen();
-
-    cout << "\nMembers list\n\n";
-    cout << left << setw(17) << "Student ID" << setw(25) << "Name" << setw(13) << "Program" << "Year Level" << endl;
-    for(int i = 0; i < studentCount; i++){
-        cout << left << setw(17) << students[i].ID << setw(25) << students[i].name << setw(13) << students[i].program << students[i].yearLevel << endl;
-    }
-
     int returnOrSort;
-    enterPrompt("\n[1] Sort     [2] Return to Menu \nChoose: ",returnOrSort);
+    do{
+        clScreen();
+        loadIDPassFromFile(students,studentCount);
 
-    if(returnOrSort == 1){
-        int method;
-        cout << "\nSort by: [1] ID     [2] Name\n";
-
-        enterPrompt("\nChoose method: ",method);
-        while(method != 1 && method != 2){
-            cout << "[!] Choose only from the options above.\n";
-            enterPrompt("\nChoose method: ",method);
+        cout << "\nMember list\n\n";
+        cout << left << setw(17) << "ID" << setw(25) << "Name" << setw(13) << "Program" << "Year Level\n";
+        for(int i = 0; i < studentCount; i++){
+            cout << left << setw(17) << students[i].ID << setw(25) << students[i].name << setw(13) <<
+                                        students[i].program << students[i].yearLevel << "\n";
         }
 
-        sortMember(students,studentCount,method);
-        viewMembers(students,studentCount);
-    }
+        enterPrompt("\n[1] Sort     [2] Return to Menu \nChoose: ",returnOrSort);
+
+        if(returnOrSort == 1){
+            int method;
+            cout << "\nSort by: [1] ID     [2] Name\n";
+
+            enterPrompt("\nChoose method: ",method);
+            while(method != 1 && method != 2){
+                cout << "[!] Choose only from the options above.\n";
+                enterPrompt("\nChoose method: ",method);
+            }
+
+            sortMember(students,studentCount,method);
+        }
+
+        updateStudentsCSV("students.csv",students,studentCount);
+    }while(returnOrSort != 2);
+
 }
 
 // bubble sort - id
@@ -988,40 +996,49 @@ void sortMember(Student* students, int studentCount, int method){
     }
 }
 
-void editMember(Student* students, int studentCount){
-    // search student first
-    string target;
-    enterPrompt( "\nEnter name of member to edit: ",target);
+void editMember(Student* students, int& studentCount){
+    loadIDPassFromFile(students, studentCount);
 
-    int memberIdx = searchMember(students,studentCount,target);
+    string target;
+    enterPrompt("\nEnter name of member to edit: ", target);
+
+    // pass "Name" explicitly, or it defaults to "" and returns -1
+    int memberIdx = searchMember(students, studentCount, target,"Name");
+
+    if(memberIdx == -1){
+        cout << "\n[!] Member not found.\n";
+        pauseScreen();
+        return;
+    }
 
     Student* stud = &students[memberIdx];
 
     cout << "\nEdit member\n\n";
     int edit;
     cout << "[1] ID     [2] Name     [3] Program     [4] Year Level\n";
-    enterPrompt("\nChoose which data you want to edit: ",edit);
+    enterPrompt("\nChoose which data you want to edit: ", edit);
 
     switch(edit){
         case 1:
-            cout << "\nEdit Member ID\n";
-            enterPrompt("\nEdit ID: ",stud->ID);
+            enterPrompt("\nEdit ID: ", stud->ID);
             break;
         case 2:
-            cout << "\nEdit Member Name\n";
-            enterPrompt("\nEdit Name: ",stud->name);
+            enterPrompt("\nEdit Name: ", stud->name);
             break;
         case 3:
-            cout << "\nEdit Member Program\n";
-            enterPrompt("\nEdit Program: ",stud->program);
+            enterPrompt("\nEdit Program: ", stud->program);
             break;
         case 4:
-            cout << "\nEdit Member Year Level\n";
-            enterPrompt("\nEdit Year Level: ",stud->yearLevel);
+            enterPrompt("\nEdit Year Level: ", stud->yearLevel);
             break;
         default:
             cout << "[!] Invalid choice. Choose only from choice above.\n";
+            return;
     }
+
+    updateStudentsCSV("students.csv", students, studentCount);
+    cout << "\n[/] Member updated successfully.\n";
+    pauseScreen();
 }
 
 /** Announcement Management Functions **/
@@ -1038,9 +1055,9 @@ void announcementManagement(){
         cout << "\n[3] Edit Announcement";
         cout << "\n[4] Remove Announcement";
         cout << "\n[5] Pin/Urgent";
-        cout << "\n[0] Return to Main Menu\n";
+        cout << "\n[6] Return to Main Menu\n";
 
-        enterChoice("\nEnter choice: ",announcementChoice);
+        enterPrompt("\nEnter choice: ",announcementChoice);
 
         switch(announcementChoice){
             case 1:
@@ -1067,14 +1084,14 @@ void announcementManagement(){
                 displayHeader2();
                 break;
 
-            case 0:
+            case 6:
                 // return to menu
                 break;
 
             default:
                 cout << "\n[!] Invalid choice. Try again.\n";
         }
-    } while(announcementChoice != 0);
+    } while(announcementChoice != 6);
     clScreen();
 
 }
@@ -1090,9 +1107,9 @@ void activityManagement(){
         cout << "\n[2] View Activities";
         cout << "\n[3] Update Activity";
         cout << "\n[4] Remove Activity";
-        cout << "\n[0] Return to Main Menu\n";
+        cout << "\n[5] Return to Main Menu\n";
 
-        enterChoice("\nEnter choice: ",activityChoice);
+        enterPrompt("\nEnter choice: ",activityChoice);
 
         switch(activityChoice){
             case 1:
@@ -1115,14 +1132,14 @@ void activityManagement(){
                 displayHeader2();
                 break;
 
-            case 0:
+            case 5:
                 // return to menu
                 break;
 
             default:
                 cout << "\n[!] Invalid choice. Try again.\n";
         }
-    } while(activityChoice != 0);
+    } while(activityChoice != 5);
 
     clScreen();
 }
@@ -1137,9 +1154,9 @@ void searchFunction(Student* students,int studentCount){
         cout << "\n[1] Search Member";
         cout << "\n[2] Search Announcement";
         cout << "\n[3] Search Activity";
-        cout << "\n[0] Return to Main Menu\n";
+        cout << "\n[4] Return to Main Menu\n";
 
-        enterChoice("\nEnter choice: ",searchChoice);
+        enterPrompt("\nEnter choice: ",searchChoice);
 
         string target;
         string searchValue;
@@ -1162,7 +1179,8 @@ void searchFunction(Student* students,int studentCount){
                     if(idIndex == -1){
                         cout << "\n[!] Member with that ID not found.\n";
                     } else {
-                        displayFoundMember(students,idIndex);
+                        cout << "\n[/] Member found\n\n";
+                        displayMember(students,idIndex);
                     }
                 } else if(searchIdName == 'N' || searchIdName == 'n'){
                     searchValue = "Name";
@@ -1175,7 +1193,8 @@ void searchFunction(Student* students,int studentCount){
                     if(nameIndex == -1){
                         cout << "\n[!] Member with that Name not found.\n";
                     } else {
-                        displayFoundMember(students,nameIndex);
+                        cout << "\n[/] Member found\n\n";
+                        displayMember(students,nameIndex);
                     }
                 } else {
                     cout << "\n[!] Invalid choice. Choose only from the choice above.\n";
@@ -1193,14 +1212,14 @@ void searchFunction(Student* students,int studentCount){
                 // conditional - id or name?
                 break;
 
-            case 0:
+            case 4:
                 // return to menu
                 break;
 
             default:
                 cout << "\n[!] Invalid choice. Try again.\n";
         }
-    } while(searchChoice != 0);
+    } while(searchChoice != 4);
 
     clScreen();
 }
@@ -1214,18 +1233,16 @@ int searchMember(Student* students, int studentCount, string target, string sear
         }
     } else if(searchValue == "Name"){
         for(int i = 0; i < studentCount; i++){
-            if(students[i].name == target){
+            // partial match
+            if(students[i].name.find(target) != string::npos){
                 return i;
             }
         }
     }
-
     return -1;
 }
 
-void displayFoundMember(Student* students, int index){
-    cout << "\n[/] Member found\n\n";
-
+void displayMember(Student* students, int index){
     cout << left << setw(17) << "ID" << setw(25) << "Name" << setw(13) << "Program" << "Year Level\n";
     cout << left << setw(17) << students[index].ID << setw(25) << students[index].name << setw(13) <<
                                 students[index].program << students[index].yearLevel << "\n\n";
@@ -1289,27 +1306,21 @@ void clScreen(){
     system("cls");
 }
 
-void enterPrompt(string prompt, string& val, int width){
+void enterPrompt(string prompt, string& val){
     do{
-        cout << left << setw(width) << prompt;
+        cout << prompt;
         getline(cin, val);
     } while(isEmpty(val));
 }
 
-void enterPrompt(string prompt, int& val, int width){
+void enterPrompt(string prompt, int& val){
     do{
-        cout << left << setw(width) << prompt;
+        cout << prompt;
         cin >> val;
     } while(isValidDigit(val));
 }
 
-void enterPrompt(string prompt, char& val, int width){
-    cout << prompt;
-    cin >> val;
-    cin.ignore();
-}
-
-void enterChoice(string prompt, int& val){
+void enterPrompt(string prompt, char& val){
     cout << prompt;
     cin >> val;
     cin.ignore();
