@@ -38,17 +38,22 @@ void displayHeader();
 void displayHeader2();
 
 // authentication
-void auth(Officer* officers, Faculty* faculty, int& role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
+void auth(Student* students, Officer* officers, Faculty* faculty, int& role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
 void askRole(int& role);
-void roleSwitch(Officer* officers, Faculty* faculty, int& role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
+void roleSwitch(Student* students, Officer* officers, Faculty* faculty, int& role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
 void createAccount(Officer* officers, Faculty* faculty, int role, int& officerCount, int& facultyCount);
 string createPasscode();
 void saveAccountToCSV(string file, Student* students, int studentCount);  // overloading - student
 void saveAccountToCSV(string file, Officer* officers, int officerCount);  // overloading - officer
 void saveAccountToCSV(string file, Faculty* faculty, int facultyCount);   // overloading - faculty
-void login(Officer* officers, Faculty* faculty, int& role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
-void officerLogin(Officer* officers, Faculty* faculty, int role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
-void facultyLogin(Officer* officers, Faculty* faculty, int role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
+void login(Student* students, Officer* officers, Faculty* faculty, int& role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
+void studentLogin(Student* students, int studentCount, int& accIndex, bool& isLoggedIn);
+void officerLogin(Student* students, Officer* officers, Faculty* faculty, int role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
+void facultyLogin(Student* students, Officer* officers, Faculty* faculty, int role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
+void updateStudentsCSV(string file, Student* students, int studentCount);  // to follow
+void updateOfficersCSV(string file, Officer* officers, int officerCount);
+void updateFacultyCSV(string file, Faculty* faculty, int facultyCount);
+void loadIDPassFromFile(Student* students, int& count);
 void loadIDPassFromFile(Officer* tempOfficer, int& count);
 void loadIDPassFromFile(Faculty* tempFaculty, int& count);
 bool idpassNotFound(bool& var, int& attempt, string displayMessage);
@@ -57,13 +62,22 @@ void displayWelcome(string name);
 // officer module
 void officerMenu();
 void officerSwitch(int choice,Student* students, int& studentCount);
-void memberManagement(Student* students, int& studentCount);
+
 /* managements holder */
+void memberManagement(Student* students, int& studentCount);
 void announcementManagement();
 void activityManagement();
-void searchFunction();
+void searchFunction(Student* students, int studentCount);
+
 /* member management */
 void addMember(Student* students, int& studentCount);
+void viewMembers(Student* students, int studentCount);
+void sortMember(Student* students, int studentCount, int method);
+void editMember(Student* students, int studentCount);
+
+/* search */
+int searchMember(Student* students, int studentCount, string target, string searchValue="");
+void displayFoundMember(Student* students, int index);
 
 // faculty module
 void facultyMenu();
@@ -73,9 +87,9 @@ void pauseScreen();
 void clScreen();
 void enterPrompt(string prompt, string& val, int width = 0);
 void enterPrompt(string prompt, int& val, int width = 0);
+void enterPrompt(string prompt, char& val, int width = 0);
 void enterChoice(string prompt, int& val);
 bool isEmpty(string str);
-
 
 /// utility function template
 template <typename T>
@@ -89,11 +103,6 @@ T isValidDigit(T digit){
     cin.ignore();
     return false;
 }
-
-/// opening files csv
-    ifstream studentFile("students.csv");
-    ifstream officerFile("officers.csv");
-    ifstream facultyFile("faculty.csv");
 
 /// main function
 int main(){
@@ -110,19 +119,20 @@ int main(){
 
     srand(time(0));
 
-    // Load data from files directly into the main arrays at startup
+    // oad data from files
+    loadIDPassFromFile(students,studentCount);
     loadIDPassFromFile(officers, officerCount);
     loadIDPassFromFile(faculty, facultyCount);
 
     displayHeader();
 
     bool isLoggedIn = false;
-    auth(officers, faculty, role, officerCount, facultyCount, accIndex, isLoggedIn);
+    auth(students, officers, faculty, role, studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
 
     if(isLoggedIn){
         switch(role){
             case 1:
-            //student
+            //student module
             break;
 
             case 2:
@@ -176,8 +186,12 @@ void displayHeader2() {
     cout << "\n==========================================================\n";
 }
 
-void auth(Officer* officers, Faculty* faculty, int& role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn){
-    if(officerFile.is_open() || facultyFile.is_open()){
+void auth(Student* students, Officer* officers, Faculty* faculty, int& role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn){
+    ifstream studentFile("students.csv");
+    ifstream officerFile("officers.csv");
+    ifstream facultyFile("faculty.csv");
+
+    if(studentFile.is_open() || officerFile.is_open() || facultyFile.is_open()){
         SetConsoleOutputCP(CP_UTF8);
         cout << right << setw(55) << "\n[📂] File successfully opened\n";
 
@@ -188,17 +202,16 @@ void auth(Officer* officers, Faculty* faculty, int& role, int& officerCount, int
 
         if(hasAccount == 'Y' || hasAccount == 'y'){
             // go to login
-            login(officers, faculty, role, officerCount, facultyCount, accIndex, isLoggedIn);
+            login(students, officers, faculty, role,studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
         } else {
             // ask role
-            roleSwitch(officers, faculty, role, officerCount, facultyCount, accIndex, isLoggedIn);
+            roleSwitch(students, officers, faculty, role, studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
         }
     } else {
         cout << "\n\n" << right << setw(55) << "[!] File doesn't exist yet. Start your account.\n\n";
         pauseScreen();
 
-        // ask for role
-        roleSwitch(officers, faculty, role, officerCount, facultyCount, accIndex, isLoggedIn);
+        roleSwitch(students, officers, faculty, role, studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
     }
 }
 
@@ -217,7 +230,7 @@ void askRole(int& role){
     }
 }
 
-void roleSwitch(Officer* officers, Faculty* faculty, int& role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn){
+void roleSwitch(Student* students, Officer* officers, Faculty* faculty, int& role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn){
     system("cls");
     displayHeader();
     SetConsoleOutputCP(CP_UTF8);
@@ -227,16 +240,29 @@ void roleSwitch(Officer* officers, Faculty* faculty, int& role, int& officerCoun
     switch(role){
         case 1:
             // ask for credentials, go to login
+            cout << "\nDo you already have your credentials? (Y/N): ";
+            char hasCred;
+            cin >> hasCred;
+            cin.ignore();
+
+            if(hasCred == 'Y' || hasCred == 'y'){
+                login(students, officers,faculty,role,studentCount, officerCount,facultyCount,accIndex,isLoggedIn);
+            } else {
+                cout << "\nRequest your credentials from an officer.\n";
+                cout << "\nReturning...";
+                Sleep(2000);
+                clScreen();
+            }
             break;
 
         case 2:
             createAccount(officers, faculty, role, officerCount, facultyCount);
-            login(officers, faculty, role, officerCount, facultyCount, accIndex, isLoggedIn);
+            login(students, officers, faculty, role,studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
             break;
 
         case 3:
             createAccount(officers, faculty, role, officerCount, facultyCount);
-            login(officers, faculty, role, officerCount, facultyCount, accIndex, isLoggedIn);
+            login(students, officers, faculty, role,studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
             break;
 
         default:
@@ -277,7 +303,7 @@ void createAccount(Officer* officers, Faculty* faculty, int role, int& officerCo
 
         officers[officerCount].passcode = createPasscode();
 
-        saveAccountToCSV("officers.csv",faculty,facultyCount);
+        saveAccountToCSV("officers.csv",officers,officerCount);
 
         // update account counter tracker
         officerCount++;
@@ -293,7 +319,7 @@ void createAccount(Officer* officers, Faculty* faculty, int role, int& officerCo
 
         faculty[facultyCount].passcode = createPasscode();
 
-        saveAccountToCSV("officers.csv",faculty,facultyCount);
+        saveAccountToCSV("faculty.csv",faculty,facultyCount);
 
         // update account counter tracker
         facultyCount++;
@@ -403,7 +429,7 @@ void saveAccountToCSV(string file, Faculty* faculty, int facultyCount){
     outFile.close();
 }
 
-void login(Officer* officers, Faculty* faculty, int& role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn){
+void login(Student* students, Officer* officers, Faculty* faculty, int& role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn){
     pauseScreen();
     clScreen();
     displayHeader();
@@ -413,48 +439,105 @@ void login(Officer* officers, Faculty* faculty, int& role, int& officerCount, in
     askRole(role);
 
     if(role == 1){
-        // student login
+        clScreen();
+        displayHeader();
+        cout << "\n============== >>> Login to your account <<< ==============\n";
+        cout << "\n                    ==> Role: Student <==\n";
+        studentLogin(students,studentCount,accIndex,isLoggedIn);
     } else if(role == 2){
         clScreen();
         displayHeader();
         cout << "\n============== >>> Login to your account <<< ==============\n";
         cout << "\n                    ==> Role: Officer <==\n";
-        officerLogin(officers, faculty, role, officerCount, facultyCount, accIndex, isLoggedIn);
-        pauseScreen();
+        officerLogin(students, officers, faculty, role, studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
     } else if(role == 3){
         clScreen();
         displayHeader();
         cout << "\n============== >>> Login to your account <<< ==============\n";
         cout << "\n                    ==> Role: Faculty <==\n";
-        facultyLogin(officers, faculty, role, officerCount, facultyCount, accIndex, isLoggedIn);
-        pauseScreen();
+        facultyLogin(students, officers, faculty, role, studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
     }
 }
 
-void officerLogin(Officer* officers, Faculty* faculty, int role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn) {
-    ifstream officerFile("officers.csv");
+void studentLogin(Student* students, int studentCount, int& accIndex, bool& isLoggedIn){
+    string id = "";
+    string pass = "";
+
+    bool idFound = false;
+    bool passFound = false;
+    int attempt = 0;
+
+    // ID Validation Loop
+    while(!idFound){
+        enterPrompt("\n🪪 Enter ID: ", id);
+
+        for(int j = 0; j < studentCount; j++){
+            // sequential search to find student id
+            if(students[j].ID == id){
+                idFound = true;
+                accIndex = j;
+                break;
+            }
+        }
+
+        if(idpassNotFound(idFound, attempt, "[!] ID Not Found. Try again\n")) {
+            cout << "\n-----------------------------------------------------------\n";
+            cout << "[!] Access Denied: Student accounts are managed by administrators.\n";
+            cout << "[i] If your ID is unregistered, please approach an Officer for account creation.\n";
+            cout << "-----------------------------------------------------------\n";
+            return; // Cleanly breaks out and returns to the login menu
+        }
+    }
+
+    // Reset attempts tracker specifically for passcode checking
+    attempt = 0;
+
+    // Passcode Validation Loop
+    while(!passFound){
+        enterPrompt("🔑 Enter passcode: ", pass);
+
+        if(students[accIndex].passcode == pass){
+            passFound = true;
+        }
+
+        if(idpassNotFound(passFound, attempt, "[!] Wrong passcode\n")) {
+            cout << "\n-----------------------------------------------------------\n";
+            cout << "[!] Access Denied: Student password self-reset is disabled.\n";
+            cout << "[i] Please talk to an Officer to verify or reset your passcode.\n";
+            cout << "-----------------------------------------------------------\n";
+            return; // Cleanly breaks out and returns to the login menu
+        }
+    }
+
+    // Success State
+    cout << "\n[/] Login Successful!";
+    displayWelcome(students[accIndex].name);
+    isLoggedIn = true;
+}
+
+void officerLogin(Student* students, Officer* officers, Faculty* faculty, int role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn) {
     string id   = "";
     string pass = "";
 
-    // matching loop validation checks
     bool idFound   = false;
     bool passFound = false;
     int  attempt   = 0;
 
-    // ID Validation Loop (Checks the main officers array directly)
+    // ID Validation Loop
     while(!idFound){
         enterPrompt("\n🪪 Enter ID: ", id);
 
         for(int j = 0; j < officerCount; j++){
-            if(officers[j].ID == id){
+            if(officers[j].ID == id) {
                 idFound = true;
-                accIndex = j; // Stores index matching the array in main
+                accIndex = j;
                 break;
             }
         }
 
         if(idpassNotFound(idFound, attempt, "[!] ID Not Found. Try again\n")) {
             createAccount(officers, faculty, role, officerCount, facultyCount);
+            login(students,officers, faculty, role, studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
             return;
         }
     }
@@ -470,8 +553,14 @@ void officerLogin(Officer* officers, Faculty* faculty, int role, int& officerCou
         }
 
         if(idpassNotFound(passFound, attempt, "[!] Wrong passcode\n")) {
-            createAccount(officers, faculty, role, officerCount, facultyCount);
-            return;
+            cout << "\n[!] Resetting passcode for ID: " << officers[accIndex].ID << "...\n";
+
+            officers[accIndex].passcode = createPasscode();
+            updateOfficersCSV("officers.csv", officers, officerCount);
+            loadIDPassFromFile(officers, officerCount);
+
+            attempt = 0;
+            cout << "\n[i] File updated & synchronized. Please log in with your new passcode.\n";
         }
     }
 
@@ -480,30 +569,29 @@ void officerLogin(Officer* officers, Faculty* faculty, int role, int& officerCou
     isLoggedIn = true;
 }
 
-void facultyLogin(Officer* officers, Faculty* faculty, int role, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn) {
-    ifstream facultyFile("faculty.csv");
+void facultyLogin(Student* students, Officer* officers, Faculty* faculty, int role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn) {
     string id   = "";
     string pass = "";
 
-    // matching loop validation checks
     bool idFound   = false;
     bool passFound = false;
     int  attempt   = 0;
 
-    // ID Validation Loop (Checks the main faculty array directly)
+    // ID Validation Loop
     while(!idFound){
         enterPrompt("\n🪪 Enter ID: ", id);
 
         for(int j = 0; j < facultyCount; j++){
             if(faculty[j].ID == id){
                 idFound = true;
-                accIndex = j; // Stores index matching the array in main
+                accIndex = j;
                 break;
             }
         }
 
         if(idpassNotFound(idFound, attempt, "[!] ID Not Found. Try again\n")) {
             createAccount(officers, faculty, role, officerCount, facultyCount);
+            login(students,officers, faculty, role, studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
             return;
         }
     }
@@ -519,8 +607,14 @@ void facultyLogin(Officer* officers, Faculty* faculty, int role, int& officerCou
         }
 
         if(idpassNotFound(passFound, attempt, "[!] Wrong passcode\n")) {
-            createAccount(officers, faculty, role, officerCount, facultyCount);
-            return;
+            cout << "\n[!] Resetting passcode for ID: " << faculty[accIndex].ID << "...\n";
+
+            faculty[accIndex].passcode = createPasscode();
+            updateFacultyCSV("faculty.csv", faculty, facultyCount);
+            loadIDPassFromFile(faculty, facultyCount);
+
+            attempt = 0;
+            cout << "\n[i] File updated & synchronized. Please log in with your new passcode.\n";
         }
     }
 
@@ -529,8 +623,89 @@ void facultyLogin(Officer* officers, Faculty* faculty, int role, int& officerCou
     isLoggedIn = true;
 }
 
+void updateStudentsCSV(string file, Student* students, int studentCount){
+    ofstream outFile(file, ios::trunc);
+
+    if(outFile.is_open()){
+        cout << "ID,Name,Program,Year Level\n";
+        for(int i = 0; i < studentCount;i++){
+            outFile << students[i].ID << ',';
+            outFile << students[i].name << ',';
+            outFile << students[i].program << ',';
+            outFile << students[i].yearLevel << ',';
+            outFile << students[i].passcode << "\n";
+        }
+        outFile.close();
+    }
+}
+
+void updateOfficersCSV(string file, Officer* officers, int officerCount) {
+    ofstream outFile(file, ios::trunc); // Overwrites the old file completely
+    if (outFile.is_open()) {
+        outFile << "ID,Name,Program,Year Level,Position,Passcode\n";
+        for (int i = 0; i < officerCount; i++) {
+            outFile << officers[i].ID << ','
+                    << officers[i].name << ','
+                    << officers[i].program << ','
+                    << officers[i].yearLevel << ','
+                    << officers[i].position << ','
+                    << officers[i].passcode << "\n";
+        }
+        outFile.close();
+    }
+}
+
+void updateFacultyCSV(string file, Faculty* faculty, int facultyCount) {
+    ofstream outFile(file, ios::trunc); // Overwrites the old file completely
+    if (outFile.is_open()) {
+        outFile << "ID,Name,Passcode\n";
+        for (int i = 0; i < facultyCount; i++) {
+            outFile << faculty[i].ID << ','
+                    << faculty[i].name << ','
+                    << faculty[i].passcode << "\n";
+        }
+        outFile.close();
+    }
+}
+
+// load id and passcode - students
+void loadIDPassFromFile(Student* tempStudents, int& count){
+    ifstream studentFile("students.csv");
+
+    studentFile.clear();
+    studentFile.seekg(0, ios::beg);
+
+    string line;
+    string yearStr;
+    count = 0;
+
+    // Read and skip header line
+    if(getline(studentFile,line)){
+        while(getline(studentFile,line) && count < MAX_STUDENT){
+            stringstream ss(line);
+
+            getline(ss, tempStudents[count].ID, ',');
+            getline(ss, tempStudents[count].name, ',');
+            getline(ss, tempStudents[count].program, ',');
+            getline(ss, yearStr, ',');
+            getline(ss, tempStudents[count].passcode);
+
+            if(!yearStr.empty()){
+                tempStudents[count].yearLevel = atoi(yearStr.c_str());
+            } else {
+                tempStudents[count].yearLevel = 0;
+            }
+
+            count++;
+        }
+    }
+
+    studentFile.close();
+}
+
 // load id and passcode - officer
 void loadIDPassFromFile(Officer* tempOfficer, int& count){
+    ifstream officerFile("officers.csv");
     officerFile.clear();
     officerFile.seekg(0, ios::beg);
 
@@ -543,7 +718,6 @@ void loadIDPassFromFile(Officer* tempOfficer, int& count){
             stringstream ss(line);
             string yearStr;
 
-            // Extract all details sequentially, including Name
             getline(ss, tempOfficer[count].ID, ',');
             getline(ss, tempOfficer[count].name, ',');
             getline(ss, tempOfficer[count].program, ',');
@@ -560,10 +734,13 @@ void loadIDPassFromFile(Officer* tempOfficer, int& count){
             count++;
         }
     }
+
+    officerFile.close();
 }
 
 // load id and passcode - faculty
 void loadIDPassFromFile(Faculty* tempFaculty, int& count){
+    ifstream facultyFile("faculty.csv");
     facultyFile.clear();
     facultyFile.seekg(0, ios::beg);
 
@@ -583,6 +760,8 @@ void loadIDPassFromFile(Faculty* tempFaculty, int& count){
             count++;
         }
     }
+
+    facultyFile.close();
 }
 
 // if id or passcode is wrong or doesn't exists
@@ -624,12 +803,11 @@ void officerMenu(){
     cout << "\n[3] 📅 Activity Management";
     cout << "\n[4] 🔍 Search\n";
     cout << "[0] 🚪 Log Out\n";
-
-
-
 }
 
 void officerSwitch(int choice,Student* students, int& studentCount){
+    loadIDPassFromFile(students,studentCount);
+
     switch(choice){
         case 1:
             // member management
@@ -652,7 +830,7 @@ void officerSwitch(int choice,Student* students, int& studentCount){
         case 4:
             // search
             displayHeader2();
-            searchFunction();
+            searchFunction(students,studentCount);
             break;
 
         case 0:
@@ -692,11 +870,13 @@ void memberManagement(Student* students, int& studentCount){
             case 2:
                 // view member
                 displayHeader2();
+                viewMembers(students,studentCount);
                 break;
 
             case 3:
                 // edit member
                 displayHeader2();
+                editMember(students,studentCount);
                 break;
 
             case 4:
@@ -739,6 +919,7 @@ void addMember(Student* students, int& studentCount){
     }
 
     cout << "\nPress Enter to generate passcode.\n";
+    cin.get();
 
     int* code = new int[8];
     string generatedCode = "";
@@ -747,7 +928,7 @@ void addMember(Student* students, int& studentCount){
         generatedCode += to_string(code[i]);
     }
 
-    cout << "\n[/] Passcode generated.\n";
+    cout << "\n[/] Passcode generated.";
 
     students[studentCount].passcode = generatedCode;
 
@@ -759,6 +940,91 @@ void addMember(Student* students, int& studentCount){
     clScreen();
 }
 
+void viewMembers(Student* students, int studentCount){
+    clScreen();
+
+    cout << "\nMembers list\n\n";
+    cout << left << setw(17) << "Student ID" << setw(25) << "Name" << setw(13) << "Program" << "Year Level" << endl;
+    for(int i = 0; i < studentCount; i++){
+        cout << left << setw(17) << students[i].ID << setw(25) << students[i].name << setw(13) << students[i].program << students[i].yearLevel << endl;
+    }
+
+    int returnOrSort;
+    enterPrompt("\n[1] Sort     [2] Return to Menu \nChoose: ",returnOrSort);
+
+    if(returnOrSort == 1){
+        int method;
+        cout << "\nSort by: [1] ID     [2] Name\n";
+
+        enterPrompt("\nChoose method: ",method);
+        while(method != 1 && method != 2){
+            cout << "[!] Choose only from the options above.\n";
+            enterPrompt("\nChoose method: ",method);
+        }
+
+        sortMember(students,studentCount,method);
+        viewMembers(students,studentCount);
+    }
+}
+
+// bubble sort - id
+void sortMember(Student* students, int studentCount, int method){
+    for(int i = 0; i < studentCount - 1; i++){
+        for(int j = 0; j < studentCount - 1 - i; j++){
+            if(method == 1){
+                if(students[j].ID > students[j+1].ID){
+                    Student temp = students[j];
+                    students[j] = students[j+1];
+                    students[j+1] = temp;
+                }
+            } else {
+                if(students[j].name > students[j+1].name){
+                    Student temp = students[j];
+                    students[j] = students[j+1];
+                    students[j+1] = temp;
+                }
+            }
+        }
+    }
+}
+
+void editMember(Student* students, int studentCount){
+    // search student first
+    string target;
+    enterPrompt( "\nEnter name of member to edit: ",target);
+
+    int memberIdx = searchMember(students,studentCount,target);
+
+    Student* stud = &students[memberIdx];
+
+    cout << "\nEdit member\n\n";
+    int edit;
+    cout << "[1] ID     [2] Name     [3] Program     [4] Year Level\n";
+    enterPrompt("\nChoose which data you want to edit: ",edit);
+
+    switch(edit){
+        case 1:
+            cout << "\nEdit Member ID\n";
+            enterPrompt("\nEdit ID: ",stud->ID);
+            break;
+        case 2:
+            cout << "\nEdit Member Name\n";
+            enterPrompt("\nEdit Name: ",stud->name);
+            break;
+        case 3:
+            cout << "\nEdit Member Program\n";
+            enterPrompt("\nEdit Program: ",stud->program);
+            break;
+        case 4:
+            cout << "\nEdit Member Year Level\n";
+            enterPrompt("\nEdit Year Level: ",stud->yearLevel);
+            break;
+        default:
+            cout << "[!] Invalid choice. Choose only from choice above.\n";
+    }
+}
+
+/** Announcement Management Functions **/
 void announcementManagement(){
     int announcementChoice = 0;
 
@@ -861,7 +1127,7 @@ void activityManagement(){
     clScreen();
 }
 
-void searchFunction(){
+void searchFunction(Student* students,int studentCount){
     int searchChoice = 0;
 
     do{
@@ -875,11 +1141,45 @@ void searchFunction(){
 
         enterChoice("\nEnter choice: ",searchChoice);
 
+        string target;
+        string searchValue;
+
         switch(searchChoice){
             case 1:
-                // search member
-                // conditional - id or name?
                 displayHeader2();
+
+                char searchIdName;
+                enterPrompt("\nSearch Member by [I]D or [N]ame: ",searchIdName);
+
+                if(searchIdName == 'I' || searchIdName == 'i'){
+                    searchValue = "ID";
+
+                    cout << "\nSearch by ID\n\n";
+                    enterPrompt("Enter ID to search: ",target);
+
+                    int idIndex = searchMember(students,studentCount,target,searchValue);
+
+                    if(idIndex == -1){
+                        cout << "\n[!] Member with that ID not found.\n";
+                    } else {
+                        displayFoundMember(students,idIndex);
+                    }
+                } else if(searchIdName == 'N' || searchIdName == 'n'){
+                    searchValue = "Name";
+
+                    cout << "\nSearch by Name\n\n";
+                    enterPrompt("Enter Name to search: ",target);
+
+                    int nameIndex = searchMember(students,studentCount,target,searchValue);
+
+                    if(nameIndex == -1){
+                        cout << "\n[!] Member with that Name not found.\n";
+                    } else {
+                        displayFoundMember(students,nameIndex);
+                    }
+                } else {
+                    cout << "\n[!] Invalid choice. Choose only from the choice above.\n";
+                }
                 break;
 
             case 2:
@@ -903,6 +1203,32 @@ void searchFunction(){
     } while(searchChoice != 0);
 
     clScreen();
+}
+
+int searchMember(Student* students, int studentCount, string target, string searchValue){
+    if(searchValue == "ID"){
+        for(int i = 0; i < studentCount; i++){
+            if(students[i].ID == target){
+                return i;
+            }
+        }
+    } else if(searchValue == "Name"){
+        for(int i = 0; i < studentCount; i++){
+            if(students[i].name == target){
+                return i;
+            }
+        }
+    }
+
+    return -1;
+}
+
+void displayFoundMember(Student* students, int index){
+    cout << "\n[/] Member found\n\n";
+
+    cout << left << setw(17) << "ID" << setw(25) << "Name" << setw(13) << "Program" << "Year Level\n";
+    cout << left << setw(17) << students[index].ID << setw(25) << students[index].name << setw(13) <<
+                                students[index].program << students[index].yearLevel << "\n\n";
 }
 
 /// faculty module
@@ -975,6 +1301,12 @@ void enterPrompt(string prompt, int& val, int width){
         cout << left << setw(width) << prompt;
         cin >> val;
     } while(isValidDigit(val));
+}
+
+void enterPrompt(string prompt, char& val, int width){
+    cout << prompt;
+    cin >> val;
+    cin.ignore();
 }
 
 void enterChoice(string prompt, int& val){
