@@ -74,6 +74,7 @@ void addMember(Student* students, int& studentCount);
 void viewMembers(Student* students, int studentCount);
 void sortMember(Student* students, int studentCount, int method);
 void editMember(Student* students, int& studentCount);
+void removeMember(Student* students, int& studentCount);
 
 /* search */
 int searchMember(Student* students, int studentCount, string target, string searchValue="");
@@ -871,19 +872,29 @@ void memberManagement(Student* students, int& studentCount){
                 displayHeader2();
                 if(studentCount <= 0){
                     cout << "\n[!] No students record yet. Go to Add Member.\n";
+                    return;
                 }
                 viewMembers(students,studentCount);
                 break;
 
             case 3:
                 // edit member
+                if(studentCount <= 0){
+                    cout << "\n[!] No students record yet. Go to Add Member.\n";
+                    return;
+                }
                 displayHeader2();
                 editMember(students,studentCount);
                 break;
 
             case 4:
                 // remove member
+                if(studentCount <= 0){
+                    cout << "\n[!] No students record yet. Go to Add Member.\n";
+                    return;
+                }
                 displayHeader2();
+                removeMember(students, studentCount);
                 break;
 
             case 5:
@@ -1038,6 +1049,47 @@ void editMember(Student* students, int& studentCount){
 
     updateStudentsCSV("students.csv", students, studentCount);
     cout << "\n[/] Member updated successfully.\n";
+    pauseScreen();
+}
+
+void removeMember(Student* students, int& studentCount){
+    loadIDPassFromFile(students, studentCount);
+
+    string target;
+    enterPrompt("\nEnter name of member to remove: ", target);
+
+    int memberIdx = searchMember(students, studentCount, target, "Name");
+
+    if(memberIdx == -1){
+        cout << "\n[!] Member not found.\n";
+        pauseScreen();
+        return;
+    }
+
+    // display found member before confirming
+    displayMember(students, memberIdx);
+
+    char confirm;
+    enterPrompt("Confirm removal? (Y/N): ", confirm);
+
+    if(confirm == 'Y' || confirm == 'y'){
+        // pointer to target member
+        Student* toDelete = &students[memberIdx];
+        toDelete = nullptr;
+
+        // shift elements left to fill the gap
+        for(int i = memberIdx; i < studentCount - 1; i++){
+            students[i] = students[i + 1];
+        }
+
+        studentCount--;
+
+        updateStudentsCSV("students.csv", students, studentCount);
+        cout << "\n[/] Member removed successfully.\n";
+    } else {
+        cout << "\n[i] Operation cancelled.\n";
+    }
+
     pauseScreen();
 }
 
