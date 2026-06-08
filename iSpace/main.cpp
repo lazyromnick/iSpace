@@ -36,8 +36,19 @@ struct Announcement {
     string content;
     string date;
     string postedBy;
-    string status;           // "Pending", "Normal", "Pinned", "Urgent", "Rejected"
+    string status;
     string rejectionReason;
+};
+
+struct Activity {
+    int    id;
+    string name;
+    string description;
+    string date;
+    string time;
+    string location;
+    string participants;
+    string status;
 };
 
 const int MAX_STUDENT = 200;
@@ -45,7 +56,9 @@ const int MAX_OFFICER = 50;
 const int MAX_FACULTY = 10;
 
 const int MAX_ANNOUNCEMENTS = 100;
+const int MAX_ACTIVITIES = 100;
 
+// headers
 void displayHeader();
 void displayHeader2();
 
@@ -74,12 +87,13 @@ string getCurrentDate();
 
 // officer module
 void officerMenu();
-void officerSwitch(int choice,Student* students, int& studentCount, Announcement* announcements, int& announcementCount);
+void officerSwitch(int choice, Student* students, int& studentCount, Announcement* announcements,
+                   int& announcementCount, Activity* activities, int& activityCount, Officer* officers, int accIndex);
 
 /* managements holder */
 void memberManagement(Student* students, int& studentCount);
 void officerSwitch(int choice, Student* students, int& studentCount, Announcement* announcements, int& announcementCount, Officer* officers, int accIndex);
-void activityManagement();
+void activityManagement(Activity* activities, int& activityCount);
 void searchFunction(Student* students, int studentCount);
 
 /* member management */
@@ -103,6 +117,21 @@ void removeAnnouncement(Announcement* announcements, int& count);
 void pinUrgentAnnouncement(Announcement* announcements, int count);
 void viewRejectedAnnouncements(Announcement* announcements, int& count);
 
+/* activity management */
+/* activity management */
+void loadActivities(Activity* activities, int& activityCount);
+void saveAllActivities(Activity* activities, int activityCount);
+int  getNextActivityID(Activity* activities, int activityCount);
+void displayActivity(Activity& a);
+void displayAllActivities(Activity* activities, int activityCount);
+void sortActivity(Activity* activities, int activityCount, int method);
+void addActivity(Activity* activities, int& activityCount);
+void viewActivities(Activity* activities, int& activityCount);
+void updateActivity(Activity* activities, int activityCount);
+void deleteActivity(Activity* activities, int& activityCount);
+bool isValidDate(string date);
+bool isValidTime(string time);
+
 /* search */
 int searchMember(Student* students, int studentCount, string target, string searchValue="");
 void displayMember(Student* students, int index=0);
@@ -110,6 +139,8 @@ void displayMember(Student* students, int index=0);
 // faculty module
 void facultyMenu();
 void facultySwitch(int choice, Announcement* announcements, int announcementCount);
+
+/* announcement management */
 void facultyAnnouncementManagement(Announcement* announcements, int& count);
 void reviewPendingAnnouncements(Announcement* announcements, int& count);
 
@@ -142,7 +173,7 @@ int main(){
     Faculty faculty[MAX_FACULTY];
 
     Announcement announcements[MAX_ANNOUNCEMENTS];
-
+    Activity activities[MAX_ACTIVITIES];
 
     int role = 0;
     int studentCount = 0;
@@ -151,6 +182,7 @@ int main(){
     int accIndex = 0;
 
     int announcementCount = 0;
+    int activityCount = 0;
 
     srand(time(0));
 
@@ -179,12 +211,12 @@ int main(){
                 do{
                     //displayHeader();
                     displayHeader2();
-                    cout << "\n" << right << setw(42) << ">>> Dashboard Officer <<<" << "\n";
+                    cout << "\n" << right << setw(42) << ">>> Officer Dashboard <<<" << "\n";
                     displayName(officers[accIndex].name);
                     officerMenu();
                     enterPrompt("\nEnter choice: ",choice);
                     clScreen();
-                    officerSwitch(choice, students, studentCount, announcements, announcementCount, officers, accIndex);
+                    officerSwitch(choice, students, studentCount, announcements, announcementCount, activities, activityCount, officers, accIndex);
                 } while(choice != 5);
 
                 break;
@@ -853,7 +885,7 @@ void officerMenu(){
     cout << "[5] 🚪 Log Out\n";
 }
 
-void officerSwitch(int choice, Student* students, int& studentCount, Announcement* announcements, int& announcementCount, Officer* officers, int accIndex){
+void officerSwitch(int choice, Student* students, int& studentCount, Announcement* announcements, int& announcementCount, Activity* activities, int& activityCount, Officer* officers, int accIndex){
     loadIDPassFromFile(students, studentCount);
 
     switch(choice){
@@ -869,7 +901,7 @@ void officerSwitch(int choice, Student* students, int& studentCount, Announcemen
 
         case 3:
             displayHeader2();
-            activityManagement();
+            activityManagement(activities,activityCount);
             break;
 
         case 4:
@@ -1399,18 +1431,35 @@ void proposeAnnouncement(Announcement* announcements, int& count, string officer
     newA.id              = getNextAnnouncementID(announcements, count);
     newA.postedBy        = officerName;
     newA.date            = getCurrentDate();
-    newA.status          = "Pending";
     newA.rejectionReason = "";
 
-    enterPrompt("\n📋 Title: ", newA.title);
+    enterPrompt("\n📋 Title  : ", newA.title);
     enterPrompt("📝 Content: ", newA.content);
+
+    cout << "\n📌 Set Status:\n";
+    cout << "[1] Normal\n";
+    cout << "[2] 🚨 Urgent\n";
+    int statusChoice;
+    enterPrompt("Choose: ", statusChoice);
+
+    while(statusChoice != 1 && statusChoice != 2){
+        cout << "\n[!] Invalid choice.\n";
+        enterPrompt("Choose: ", statusChoice);
+    }
+
+    if(statusChoice == 2){
+        newA.status = "Urgent";
+        cout << "\n[✔] Announcement marked Urgent and posted immediately.\n";
+    } else {
+        newA.status = "Pending";
+        cout << "\n[✔] Announcement submitted! Waiting for faculty approval.\n";
+    }
 
     announcements[count++] = newA;
     saveAllAnnouncements(announcements, count);
-
-    cout << "\n[✔] Announcement submitted! Waiting for faculty approval.\n";
     pauseScreen();
 }
+
 
 // Officer: View rejected announcements with reasons
 void viewRejectedAnnouncements(Announcement* announcements, int& count) {
@@ -1600,6 +1649,350 @@ void activityManagement(){
     clScreen();
 }
 
+void activityManagement(Activity* activities, int& activityCount){
+    loadActivities(activities, activityCount);
+    int choice = 0;
+
+    do{
+        clScreen();
+        displayHeader2();
+        cout << "\n" << right << setw(44) << "--------------------------";
+        cout << "\n" << right << setw(47) << "📅 Activity Management 📅" << "\n";
+        cout << right << setw(44) << "--------------------------" << "\n";
+        cout << "\n[1] Add Activity";
+        cout << "\n[2] View Activities";
+        cout << "\n[3] Update Activity";
+        cout << "\n[4] Delete Activity";
+        cout << "\n[5] Return to Main Menu\n";
+
+        enterPrompt("\nEnter choice: ", choice);
+
+        switch(choice){
+            case 1:
+                clScreen(); displayHeader2();
+                addActivity(activities, activityCount);
+                break;
+
+            case 2:
+                clScreen(); displayHeader2();
+                if(activityCount <= 0){ cout << "\n[!] No activities yet.\n"; pauseScreen(); break; }
+                viewActivities(activities, activityCount);
+                break;
+
+            case 3:
+                clScreen(); displayHeader2();
+                if(activityCount <= 0){ cout << "\n[!] No activities yet.\n"; pauseScreen(); break; }
+                updateActivity(activities, activityCount);
+                break;
+
+            case 4:
+                clScreen(); displayHeader2();
+                if(activityCount <= 0){ cout << "\n[!] No activities yet.\n"; pauseScreen(); break; }
+                deleteActivity(activities, activityCount);
+                break;
+
+            case 5:
+                break;
+
+            default:
+                cout << "\n[!] Invalid choice. Try again.\n";
+        }
+    } while(choice != 5);
+
+    clScreen();
+}
+
+void loadActivities(Activity* activities, int& activityCount){
+    ifstream file("activities.txt");
+    activityCount = 0;
+
+    if(!file.is_open()) return;
+
+    string line;
+    while(getline(file, line) && activityCount < MAX_ACTIVITIES){
+        if(line == "---"){
+            Activity a;
+            string idStr;
+
+            getline(file, idStr);
+            getline(file, a.name);
+            getline(file, a.description);
+            getline(file, a.date);
+            getline(file, a.time);
+            getline(file, a.location);
+            getline(file, a.participants);
+            getline(file, a.status);
+
+            if(!idStr.empty()){
+                a.id = atoi(idStr.c_str());
+                activities[activityCount++] = a;
+            }
+        }
+    }
+
+    file.close();
+}
+
+void saveAllActivities(Activity* activities, int activityCount){
+    ofstream file("activities.txt", ios::trunc);
+
+    if(!file.is_open()){
+        cout << "\n[!] Error: Could not open activities.txt\n";
+        return;
+    }
+
+    for(int i = 0; i < activityCount; i++){
+        file << "---\n";
+        file << activities[i].id          << "\n";
+        file << activities[i].name        << "\n";
+        file << activities[i].description << "\n";
+        file << activities[i].date        << "\n";
+        file << activities[i].time        << "\n";
+        file << activities[i].location    << "\n";
+        file << activities[i].participants<< "\n";
+        file << activities[i].status      << "\n";
+    }
+
+    file.close();
+}
+
+int getNextActivityID(Activity* activities, int activityCount){
+    if(activityCount == 0) return 1;
+    int maxID = 0;
+    for(int i = 0; i < activityCount; i++)
+        if(activities[i].id > maxID) maxID = activities[i].id;
+    return maxID + 1;
+}
+
+bool isValidDate(string date){
+    if(date.length() != 10) return false;
+    if(date[2] != '/' || date[5] != '/') return false;
+    for(int i = 0; i < 10; i++){
+        if(i == 2 || i == 5) continue;
+        if(!isdigit(date[i])) return false;
+    }
+    return true;
+}
+
+bool isValidTime(string time){
+    if(time.length() != 5) return false;
+    if(time[2] != ':') return false;
+    for(int i = 0; i < 5; i++){
+        if(i == 2) continue;
+        if(!isdigit(time[i])) return false;
+    }
+    return true;
+}
+
+void displayActivity(Activity& a){
+    cout << "\n----------------------------------------------------------\n";
+    cout << "  ID       : " << a.id          << "\n";
+    cout << "  Name     : " << a.name        << "\n";
+    cout << "\n----------------------------------------------------------\n";
+    cout << "  Desc     : ";
+    stringstream ss(a.description); string word; size_t currentLength = 0;
+    while(ss >> word){
+        if(currentLength + word.length() > 40){ cout << "\n               "; currentLength = 0; }
+        cout << word << " ";
+        currentLength += word.length() + 1;
+    }
+    cout << "\n----------------------------------------------------------\n";
+    cout << "  Date     : " << a.date        << "\n";
+    cout << "  Time     : " << a.time        << "\n";
+    cout << "  Location : " << a.location    << "\n";
+    cout << "  Participants: " << a.participants << "\n";
+    cout << "----------------------------------------------------------\n";
+}
+
+void displayAllActivities(Activity* activities, int activityCount){
+    cout << "\n==========================================================";
+    cout << "\n                 📅 ACTIVITIES LIST 📅";
+    cout << "\n==========================================================\n";
+    cout << left << setw(6) << "ID" << setw(22) << "Name" << setw(13) << "Date"
+         << setw(8) << "Time" << "Location\n";
+    cout << "----------------------------------------------------------\n";
+    for(int i = 0; i < activityCount; i++){
+        cout << left << setw(6)  << activities[i].id
+                     << setw(22) << activities[i].name
+                     << setw(13) << activities[i].date
+                     << setw(8)  << activities[i].time
+                     << activities[i].location << "\n";
+    }
+    cout << "----------------------------------------------------------\n";
+}
+
+void sortActivity(Activity* activities, int activityCount, int method){
+    for(int i = 0; i < activityCount - 1; i++){
+        for(int j = 0; j < activityCount - 1 - i; j++){
+            bool swap = false;
+            if(method == 1)      swap = activities[j].date > activities[j+1].date;
+            else if(method == 2) swap = activities[j].name > activities[j+1].name;
+            else if(method == 3) swap = activities[j].id   > activities[j+1].id;
+
+            if(swap){
+                Activity temp   = activities[j];
+                activities[j]   = activities[j+1];
+                activities[j+1] = temp;
+            }
+        }
+    }
+}
+
+void addActivity(Activity* activities, int& activityCount){
+    clScreen();
+    displayHeader2();
+    cout << "\n" << right << setw(40) << "--------------------";
+    cout << "\n" << right << setw(44) << "📅 Add Activity 📅\n";
+    cout << right << setw(40) << "--------------------\n";
+
+    if(activityCount >= MAX_ACTIVITIES){
+        cout << "\n[!] Activity list is full.\n";
+        pauseScreen();
+        return;
+    }
+
+    Activity newA;
+    newA.id     = getNextActivityID(activities, activityCount);
+    newA.status = "Scheduled";
+
+    enterPrompt("\n📌 Activity Name: ", newA.name);
+    enterPrompt("📝 Description: ", newA.description);
+
+    do {
+        enterPrompt("📅 Date (DD/MM/YYYY): ", newA.date);
+        if(!isValidDate(newA.date)) cout << "\n[!] Enter a valid date (DD/MM/YYYY).\n";
+    } while(!isValidDate(newA.date));
+
+    do {
+        enterPrompt("🕐 Time (HH:MM)     : ", newA.time);
+        if(!isValidTime(newA.time)) cout << "\n[!] Enter a valid time (HH:MM).\n";
+    } while(!isValidTime(newA.time));
+
+    enterPrompt("📍 Location         : ", newA.location);
+    enterPrompt("👥 Participants      : ", newA.participants);
+
+    activities[activityCount++] = newA;
+    saveAllActivities(activities, activityCount);
+
+    cout << "\n[✔] Activity added successfully.\n";
+    pauseScreen();
+}
+
+void viewActivities(Activity* activities, int& activityCount){
+    int returnOrSort;
+
+    do{
+        clScreen();
+        displayHeader2();
+        loadActivities(activities, activityCount);
+        displayAllActivities(activities, activityCount);
+
+        cout << "\nSort by: [1] Date     [2] Name     [3] ID     [4] Return to Menu\n";
+        enterPrompt("Choose: ", returnOrSort);
+
+        if(returnOrSort >= 1 && returnOrSort <= 3){
+            sortActivity(activities, activityCount, returnOrSort);
+            saveAllActivities(activities, activityCount);
+        }
+    } while(returnOrSort != 4);
+}
+
+void updateActivity(Activity* activities, int activityCount){
+    loadActivities(activities, activityCount);
+    displayAllActivities(activities, activityCount);
+
+    int targetID;
+    enterPrompt("\n🆔 Enter Activity ID to update: ", targetID);
+
+    int found = -1;
+    for(int i = 0; i < activityCount; i++){
+        if(activities[i].id == targetID){ found = i; break; }
+    }
+
+    if(found == -1){
+        cout << "\n[!] Activity not found.\n";
+        pauseScreen();
+        return;
+    }
+
+    displayActivity(activities[found]);
+
+    cout << "\n[1] Name  [2] Description  [3] Date  [4] Time  [5] Location  \n[6] Participants\n";
+    int editChoice;
+    enterPrompt("\nChoose field to update: ", editChoice);
+
+    switch(editChoice){
+        case 1: enterPrompt("\n📌 New Name: ", activities[found].name);         break;
+        case 2: enterPrompt("\n📝 New Description: ", activities[found].description);  break;
+        case 3:
+            do {
+                enterPrompt("\n📅 New Date (DD/MM/YYYY): ", activities[found].date);
+                if(!isValidDate(activities[found].date)) cout << "\n[!] Enter a valid date (DD/MM/YYYY).\n";
+            } while(!isValidDate(activities[found].date));
+            break;
+        case 4:
+            do {
+                enterPrompt("\n🕐 New Time (HH:MM): ", activities[found].time);
+                if(!isValidTime(activities[found].time)) cout << "\n[!] Enter a valid time (HH:MM).\n";
+            } while(!isValidTime(activities[found].time));
+            break;
+        case 5: enterPrompt("\n📍 New Location    : ", activities[found].location);     break;
+        case 6: enterPrompt("\n👥 New Participants: ", activities[found].participants);  break;
+        default:
+            cout << "\n[!] Invalid choice.\n";
+            pauseScreen();
+            return;
+    }
+
+    activities[found].status = "Modified";
+    saveAllActivities(activities, activityCount);
+    cout << "\n[✔] Activity updated successfully.\n";
+    pauseScreen();
+}
+
+void deleteActivity(Activity* activities, int& activityCount){
+    loadActivities(activities, activityCount);
+    displayAllActivities(activities, activityCount);
+
+    int targetID;
+    enterPrompt("\n🆔 Enter Activity ID to delete: ", targetID);
+
+    // binary search — array sorted by ID from file order
+    int lo = 0, hi = activityCount - 1, found = -1;
+    while(lo <= hi){
+        int mid = (lo + hi) / 2;
+        if(activities[mid].id == targetID){ found = mid; break; }
+        else if(activities[mid].id < targetID) lo = mid + 1;
+        else hi = mid - 1;
+    }
+
+    if(found == -1){
+        cout << "\n[!] Activity not found.\n";
+        pauseScreen();
+        return;
+    }
+
+    displayActivity(activities[found]);
+
+    char confirm;
+    cout << "\n----------------------------------------------------------\n";
+    enterPrompt("Confirm deletion? (Y/N): ", confirm);
+
+    if(confirm == 'Y' || confirm == 'y'){
+        for(int i = found; i < activityCount - 1; i++)
+            activities[i] = activities[i+1];
+        activityCount--;
+
+        saveAllActivities(activities, activityCount);
+        cout << "\n[✔] Activity deleted successfully.\n";
+    } else {
+        cout << "\n[i] Operation cancelled.\n";
+    }
+
+    pauseScreen();
+}
+
+/** Search Functionalities **/
 void searchFunction(Student* students,int studentCount){
     int searchChoice = 0;
 
