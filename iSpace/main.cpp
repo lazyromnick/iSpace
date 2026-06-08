@@ -30,9 +30,21 @@ struct Faculty {
     string passcode;
 };
 
+struct Announcement {
+    int    id;
+    string title;
+    string content;
+    string date;
+    string postedBy;
+    string status;           // "Pending", "Normal", "Pinned", "Urgent", "Rejected"
+    string rejectionReason;
+};
+
 const int MAX_STUDENT = 200;
 const int MAX_OFFICER = 50;
 const int MAX_FACULTY = 10;
+
+const int MAX_ANNOUNCEMENTS = 100;
 
 void displayHeader();
 void displayHeader2();
@@ -62,11 +74,11 @@ string getCurrentDate();
 
 // officer module
 void officerMenu();
-void officerSwitch(int choice,Student* students, int& studentCount);
+void officerSwitch(int choice,Student* students, int& studentCount, Announcement* announcements, int& announcementCount);
 
 /* managements holder */
 void memberManagement(Student* students, int& studentCount);
-void announcementManagement();
+void officerSwitch(int choice, Student* students, int& studentCount, Announcement* announcements, int& announcementCount, Officer* officers, int accIndex);
 void activityManagement();
 void searchFunction(Student* students, int studentCount);
 
@@ -77,12 +89,30 @@ void sortMember(Student* students, int studentCount, int method);
 void editMember(Student* students, int& studentCount);
 void removeMember(Student* students, int& studentCount);
 
+/* announcement management */
+void loadAnnouncements(Announcement* announcements, int& count);
+void saveAllAnnouncements(Announcement* announcements, int count);
+int  getNextAnnouncementID(Announcement* announcements, int count);
+void displayAnnouncement(Announcement& a, int displayIndex);
+void displayAllAnnouncements(Announcement* announcements, int count, string filterStatus = "");
+void announcementManagement(Announcement* announcements, int announcementCount, string officerName);
+void proposeAnnouncement(Announcement* announcements, int& count, string officerName);
+void viewAnnouncements(Announcement* announcements, int& count);
+void editAnnouncement(Announcement* announcements, int count);
+void removeAnnouncement(Announcement* announcements, int& count);
+void pinUrgentAnnouncement(Announcement* announcements, int count);
+void viewRejectedAnnouncements(Announcement* announcements, int& count);
+
 /* search */
 int searchMember(Student* students, int studentCount, string target, string searchValue="");
 void displayMember(Student* students, int index=0);
 
 // faculty module
 void facultyMenu();
+void facultySwitch(int choice, Announcement* announcements, int announcementCount);
+void facultyAnnouncementManagement(Announcement* announcements, int& count);
+void reviewPendingAnnouncements(Announcement* announcements, int& count);
+
 
 /// utility function
 void pauseScreen();
@@ -111,12 +141,16 @@ int main(){
     Officer officers[MAX_OFFICER];
     Faculty faculty[MAX_FACULTY];
 
+    Announcement announcements[MAX_ANNOUNCEMENTS];
+
+
     int role = 0;
     int studentCount = 0;
     int officerCount = 0;
     int facultyCount = 0;
     int accIndex = 0;
-    int choice = 0;
+
+    int announcementCount = 0;
 
     srand(time(0));
 
@@ -126,6 +160,8 @@ int main(){
     loadIDPassFromFile(faculty, facultyCount);
 
     displayHeader();
+
+    int choice = 0;
 
     bool isLoggedIn = false;
     auth(students, officers, faculty, role, studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
@@ -140,15 +176,14 @@ int main(){
                 // officer module
                 clScreen();
 
-
-
                 do{
                     //displayHeader();
                     displayHeader2();
+                    displayName(officers[accIndex].name);
                     officerMenu();
                     enterPrompt("\nEnter choice: ",choice);
                     clScreen();
-                    officerSwitch(choice,students,studentCount);
+                    officerSwitch(choice, students, studentCount, announcements, announcementCount, officers, accIndex);
                 } while(choice != 5);
 
                 break;
@@ -161,8 +196,9 @@ int main(){
                     displayHeader2();
                     facultyMenu();
                     enterPrompt("\nEnter choice: ",choice);
+                    facultySwitch(choice,announcements,announcementCount);
                     clScreen();
-                }  while(choice != 0);
+                }  while(choice != 6);
 
                 break;
         }
@@ -514,7 +550,6 @@ void studentLogin(Student* students, int studentCount, int& accIndex, bool& isLo
 
     // Success State
     cout << "\n[/] Login Successful!";
-    displayName(students[accIndex].name);
     isLoggedIn = true;
 }
 
@@ -568,7 +603,6 @@ void officerLogin(Student* students, Officer* officers, Faculty* faculty, int ro
     }
 
     cout << "\n[/] Login Successful!";
-    displayName(officers[accIndex].name);
     isLoggedIn = true;
     pauseScreen();
 }
@@ -623,7 +657,6 @@ void facultyLogin(Student* students, Officer* officers, Faculty* faculty, int ro
     }
 
     cout << "\n[/] Login Successful!";
-    displayName(faculty[accIndex].name);
     isLoggedIn = true;
 }
 
@@ -796,20 +829,18 @@ bool idpassNotFound(bool& var, int& attempt, string displayMessage){
 
 void displayName(string name){
     cout << "\nHello, " << name << "!\n";
-    cout << getCurrentDate << endl;
+    cout << "Last login: " << getCurrentDate() << endl;
 }
 
 string getCurrentDate() {
     time_t now = time(nullptr);
     tm* localTime = localtime(&now);
 
-    char buffer[11]; // "YYYY-MM-DD\0"
+    char buffer[11];
     strftime(buffer, sizeof(buffer), "%Y-%m-%d", localTime);
 
     return string(buffer);
 }
-
-
 
 /// officer's module
 void officerMenu(){
@@ -821,43 +852,35 @@ void officerMenu(){
     cout << "[5] 🚪 Log Out\n";
 }
 
-void officerSwitch(int choice,Student* students, int& studentCount){
-    loadIDPassFromFile(students,studentCount);
+void officerSwitch(int choice, Student* students, int& studentCount, Announcement* announcements, int& announcementCount, Officer* officers, int accIndex){
+    loadIDPassFromFile(students, studentCount);
 
     switch(choice){
         case 1:
-            // member management
             displayHeader2();
-            memberManagement(students,studentCount);
+            memberManagement(students, studentCount);
             break;
 
         case 2:
-            // announcement management
             displayHeader2();
-            announcementManagement();
+            announcementManagement(announcements, announcementCount, officers[accIndex].name);
             break;
 
         case 3:
-            // activity management
             displayHeader2();
             activityManagement();
             break;
 
         case 4:
-            // search
-
-            searchFunction(students,studentCount);
+            searchFunction(students, studentCount);
             break;
 
         case 5:
-            // log out
-            // go back to landing page
             break;
 
         default:
             cout << "\n[!] Invalid choice. Try again.\n";
     }
-
 }
 
 // member management
@@ -1135,60 +1158,399 @@ void removeMember(Student* students, int& studentCount){
 }
 
 /** Announcement Management Functions **/
-void announcementManagement(){
-    int announcementChoice = 0;
+void announcementManagement(Announcement* announcements, int announcementCount, string officerName) {
+    loadAnnouncements(announcements, announcementCount);
 
-    do{
+    int choice = 0;
+
+    do {
+        clScreen();
+        displayHeader2();
+
+        // Count pending/rejected for officer awareness
+        int pendingCount  = 0;
+        for (int i = 0; i < announcementCount; i++) {
+            if (announcements[i].status == "Pending")  pendingCount++;
+        }
+
         cout << "\n" << right << setw(43) << "--------------------------";
-        cout << "\n" << right << setw(49) << "📢 Announcement Management 📢" << "\n";
-        cout << right << setw(43) << "--------------------------" << "\n";
+        cout << "\n" << right << setw(49) << "📢 Announcement Management 📢\n";
+        cout << right << setw(43) << "--------------------------\n";
+
+        if (pendingCount > 0)
+            cout << "\n[⏳] " << pendingCount << " announcement(s) awaiting faculty approval.\n";
 
         cout << "\n[1] Propose Announcement";
-        cout << "\n[2] View Announcement";
-        cout << "\n[3] Edit Announcement";
-        cout << "\n[4] Remove Announcement";
-        cout << "\n[5] Pin/Urgent";
-        cout << "\n[6] Return to Main Menu\n";
+        cout << "\n[2] View Approved Announcements";
+        cout << "\n[3] View My Pending Announcements";
+        cout << "\n[4] View Rejected Announcements";
+        cout << "\n[5] Edit Announcement";
+        cout << "\n[6] Remove Announcement";
+        cout << "\n[7] Pin / Mark as Urgent";
+        cout << "\n[8] Return to Main Menu\n";
 
-        enterPrompt("\nEnter choice: ",announcementChoice);
+        enterPrompt("\nEnter choice: ", choice);
 
-        switch(announcementChoice){
+        switch (choice) {
             case 1:
-                // propose
-                displayHeader2();
+                clScreen(); displayHeader2();
+                proposeAnnouncement(announcements, announcementCount, officerName);
                 break;
 
             case 2:
-                // view announcement
-                displayHeader2();
+                clScreen(); displayHeader2();
+                loadAnnouncements(announcements, announcementCount);
+                displayAllAnnouncements(announcements, announcementCount, "Approved");
+                pauseScreen();
                 break;
 
             case 3:
-                // edit announcement
+                clScreen(); displayHeader2();
+                loadAnnouncements(announcements, announcementCount);
+                cout << "\n📋 Your Pending Announcements (awaiting faculty approval):\n";
+                displayAllAnnouncements(announcements, announcementCount, "Pending");
+                pauseScreen();
                 break;
 
             case 4:
-                // remove
-                displayHeader2();
+                clScreen(); displayHeader2();
+                viewRejectedAnnouncements(announcements, announcementCount);
                 break;
 
             case 5:
-                // pin / urgent
-                displayHeader2();
+                clScreen(); displayHeader2();
+                if (announcementCount <= 0) { cout << "\n[!] No announcements yet.\n"; pauseScreen(); break; }
+                editAnnouncement(announcements, announcementCount);
                 break;
 
             case 6:
-                // return to menu
+                clScreen(); displayHeader2();
+                if (announcementCount <= 0) { cout << "\n[!] No announcements yet.\n"; pauseScreen(); break; }
+                removeAnnouncement(announcements, announcementCount);
+                break;
+
+            case 7:
+                clScreen(); displayHeader2();
+                if (announcementCount <= 0) { cout << "\n[!] No announcements yet.\n"; pauseScreen(); break; }
+                pinUrgentAnnouncement(announcements, announcementCount);
+                break;
+
+            case 8:
                 break;
 
             default:
-                cout << "\n[!] Invalid choice. Try again.\n";
+                cout << "\n[!] Invalid choice.\n";
+                pauseScreen();
         }
-    } while(announcementChoice != 6);
-    clScreen();
+    } while (choice != 8);
 
+    clScreen();
 }
 
+void loadAnnouncements(Announcement* announcements, int& count) {
+    ifstream file("announcements.txt");
+    count = 0;
+
+    if (!file.is_open()) return;
+
+    string line;
+    while (getline(file, line) && count < MAX_ANNOUNCEMENTS) {
+        if (line == "---") {
+            Announcement a;
+            string idStr;
+
+            getline(file, idStr);
+            getline(file, a.title);
+            getline(file, a.content);
+            getline(file, a.date);
+            getline(file, a.postedBy);
+            getline(file, a.status);
+            getline(file, a.rejectionReason);
+
+            if (!idStr.empty()) {
+                a.id = atoi(idStr.c_str());
+                announcements[count++] = a;
+            }
+        }
+    }
+
+    file.close();
+}
+
+// Save all to announcements.txt
+void saveAllAnnouncements(Announcement* announcements, int count) {
+    ofstream file("announcements.txt", ios::trunc);
+
+    if (!file.is_open()) {
+        cout << "\n[!] Error: Could not open announcements.txt\n";
+        return;
+    }
+
+    for (int i = 0; i < count; i++) {
+        file << "---\n";
+        file << announcements[i].id              << "\n";
+        file << announcements[i].title           << "\n";
+        file << announcements[i].content         << "\n";
+        file << announcements[i].date            << "\n";
+        file << announcements[i].postedBy        << "\n";
+        file << announcements[i].status          << "\n";
+        file << announcements[i].rejectionReason << "\n";
+    }
+
+    file.close();
+}
+
+int getNextAnnouncementID(Announcement* announcements, int count) {
+    if (count == 0) return 1;
+    int maxID = 0;
+    for (int i = 0; i < count; i++)
+        if (announcements[i].id > maxID) maxID = announcements[i].id;
+    return maxID + 1;
+}
+
+// Display one announcement — shows rejection reason if rejected
+void displayAnnouncement(Announcement& a, int displayIndex) {
+    string badge = "";
+    if (a.status == "Pinned")   badge = " 📌";
+    else if (a.status == "Urgent")   badge = " 🚨";
+    else if (a.status == "Pending")  badge = " ⏳";
+    else if (a.status == "Rejected") badge = " ❌";
+
+    cout << "\n----------------------------------------------------------\n";
+    cout << badge << " ID: " << a.id << " | " << a.status << "\n\n";
+    cout << "  Title    : " << a.title     << "\n";
+    cout << "----------------------------------------------------------\n";
+    cout << "  Content  : ";
+    stringstream ss(a.content); string word; size_t currentLength = 0;
+    while(ss >> word){
+        if(currentLength + word.length() > 45){
+            cout << "\n             ";
+            currentLength = 0;
+        }
+        cout << word << " ";
+        currentLength += word.length() + 1;
+    }
+    cout << "\n----------------------------------------------------------";
+    cout << "\n  Date     : " << a.date      << "\n";
+    cout << "  Posted by: " << a.postedBy  << "\n";
+    if (a.status == "Rejected" && !a.rejectionReason.empty())
+        cout << "  Reason   : " << a.rejectionReason << "\n";
+    cout << "----------------------------------------------------------\n";
+}
+
+void displayAllAnnouncements(Announcement* announcements, int count, string filterStatus) {
+    bool anyShown = false;
+
+    cout << "\n==========================================================";
+    if (filterStatus == "Approved" || filterStatus == "")
+        cout << "\n              📢 ANNOUNCEMENTS BOARD 📢";
+    else if (filterStatus == "Pending")
+        cout << "\n              ⏳ PENDING ANNOUNCEMENTS ⏳";
+    else if (filterStatus == "Rejected")
+        cout << "\n              ❌ REJECTED ANNOUNCEMENTS ❌";
+    cout << "\n==========================================================\n";
+
+    int display = 1;
+
+    auto show = [&](string status) {
+        for (int i = 0; i < count; i++) {
+            bool match = false;
+            if (filterStatus == "Approved")
+                match = (announcements[i].status == status &&
+                        (status == "Urgent" || status == "Pinned" || status == "Approved"));
+            else if (filterStatus == "")
+                match = (announcements[i].status == status);
+            else
+                match = (announcements[i].status == filterStatus && announcements[i].status == status);
+
+            if (match) {
+                displayAnnouncement(announcements[i], display++);
+                anyShown = true;
+            }
+        }
+    };
+
+    if (filterStatus == "Approved" || filterStatus == "") {
+        show("Urgent");
+        show("Pinned");
+        show("Approved");
+    }
+    if (filterStatus == "Pending"  || filterStatus == "") show("Pending");
+    if (filterStatus == "Rejected" || filterStatus == "") show("Rejected");
+
+    if (!anyShown)
+        cout << "\n  (No announcements to display)\n";
+}
+
+void proposeAnnouncement(Announcement* announcements, int& count, string officerName) {
+    SetConsoleOutputCP(CP_UTF8);
+    cout << "\n" << right << setw(43) << "----------------------------";
+    cout << "\n" << right << setw(47) << "📢 Propose Announcement 📢\n";
+    cout << right << setw(43) << "----------------------------\n";
+
+    if (count >= MAX_ANNOUNCEMENTS) {
+        cout << "\n[!] Announcement list is full.\n";
+        pauseScreen();
+        return;
+    }
+
+    Announcement newA;
+    newA.id              = getNextAnnouncementID(announcements, count);
+    newA.postedBy        = officerName;
+    newA.date            = getCurrentDate();
+    newA.status          = "Pending";
+    newA.rejectionReason = "";
+
+    enterPrompt("\n📋 Title: ", newA.title);
+    enterPrompt("📝 Content: ", newA.content);
+
+    announcements[count++] = newA;
+    saveAllAnnouncements(announcements, count);
+
+    cout << "\n[✔] Announcement submitted! Waiting for faculty approval.\n";
+    pauseScreen();
+}
+
+// Officer: View rejected announcements with reasons
+void viewRejectedAnnouncements(Announcement* announcements, int& count) {
+    loadAnnouncements(announcements, count);
+    displayAllAnnouncements(announcements, count, "Rejected");
+    pauseScreen();
+}
+
+// Officer: Edit (only Pending or Rejected announcements — re-submits as Pending)
+void editAnnouncement(Announcement* announcements, int count) {
+    cout << "\n  Note: You can only edit Pending or Rejected announcements.\n";
+    cout << "  Editing a Rejected announcement re-submits it for approval.\n";
+
+    displayAllAnnouncements(announcements, count, "Pending");
+    displayAllAnnouncements(announcements, count, "Rejected");
+
+    int targetID;
+    enterPrompt("\n\n🆔 Enter Announcement ID to edit: ", targetID);
+
+    int found = -1;
+    for (int i = 0; i < count; i++) {
+        if (announcements[i].id == targetID &&
+           (announcements[i].status == "Pending" || announcements[i].status == "Rejected")) {
+            found = i;
+            break;
+        }
+    }
+
+    if (found == -1) {
+        cout << "\n[!] ID not found or announcement is already approved.\n";
+        pauseScreen();
+        return;
+    }
+
+    cout << "\nWhat do you want to edit?\n";
+    cout << "[1] Title\n[2] Content\n";
+    int editChoice;
+    enterPrompt("Choose: ", editChoice);
+
+    switch (editChoice) {
+        case 1: enterPrompt("\n📋 New Title: ", announcements[found].title);   break;
+        case 2: enterPrompt("\n📝 New Content: ", announcements[found].content); break;
+        default:
+            cout << "\n[!] Invalid choice.\n";
+            pauseScreen();
+            return;
+    }
+
+    // Re-submit as Pending after edit
+    announcements[found].status          = "Pending";
+    announcements[found].rejectionReason = "";
+
+    saveAllAnnouncements(announcements, count);
+    cout << "\n[✔] Announcement updated and re-submitted for faculty approval.\n";
+    pauseScreen();
+}
+
+// Officer: Remove any of their announcements
+void removeAnnouncement(Announcement* announcements, int& count) {
+    displayAllAnnouncements(announcements, count, "");
+
+    int targetID;
+    enterPrompt("\n🆔 Enter Announcement ID to remove: ", targetID);
+
+    int found = -1;
+    for (int i = 0; i < count; i++) {
+        if (announcements[i].id == targetID) { found = i; break; }
+    }
+
+    if (found == -1) {
+        cout << "\n[!] Announcement ID not found.\n";
+        pauseScreen();
+        return;
+    }
+
+    displayAnnouncement(announcements[found], found + 1);
+
+    char confirm;
+    cout << "\n--------------------------------------------------------------------\n";
+    enterPrompt("Confirm removal? (Y/N): ", confirm);
+
+    if (confirm == 'Y' || confirm == 'y') {
+        for (int i = found; i < count - 1; i++)
+            announcements[i] = announcements[i + 1];
+        count--;
+
+        saveAllAnnouncements(announcements, count);
+        cout << "\n[✔] Announcement removed successfully.\n";
+    } else {
+        cout << "\n[i] Operation cancelled.\n";
+    }
+
+    pauseScreen();
+}
+
+// Officer: Pin / Urgent — only for Approved announcements
+void pinUrgentAnnouncement(Announcement* announcements, int count) {
+    cout << "\n  Note: Only approved announcements can be pinned or marked urgent.\n";
+    displayAllAnnouncements(announcements, count, "Approved");
+
+    int targetID;
+    enterPrompt("\n🆔 Enter Announcement ID: ", targetID);
+
+    int found = -1;
+    for (int i = 0; i < count; i++) {
+        if (announcements[i].id == targetID &&
+           (announcements[i].status == "Approved" ||
+            announcements[i].status == "Pinned" ||
+            announcements[i].status == "Urgent")) {
+            found = i;
+            break;
+        }
+    }
+
+    if (found == -1) {
+        cout << "\n[!] ID not found or not yet approved.\n";
+        pauseScreen();
+        return;
+    }
+
+    cout << "\nSet status:\n";
+    cout << "[1] 📌 Pinned\n[2] 🚨 Urgent\n[3] Approved\n";
+    int statusChoice;
+    enterPrompt("Choose: ", statusChoice);
+
+    switch (statusChoice) {
+        case 1: announcements[found].status = "Pinned"; break;
+        case 2: announcements[found].status = "Urgent"; break;
+        case 3: announcements[found].status = "Normal"; break;
+        default:
+            cout << "\n[!] Invalid choice.\n";
+            pauseScreen();
+            return;
+    }
+
+    saveAllAnnouncements(announcements, count);
+    cout << "\n[✔] Status updated to: " << announcements[found].status << "\n";
+    pauseScreen();
+}
+
+/** Activity Management Functions **/
 void activityManagement(){
     int activityChoice = 0;
 
@@ -1365,14 +1727,15 @@ void facultyMenu(){
     cout << "\n[3] View Officers";
     cout << "\n[4] Search";
     cout << "\n[5] View Feedbacks";
-    cout << "\n[0] Log Out\n";
+    cout << "\n[6] Log Out\n";
 }
 
-void facultySwitch(int choice){
+void facultySwitch(int choice, Announcement* announcements, int announcementCount){
     switch(choice){
         case 1:
             // announcement management
             displayHeader2();
+            facultyAnnouncementManagement(announcements,announcementCount);
             break;
 
         case 2:
@@ -1395,13 +1758,126 @@ void facultySwitch(int choice){
             displayHeader2();
             break;
 
-        case 0:
+        case 6:
             // log out
             break;
 
         default:
             cout << "\n[!] Invalid choice. Try again.\n";
     }
+}
+
+
+/** Announcement Management **/
+void facultyAnnouncementManagement(Announcement* announcements, int& count) {
+    loadAnnouncements(announcements, count);
+
+    int choice = 0;
+
+    do {
+        clScreen();
+        displayHeader2();
+
+        // Count pending for badge
+        int pendingCount = 0;
+        for (int i = 0; i < count; i++)
+            if (announcements[i].status == "Pending") pendingCount++;
+
+        cout << "\n" << right << setw(43) << "--------------------------";
+        cout << "\n" << right << setw(49) << "📢 Announcement Management 📢\n";
+        cout << right << setw(43) << "--------------------------\n";
+
+        if (pendingCount > 0)
+            cout << "\n  [⏳] " << pendingCount << " announcement(s) pending your approval!\n";
+
+        cout << "\n[1] Review Pending Announcements";
+        cout << "\n[2] View All Approved Announcements";
+        cout << "\n[3] Return to Main Menu\n";
+
+        enterPrompt("\nEnter choice: ", choice);
+
+        switch (choice) {
+            case 1:
+                clScreen(); displayHeader2();
+                reviewPendingAnnouncements(announcements, count);
+                break;
+
+            case 2:
+                clScreen(); displayHeader2();
+                loadAnnouncements(announcements, count);
+                displayAllAnnouncements(announcements, count, "Approved");
+                pauseScreen();
+                break;
+
+            case 3:
+                break;
+
+            default:
+                cout << "\n[!] Invalid choice.\n";
+                pauseScreen();
+        }
+    } while (choice != 3);
+
+    clScreen();
+}
+
+void reviewPendingAnnouncements(Announcement* announcements, int& count) {
+    loadAnnouncements(announcements, count);
+
+    // Collect pending indices
+    int pendingIndices[MAX_ANNOUNCEMENTS];
+    int pendingCount = 0;
+    for (int i = 0; i < count; i++)
+        if (announcements[i].status == "Pending")
+            pendingIndices[pendingCount++] = i;
+
+    if (pendingCount == 0) {
+        cout << "\n[✔] No pending announcements. All caught up!\n";
+        pauseScreen();
+        return;
+    }
+
+    cout << "\n  " << pendingCount << " pending announcement(s) to review.\n";
+
+    for (int p = 0; p < pendingCount; p++) {
+        int i = pendingIndices[p];
+        clScreen();
+        displayHeader2();
+
+        cout << "\n⏳ Reviewing " << (p + 1) << " of " << pendingCount << "\n";
+        displayAnnouncement(announcements[i], p + 1);
+
+        cout << "\n[1] ✅ Approve";
+        cout << "\n[2] ❌ Reject";
+        cout << "\n[3] Skip (decide later)\n";
+
+        int decision;
+        enterPrompt("\nYour decision: ", decision);
+
+        if (decision == 1) {
+            announcements[i].status          = "Approved";
+            announcements[i].rejectionReason = "";
+            saveAllAnnouncements(announcements, count);
+            cout << "\n[✔] Announcement approved and posted to the board.\n";
+            Sleep(1200);
+
+        } else if (decision == 2) {
+            string reason = "";
+            enterPrompt("\n📝 Enter rejection reason: ", reason);
+            announcements[i].status          = "Rejected";
+            announcements[i].rejectionReason = reason;
+            saveAllAnnouncements(announcements, count);
+            cout << "\n[✔] Announcement rejected. Officer will be notified.\n";
+            Sleep(1200);
+
+        } else {
+            cout << "\n[i] Skipped.\n";
+            Sleep(800);
+        }
+    }
+
+    cout << "\n[✔] Done reviewing all pending announcements.\n";
+    pauseScreen();
 }
 
 
