@@ -57,7 +57,8 @@ void loadIDPassFromFile(Student* students, int& count);
 void loadIDPassFromFile(Officer* tempOfficer, int& count);
 void loadIDPassFromFile(Faculty* tempFaculty, int& count);
 bool idpassNotFound(bool& var, int& attempt, string displayMessage);
-void displayWelcome(string name);
+void displayName(string name);
+string getCurrentDate();
 
 // officer module
 void officerMenu();
@@ -138,6 +139,8 @@ int main(){
             case 2:
                 // officer module
                 clScreen();
+
+
 
                 do{
                     //displayHeader();
@@ -511,7 +514,7 @@ void studentLogin(Student* students, int studentCount, int& accIndex, bool& isLo
 
     // Success State
     cout << "\n[/] Login Successful!";
-    displayWelcome(students[accIndex].name);
+    displayName(students[accIndex].name);
     isLoggedIn = true;
 }
 
@@ -565,8 +568,9 @@ void officerLogin(Student* students, Officer* officers, Faculty* faculty, int ro
     }
 
     cout << "\n[/] Login Successful!";
-    displayWelcome(officers[accIndex].name);
+    displayName(officers[accIndex].name);
     isLoggedIn = true;
+    pauseScreen();
 }
 
 void facultyLogin(Student* students, Officer* officers, Faculty* faculty, int role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn) {
@@ -619,7 +623,7 @@ void facultyLogin(Student* students, Officer* officers, Faculty* faculty, int ro
     }
 
     cout << "\n[/] Login Successful!";
-    displayWelcome(faculty[accIndex].name);
+    displayName(faculty[accIndex].name);
     isLoggedIn = true;
 }
 
@@ -790,9 +794,21 @@ bool idpassNotFound(bool& var, int& attempt, string displayMessage){
     return false;
 }
 
-void displayWelcome(string name){
-    cout << "\nWelcome, " << name << "!\n";
+void displayName(string name){
+    cout << "\nHello, " << name << "!\n";
+    cout << getCurrentDate << endl;
 }
+
+string getCurrentDate() {
+    time_t now = time(nullptr);
+    tm* localTime = localtime(&now);
+
+    char buffer[11]; // "YYYY-MM-DD\0"
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d", localTime);
+
+    return string(buffer);
+}
+
 
 
 /// officer's module
@@ -829,7 +845,7 @@ void officerSwitch(int choice,Student* students, int& studentCount){
 
         case 4:
             // search
-            displayHeader2();
+
             searchFunction(students,studentCount);
             break;
 
@@ -849,7 +865,9 @@ void memberManagement(Student* students, int& studentCount){
     int memberChoice = 0;
 
     do{
-       cout << "\n" << right << setw(42) << "-----------------------";
+        clScreen();
+        displayHeader2();
+        cout << "\n" << right << setw(42) << "-----------------------";
         cout << "\n" << right << setw(46) << "👥 Member Management 👥" << "\n";
         cout << right << setw(42) << "-----------------------" << "\n";
         cout << "\n[1] Add Member";
@@ -879,6 +897,7 @@ void memberManagement(Student* students, int& studentCount){
 
             case 3:
                 // edit member
+                displayHeader2();
                 if(studentCount <= 0){
                     cout << "\n[!] No students record yet. Go to Add Member.\n";
                     return;
@@ -889,6 +908,8 @@ void memberManagement(Student* students, int& studentCount){
 
             case 4:
                 // remove member
+                //displayHeader2();
+                clScreen();
                 if(studentCount <= 0){
                     cout << "\n[!] No students record yet. Go to Add Member.\n";
                     return;
@@ -903,6 +924,7 @@ void memberManagement(Student* students, int& studentCount){
 
             default:
                 cout << "\n[!] Invalid choice. Try again.\n";
+                cout << endl;
         }
     } while(memberChoice != 5);
 
@@ -912,23 +934,25 @@ void memberManagement(Student* students, int& studentCount){
 /** Member management functions **/
 void addMember(Student* students, int& studentCount){
     clScreen();
+    displayHeader2();
+    SetConsoleOutputCP(CP_UTF8);
     cout << "\n" << right << setw(38) << "----------------";
     cout << "\n" << right << setw(42) << "👥 Add Member 👥" << "\n";
     cout << right << setw(38) << "----------------" << "\n";
-    enterPrompt("\nEnter Student ID: ", students[studentCount].ID);
-    enterPrompt("Enter Student Name: ", students[studentCount].name);
+    enterPrompt("\n🆔 Enter Student ID: ", students[studentCount].ID);
+    enterPrompt("👤Enter Student Name: ", students[studentCount].name);
 
-    enterPrompt("Enter Program: ", students[studentCount].program);
+    enterPrompt("📚 Enter Program: ", students[studentCount].program);
     /*while(students[studentCount].program != "BSIT" && students[studentCount].program != "DIT"  &&
           students[studentCount].program != "bsit" && students[studentCount] != "dit"){
             cout << "\n[!] Program must be BSIT or DIT only.\n\n";
             enterPrompt("💻 Enter Program: ", students[studentCount].program, 26);
     }*/
 
-    enterPrompt("Enter Year Level: ", students[studentCount].yearLevel);
+    enterPrompt("⭐ Enter Year Level: ", students[studentCount].yearLevel);
     while(students[studentCount].yearLevel >= 5){
             cout << "\n[!] Valid year level are Years 1 to 4 only.\n\n";
-            enterPrompt("\n📈 Enter Year Level: ",students[studentCount].yearLevel);
+            enterPrompt("\n⭐ Enter Year Level: ",students[studentCount].yearLevel);
     }
 
     cout << "\nPress Enter to generate passcode.\n";
@@ -954,12 +978,16 @@ void addMember(Student* students, int& studentCount){
 }
 
 void viewMembers(Student* students, int studentCount){
+
     int returnOrSort;
     do{
         clScreen();
+        displayHeader2();
         loadIDPassFromFile(students,studentCount);
 
-        cout << "\nMember list\n\n";
+        cout << "\n" << right << setw(40) << "---------------------";
+        cout << "\n" << right << setw(39) << ">>> Member list <<<";
+        cout << "\n" << right << setw(42) << "---------------------\n\n";
         cout << left << setw(17) << "ID" << setw(25) << "Name" << setw(13) << "Program" << "Year Level\n";
         for(int i = 0; i < studentCount; i++){
             cout << left << setw(17) << students[i].ID << setw(25) << students[i].name << setw(13) <<
@@ -1008,10 +1036,16 @@ void sortMember(Student* students, int studentCount, int method){
 }
 
 void editMember(Student* students, int& studentCount){
+    clScreen();
+    displayHeader2();
     loadIDPassFromFile(students, studentCount);
 
+    cout << "\n" << right << setw(40) << "----------------------";
+    cout << "\n" << right << setw(39) << ">>> Edit Member  <<<";
+    cout << "\n" << right << setw(42) << "----------------------\n\n";
+
     string target;
-    enterPrompt("\nEnter name of member to edit: ", target);
+    enterPrompt("\n👤 Enter name of member to edit: ", target);
 
     // pass "Name" explicitly, or it defaults to "" and returns -1
     int memberIdx = searchMember(students, studentCount, target,"Name");
@@ -1030,17 +1064,18 @@ void editMember(Student* students, int& studentCount){
     enterPrompt("\nChoose which data you want to edit: ", edit);
 
     switch(edit){
+        SetConsoleOutputCP(CP_UTF8);
         case 1:
-            enterPrompt("\nEdit ID: ", stud->ID);
+            enterPrompt("\n🆔 Edit ID: ", stud->ID);
             break;
         case 2:
-            enterPrompt("\nEdit Name: ", stud->name);
+            enterPrompt("\n👤 Edit Name: ", stud->name);
             break;
         case 3:
-            enterPrompt("\nEdit Program: ", stud->program);
+            enterPrompt("\n📚 Edit Program: ", stud->program);
             break;
         case 4:
-            enterPrompt("\nEdit Year Level: ", stud->yearLevel);
+            enterPrompt("\n⭐ Edit Year Level: ", stud->yearLevel);
             break;
         default:
             cout << "[!] Invalid choice. Choose only from choice above.\n";
@@ -1055,8 +1090,12 @@ void editMember(Student* students, int& studentCount){
 void removeMember(Student* students, int& studentCount){
     loadIDPassFromFile(students, studentCount);
 
+    cout << "\n" << right << setw(40) << "-----------------------";
+    cout << "\n" << right << setw(39) << ">>> Remove Member <<<";
+    cout << "\n" << right << setw(42) << "-----------------------\n\n";
+
     string target;
-    enterPrompt("\nEnter name of member to remove: ", target);
+    enterPrompt("\n👤 Enter name of member to remove: ", target);
 
     int memberIdx = searchMember(students, studentCount, target, "Name");
 
@@ -1067,9 +1106,11 @@ void removeMember(Student* students, int& studentCount){
     }
 
     // display found member before confirming
+    cout << "\n\n";
     displayMember(students, memberIdx);
 
     char confirm;
+    cout << "\n\n--------------------------------------------------------------------\n";
     enterPrompt("Confirm removal? (Y/N): ", confirm);
 
     if(confirm == 'Y' || confirm == 'y'){
@@ -1200,6 +1241,7 @@ void searchFunction(Student* students,int studentCount){
     int searchChoice = 0;
 
     do{
+       displayHeader2();
         cout << "\n" << right << setw(43) << "--------------------------";
         cout << "\n" << right << setw(46) << "🔍 Search Management 🔍" << "\n";
         cout << right << setw(43) << "--------------------------" << "\n";
@@ -1215,47 +1257,60 @@ void searchFunction(Student* students,int studentCount){
 
         switch(searchChoice){
             case 1:
+                clScreen();
                 displayHeader2();
+
+                cout << "\n" << right << setw(43) << "-----------------------------";
+                cout << "\n" << right << setw(46) << ">>> 🔍 Search Member 👥 <<<";
+                cout << "\n" << right << setw(45) << "-----------------------------\n\n";
 
                 char searchIdName;
                 enterPrompt("\nSearch Member by [I]D or [N]ame: ",searchIdName);
+                pauseScreen();
 
                 if(searchIdName == 'I' || searchIdName == 'i'){
+                    clScreen();
+                    displayHeader2();
                     searchValue = "ID";
 
-                    cout << "\nSearch by ID\n\n";
-                    enterPrompt("Enter ID to search: ",target);
+                    cout << "\n" << right << setw(44) << ">>> Search by ID <<<\n\n";
+                    enterPrompt("🆔 Enter ID to search: ",target);
 
                     int idIndex = searchMember(students,studentCount,target,searchValue);
 
                     if(idIndex == -1){
                         cout << "\n[!] Member with that ID not found.\n";
                     } else {
-                        cout << "\n[/] Member found\n\n";
+                        cout << "\n[/] Member found\n\n\n";
                         displayMember(students,idIndex);
                     }
                 } else if(searchIdName == 'N' || searchIdName == 'n'){
+                    clScreen();
+                    displayHeader2();
                     searchValue = "Name";
-
-                    cout << "\nSearch by Name\n\n";
-                    enterPrompt("Enter Name to search: ",target);
+                    cout << "\n" << right << setw(42) << ">>> Search by Name <<<\n\n";
+                    enterPrompt("🔍 Enter Name to search: ",target);
 
                     int nameIndex = searchMember(students,studentCount,target,searchValue);
 
                     if(nameIndex == -1){
                         cout << "\n[!] Member with that Name not found.\n";
                     } else {
-                        cout << "\n[/] Member found\n\n";
+                        cout << "\n[/] Member found\n\n\n";
                         displayMember(students,nameIndex);
                     }
                 } else {
                     cout << "\n[!] Invalid choice. Choose only from the choice above.\n";
                 }
+
+                pauseScreen();
+                clScreen();
                 break;
 
             case 2:
                 // search announcement
                 // conditional - id or name?
+                clScreen();
                 displayHeader2();
                 break;
 
@@ -1295,6 +1350,8 @@ int searchMember(Student* students, int studentCount, string target, string sear
 }
 
 void displayMember(Student* students, int index){
+    cout << "📑Search Result\n";
+    cout << "====================================================================\n";
     cout << left << setw(17) << "ID" << setw(25) << "Name" << setw(13) << "Program" << "Year Level\n";
     cout << left << setw(17) << students[index].ID << setw(25) << students[index].name << setw(13) <<
                                 students[index].program << students[index].yearLevel << "\n\n";
