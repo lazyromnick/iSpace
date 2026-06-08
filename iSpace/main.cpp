@@ -179,6 +179,7 @@ int main(){
                 do{
                     //displayHeader();
                     displayHeader2();
+                    cout << "\n" << right << setw(42) << ">>> Dashboard Officer <<<" << "\n";
                     displayName(officers[accIndex].name);
                     officerMenu();
                     enterPrompt("\nEnter choice: ",choice);
@@ -481,19 +482,19 @@ void login(Student* students, Officer* officers, Faculty* faculty, int& role, in
         clScreen();
         displayHeader();
         cout << "\n============== >>> Login to your account <<< ==============\n";
-        cout << "\n                    ==> Role: Student <==\n";
+        cout << "\n                   ==> Role: Student <==\n";
         studentLogin(students,studentCount,accIndex,isLoggedIn);
     } else if(role == 2){
         clScreen();
         displayHeader();
         cout << "\n============== >>> Login to your account <<< ==============\n";
-        cout << "\n                    ==> Role: Officer <==\n";
+        cout << "\n                   ==> Role: Officer <==\n";
         officerLogin(students, officers, faculty, role, studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
     } else if(role == 3){
         clScreen();
         displayHeader();
         cout << "\n============== >>> Login to your account <<< ==============\n";
-        cout << "\n                    ==> Role: Faculty <==\n";
+        cout << "\n                   ==> Role: Faculty <==\n";
         facultyLogin(students, officers, faculty, role, studentCount, officerCount, facultyCount, accIndex, isLoggedIn);
     }
 }
@@ -844,7 +845,7 @@ string getCurrentDate() {
 
 /// officer's module
 void officerMenu(){
-    cout << "\n" << right << setw(40) << ">>> Role: Officer <<<" << "\n";
+    //cout << "\n" << right << setw(40) << ">>> Role: Officer <<<" << "\n";
     cout << "\n[1] 👥 Member Management";
     cout << "\n[2] 📢 Announcement Management";
     cout << "\n[3] 📅 Activity Management";
@@ -1175,7 +1176,7 @@ void announcementManagement(Announcement* announcements, int announcementCount, 
 
         cout << "\n" << right << setw(43) << "--------------------------";
         cout << "\n" << right << setw(49) << "📢 Announcement Management 📢\n";
-        cout << right << setw(43) << "--------------------------\n";
+        cout << right << setw(44) << "--------------------------\n";
 
         if (pendingCount > 0)
             cout << "\n[⏳] " << pendingCount << " announcement(s) awaiting faculty approval.\n";
