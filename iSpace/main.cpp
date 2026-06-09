@@ -61,6 +61,9 @@ const int MAX_ACTIVITIES = 100;
 // headers
 void displayHeader();
 void displayHeader2();
+void displayCounterUpdates(int studentCount, int announcementCount, int activityCount);
+void displayName(string name);
+string getCurrentDate();
 
 // authentication
 void auth(Student* students, Officer* officers, Faculty* faculty, int& role, int studentCount, int& officerCount, int& facultyCount, int& accIndex, bool& isLoggedIn);
@@ -82,8 +85,6 @@ void loadIDPassFromFile(Student* students, int& count);
 void loadIDPassFromFile(Officer* tempOfficer, int& count);
 void loadIDPassFromFile(Faculty* tempFaculty, int& count);
 bool idpassNotFound(bool& var, int& attempt, string displayMessage);
-void displayName(string name);
-string getCurrentDate();
 
 // officer module
 void officerMenu();
@@ -104,18 +105,20 @@ void editMember(Student* students, int& studentCount);
 void removeMember(Student* students, int& studentCount);
 
 /* announcement management */
-void loadAnnouncements(Announcement* announcements, int& count);
-void saveAllAnnouncements(Announcement* announcements, int count);
-int  getNextAnnouncementID(Announcement* announcements, int count);
+void loadAnnouncements(Announcement* announcements, int& announcementCount);
+void saveAllAnnouncements(Announcement* announcements, int announcementCount);
+int  getNextAnnouncementID(Announcement* announcements, int announcementCount);
 void displayAnnouncement(Announcement& a, int displayIndex);
-void displayAllAnnouncements(Announcement* announcements, int count, string filterStatus = "");
-void announcementManagement(Announcement* announcements, int announcementCount, string officerName);
-void proposeAnnouncement(Announcement* announcements, int& count, string officerName);
-void viewAnnouncements(Announcement* announcements, int& count);
-void editAnnouncement(Announcement* announcements, int count);
-void removeAnnouncement(Announcement* announcements, int& count);
-void pinUrgentAnnouncement(Announcement* announcements, int count);
-void viewRejectedAnnouncements(Announcement* announcements, int& count);
+void displayAllAnnouncements(Announcement* announcements, int announcementCount, string filterStatus = "");
+void announcementManagement(Announcement* announcements, int announcementannouncementCount, string officerName);
+void proposeAnnouncement(Announcement* announcements, int& announcementCount, string officerName);
+void viewAnnouncements(Announcement* announcements, int& announcementCount);
+void editAnnouncement(Announcement* announcements, int announcementCount);
+void removeAnnouncement(Announcement* announcements, int& announcementCount);
+void pinUrgentAnnouncement(Announcement* announcements, int announcementCount);
+void viewRejectedAnnouncements(Announcement* announcements, int& announcementCount);
+void displayBulletin(Announcement* announcements);
+
 
 /* activity management */
 /* activity management */
@@ -211,8 +214,8 @@ int main(){
                 do{
                     //displayHeader();
                     displayHeader2();
-                    cout << "\n" << right << setw(42) << ">>> Officer Dashboard <<<" << "\n";
                     displayName(officers[accIndex].name);
+                    displayCounterUpdates(studentCount,announcementCount,activityCount);
                     officerMenu();
                     enterPrompt("\nEnter choice: ",choice);
                     clScreen();
@@ -253,7 +256,7 @@ void displayHeader2() {
    cout << "==========================================================";
     cout << "\n|" << right << setw(39) << " __✨ iSpace ✨__" << right << setw(21) << "|\n";
     cout << "|" << right << setw(58) << "|\n";
-    cout << "|" << right << setw(48) << "⚙️ MANAGEMENT OVERVIEW 📊 " << right << setw(16) << "|\n";
+    cout << "|" << right << setw(48) << "⚙️ OFFICER'S DASHBOARD 📊 " << right << setw(16) << "|\n";
     cout << "|" << right << setw(57) << "|";
     cout << "\n==========================================================\n";
 }
@@ -861,8 +864,11 @@ bool idpassNotFound(bool& var, int& attempt, string displayMessage){
 }
 
 void displayName(string name){
-    cout << "\nHello, " << name << "!\n";
-    cout << "Last login: " << getCurrentDate() << endl;
+    size_t getSpace = name.find(' ');
+    string displayName = name.substr(0,getSpace);
+    cout << "\nGood day, " << displayName << "! 👋\n";
+    cout << "Here's what happening in iBITS today!\n";
+    cout << "" << getCurrentDate() << endl;
 }
 
 string getCurrentDate() {
@@ -877,7 +883,6 @@ string getCurrentDate() {
 
 /// officer's module
 void officerMenu(){
-    //cout << "\n" << right << setw(40) << ">>> Role: Officer <<<" << "\n";
     cout << "\n[1] 👥 Member Management";
     cout << "\n[2] 📢 Announcement Management";
     cout << "\n[3] 📅 Activity Management";
@@ -1280,14 +1285,14 @@ void announcementManagement(Announcement* announcements, int announcementCount, 
     clScreen();
 }
 
-void loadAnnouncements(Announcement* announcements, int& count) {
+void loadAnnouncements(Announcement* announcements, int& announcementCount) {
     ifstream file("announcements.txt");
-    count = 0;
+    announcementCount = 0;
 
     if (!file.is_open()) return;
 
     string line;
-    while (getline(file, line) && count < MAX_ANNOUNCEMENTS) {
+    while (getline(file, line) && announcementCount < MAX_ANNOUNCEMENTS) {
         if (line == "---") {
             Announcement a;
             string idStr;
@@ -1302,7 +1307,7 @@ void loadAnnouncements(Announcement* announcements, int& count) {
 
             if (!idStr.empty()) {
                 a.id = atoi(idStr.c_str());
-                announcements[count++] = a;
+                announcements[announcementCount++] = a;
             }
         }
     }
@@ -1311,7 +1316,7 @@ void loadAnnouncements(Announcement* announcements, int& count) {
 }
 
 // Save all to announcements.txt
-void saveAllAnnouncements(Announcement* announcements, int count) {
+void saveAllAnnouncements(Announcement* announcements, int announcementCount) {
     ofstream file("announcements.txt", ios::trunc);
 
     if (!file.is_open()) {
@@ -1319,7 +1324,7 @@ void saveAllAnnouncements(Announcement* announcements, int count) {
         return;
     }
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < announcementCount; i++) {
         file << "---\n";
         file << announcements[i].id              << "\n";
         file << announcements[i].title           << "\n";
@@ -1333,10 +1338,10 @@ void saveAllAnnouncements(Announcement* announcements, int count) {
     file.close();
 }
 
-int getNextAnnouncementID(Announcement* announcements, int count) {
-    if (count == 0) return 1;
+int getNextAnnouncementID(Announcement* announcements, int announcementCount) {
+    if (announcementCount == 0) return 1;
     int maxID = 0;
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < announcementCount; i++)
         if (announcements[i].id > maxID) maxID = announcements[i].id;
     return maxID + 1;
 }
@@ -1371,7 +1376,7 @@ void displayAnnouncement(Announcement& a, int displayIndex) {
     cout << "----------------------------------------------------------\n";
 }
 
-void displayAllAnnouncements(Announcement* announcements, int count, string filterStatus) {
+void displayAllAnnouncements(Announcement* announcements, int announcementCount, string filterStatus) {
     bool anyShown = false;
 
     cout << "\n==========================================================";
@@ -1386,7 +1391,7 @@ void displayAllAnnouncements(Announcement* announcements, int count, string filt
     int display = 1;
 
     auto show = [&](string status) {
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < announcementCount; i++) {
             bool match = false;
             if (filterStatus == "Approved")
                 match = (announcements[i].status == status &&
@@ -1415,20 +1420,20 @@ void displayAllAnnouncements(Announcement* announcements, int count, string filt
         cout << "\n  (No announcements to display)\n";
 }
 
-void proposeAnnouncement(Announcement* announcements, int& count, string officerName) {
+void proposeAnnouncement(Announcement* announcements, int& announcementCount, string officerName) {
     SetConsoleOutputCP(CP_UTF8);
     cout << "\n" << right << setw(43) << "----------------------------";
     cout << "\n" << right << setw(47) << "📢 Propose Announcement 📢\n";
     cout << right << setw(43) << "----------------------------\n";
 
-    if (count >= MAX_ANNOUNCEMENTS) {
+    if (announcementCount >= MAX_ANNOUNCEMENTS) {
         cout << "\n[!] Announcement list is full.\n";
         pauseScreen();
         return;
     }
 
     Announcement newA;
-    newA.id              = getNextAnnouncementID(announcements, count);
+    newA.id              = getNextAnnouncementID(announcements, announcementCount);
     newA.postedBy        = officerName;
     newA.date            = getCurrentDate();
     newA.rejectionReason = "";
@@ -1455,32 +1460,32 @@ void proposeAnnouncement(Announcement* announcements, int& count, string officer
         cout << "\n[✔] Announcement submitted! Waiting for faculty approval.\n";
     }
 
-    announcements[count++] = newA;
-    saveAllAnnouncements(announcements, count);
+    announcements[announcementCount++] = newA;
+    saveAllAnnouncements(announcements, announcementCount);
     pauseScreen();
 }
 
 
 // Officer: View rejected announcements with reasons
-void viewRejectedAnnouncements(Announcement* announcements, int& count) {
-    loadAnnouncements(announcements, count);
-    displayAllAnnouncements(announcements, count, "Rejected");
+void viewRejectedAnnouncements(Announcement* announcements, int& announcementCount) {
+    loadAnnouncements(announcements, announcementCount);
+    displayAllAnnouncements(announcements, announcementCount, "Rejected");
     pauseScreen();
 }
 
 // Officer: Edit (only Pending or Rejected announcements — re-submits as Pending)
-void editAnnouncement(Announcement* announcements, int count) {
+void editAnnouncement(Announcement* announcements, int announcementCount) {
     cout << "\n  Note: You can only edit Pending or Rejected announcements.\n";
     cout << "  Editing a Rejected announcement re-submits it for approval.\n";
 
-    displayAllAnnouncements(announcements, count, "Pending");
-    displayAllAnnouncements(announcements, count, "Rejected");
+    displayAllAnnouncements(announcements, announcementCount, "Pending");
+    displayAllAnnouncements(announcements, announcementCount, "Rejected");
 
     int targetID;
     enterPrompt("\n\n🆔 Enter Announcement ID to edit: ", targetID);
 
     int found = -1;
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < announcementCount; i++) {
         if (announcements[i].id == targetID &&
            (announcements[i].status == "Pending" || announcements[i].status == "Rejected")) {
             found = i;
@@ -1512,20 +1517,20 @@ void editAnnouncement(Announcement* announcements, int count) {
     announcements[found].status          = "Pending";
     announcements[found].rejectionReason = "";
 
-    saveAllAnnouncements(announcements, count);
+    saveAllAnnouncements(announcements, announcementCount);
     cout << "\n[✔] Announcement updated and re-submitted for faculty approval.\n";
     pauseScreen();
 }
 
 // Officer: Remove any of their announcements
-void removeAnnouncement(Announcement* announcements, int& count) {
-    displayAllAnnouncements(announcements, count, "");
+void removeAnnouncement(Announcement* announcements, int& announcementCount) {
+    displayAllAnnouncements(announcements, announcementCount, "");
 
     int targetID;
     enterPrompt("\n🆔 Enter Announcement ID to remove: ", targetID);
 
     int found = -1;
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < announcementCount; i++) {
         if (announcements[i].id == targetID) { found = i; break; }
     }
 
@@ -1542,11 +1547,11 @@ void removeAnnouncement(Announcement* announcements, int& count) {
     enterPrompt("Confirm removal? (Y/N): ", confirm);
 
     if (confirm == 'Y' || confirm == 'y') {
-        for (int i = found; i < count - 1; i++)
+        for (int i = found; i < announcementCount - 1; i++)
             announcements[i] = announcements[i + 1];
-        count--;
+        announcementCount--;
 
-        saveAllAnnouncements(announcements, count);
+        saveAllAnnouncements(announcements, announcementCount);
         cout << "\n[✔] Announcement removed successfully.\n";
     } else {
         cout << "\n[i] Operation cancelled.\n";
@@ -1556,15 +1561,15 @@ void removeAnnouncement(Announcement* announcements, int& count) {
 }
 
 // Officer: Pin / Urgent — only for Approved announcements
-void pinUrgentAnnouncement(Announcement* announcements, int count) {
+void pinUrgentAnnouncement(Announcement* announcements, int announcementCount) {
     cout << "\n  Note: Only approved announcements can be pinned or marked urgent.\n";
-    displayAllAnnouncements(announcements, count, "Approved");
+    displayAllAnnouncements(announcements, announcementCount, "Approved");
 
     int targetID;
     enterPrompt("\n🆔 Enter Announcement ID: ", targetID);
 
     int found = -1;
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < announcementCount; i++) {
         if (announcements[i].id == targetID &&
            (announcements[i].status == "Approved" ||
             announcements[i].status == "Pinned" ||
@@ -1595,60 +1600,12 @@ void pinUrgentAnnouncement(Announcement* announcements, int count) {
             return;
     }
 
-    saveAllAnnouncements(announcements, count);
+    saveAllAnnouncements(announcements, announcementCount);
     cout << "\n[✔] Status updated to: " << announcements[found].status << "\n";
     pauseScreen();
 }
 
 /** Activity Management Functions **/
-void activityManagement(){
-    int activityChoice = 0;
-
-    do{
-        cout << "\n" << right << setw(44) << "--------------------------";
-        cout << "\n" << right << setw(47) << "📅 Activity Management 📅" << "\n";
-        cout << right << setw(44) << "--------------------------" << "\n";
-        cout << "\n[1] Add Activity";
-        cout << "\n[2] View Activities";
-        cout << "\n[3] Update Activity";
-        cout << "\n[4] Remove Activity";
-        cout << "\n[5] Return to Main Menu\n";
-
-        enterPrompt("\nEnter choice: ",activityChoice);
-
-        switch(activityChoice){
-            case 1:
-                // add activity
-                displayHeader2();
-                break;
-
-            case 2:
-                // view
-                displayHeader2();
-                break;
-
-            case 3:
-                // edit
-                displayHeader2();
-                break;
-
-            case 4:
-                // remove
-                displayHeader2();
-                break;
-
-            case 5:
-                // return to menu
-                break;
-
-            default:
-                cout << "\n[!] Invalid choice. Try again.\n";
-        }
-    } while(activityChoice != 5);
-
-    clScreen();
-}
-
 void activityManagement(Activity* activities, int& activityCount){
     loadActivities(activities, activityCount);
     int choice = 0;
@@ -2161,7 +2118,6 @@ void facultySwitch(int choice, Announcement* announcements, int announcementCoun
     }
 }
 
-
 /** Announcement Management **/
 void facultyAnnouncementManagement(Announcement* announcements, int& count) {
     loadAnnouncements(announcements, count);
@@ -2274,6 +2230,11 @@ void reviewPendingAnnouncements(Announcement* announcements, int& count) {
     pauseScreen();
 }
 
+void displayCounterUpdates(int studentCount, int announcementCount, int activityCount){
+    cout << "\n\033[1m" << studentCount << "\033[0m \033[3mTotal Members\033[0m";
+    cout << "\n\033[1m" << announcementCount << "\033[0m \033[3mActive Announcements\033[0m";
+    cout << "\n\033[1m" << activityCount << "\033[0m \033[3mUpcoming Activity\033[0m\n\n";
+}
 
 /// utility function definition
 void pauseScreen(){
@@ -2311,4 +2272,8 @@ bool isEmpty(string str){
         return true;
     }
     return false;
+}
+
+void landingPage() {
+
 }
