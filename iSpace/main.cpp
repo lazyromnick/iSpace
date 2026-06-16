@@ -145,7 +145,7 @@ int getUpcomingActCount(Activity* a, int count);
 template<typename T>
 T getMaxID(T* arr, int count);  // returns max id field
 
-//_dynamic memory allocation | pointer to poiter = 1 
+//_dynamic memory allocation | pointer to poiter = 1
 Announcement** buildPinnedFirst(Announcement* a, int count, int& outCount);
 
 //_sorting - bubble sort = 2
@@ -259,8 +259,8 @@ int main(){
 
     do {
         isLoggedIn = false;
-        role       = 0;
-        accIndex   = 0;
+        role = 0;
+        accIndex = 0;
 
         if(firstRun){
             auth(students, studentCount, officers, officerCount, faculty, facultyCount, role, accIndex, isLoggedIn);
@@ -288,7 +288,7 @@ int main(){
 
                 case OFFICER: {
                     cls();
-                    int pendingReq  = getPendingRequestCount();
+                    int pendingReq = getPendingRequestCount();
                     int approvedAnn = getApprovedAnnCount(ann, annCount);
                     int upcomingAct = getUpcomingActCount(act, actCount);
 
@@ -335,7 +335,6 @@ int main(){
 
             landingPage(isLoggedIn);
         }
-
     } while(isLoggedIn);
 
     return 0;
@@ -372,7 +371,7 @@ void displayHeader3(){
 
 void displayStudentHeader(const string& name){
     size_t spacePos = name.find(' ');
-    string firstName = (spacePos != string::npos) ? name.substr(0, spacePos) : name;
+    string firstName = (spacePos != string::npos) ? name.substr(0, spacePos) : name;  // if search for space isn't failed, firstName is the string of characters before the first space
 
     string line1 = "Good day, " + firstName + "! 👋";
     string line2 = "Here's what's happening in iBITS today!";
@@ -385,28 +384,27 @@ void displayStudentHeader(const string& name){
 }
 
 string getCurrentDate(){
-    time_t now       = time(nullptr);
-    tm* localTime    = localtime(&now);
+    time_t now = time(nullptr);
+    tm* localTime = localtime(&now);
     char buffer[11];
     strftime(buffer, sizeof(buffer), "%Y-%m-%d", localTime);
     return string(buffer);
 }
 
-// ═══════════════════════════════════════════
-//  AUTH
-// ═══════════════════════════════════════════
-void auth(Student* students, int& studentCount,
-          Officer* officers, int& officerCount,
-          Faculty* faculty,  int& facultyCount,
+void auth(Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount,
           int& role, int& accIndex, bool& isLoggedIn){
 
-    ifstream sf("students.csv"), of("officers.csv"), ff("faculty.csv");
+    ifstream sf("students.csv");
+    ifstream of("officers.csv");
+    ifstream ff("faculty.csv");
+
     bool anyOpen = sf.is_open() || of.is_open() || ff.is_open();
+
     sf.close(); of.close(); ff.close();
 
     if(anyOpen){
         SetConsoleOutputCP(CP_UTF8);
-        cout << right << setw(55) << "\n[📂] File successfully opened\n";
+        cout << "\n[📂] File successfully opened\n";
 
         char hasAccount;
         cout << "\nAlready have an account? (Y/N): ";
@@ -428,13 +426,11 @@ void auth(Student* students, int& studentCount,
             }
         }
     } else {
-        cout << "\n\n" << right << setw(55)
-             << "[!] File doesn't exist yet. Start your account.\n\n";
+        cout << "\n\n" << "[!] File doesn't exist yet. Start your account.\n\n";
         pauseScreen();
         askRole(role);
-        registerAccountHandler(role, students, studentCount,
-                               officers, officerCount,
-                               faculty,  facultyCount);
+        registerAccountHandler(role, students, studentCount, officers, officerCount, faculty,  facultyCount);
+
         if(role != STUDENT){
             login(role, students, studentCount, officers, officerCount,
                   faculty, facultyCount, accIndex, isLoggedIn);
@@ -459,10 +455,7 @@ void askRole(int& role){
     cls();
 }
 
-void registerAccountHandler(int role,
-          Student* students, int& studentCount,
-          Officer* officers, int& officerCount,
-          Faculty* faculty,  int& facultyCount){
+void registerAccountHandler(int role, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount){
     switch(role){
         case STUDENT:
             studentRegistration();
@@ -481,36 +474,37 @@ void studentRegistration(){
     displayHeader();
     SetConsoleOutputCP(CP_UTF8);
     cout << "\n" << right << setw(49) << "📋 >>> Student Registration <<< 📋\n";
-    cout << right << setw(47) << "Fill in your details to request an account.\n";
+    cout << "       Fill in your details to request an account.\n";
     cout << "\n-----------------------------------------------------------\n";
 
     Student s;
-    enterPrompt("\n🆔 Enter Student ID : ", s.ID);
-    enterPrompt("👤 Enter Name       : ", s.name);
-    enterPrompt("📚 Enter Program    : ", s.program);
+    enterPrompt("\n🆔 Enter Student ID: ", s.ID);
+    enterPrompt("👤 Enter Name: ", s.name);
+    enterPrompt("📚 Enter Program: ", s.program);
     while(s.program != "BSIT" && s.program != "bsit" &&
           s.program != "DIT"  && s.program != "dit"){
         cout << "\n[!] Program must be BSIT or DIT only.\n";
-        enterPrompt("📚 Enter Program    : ", s.program);
+        enterPrompt("📚 Enter Program: ", s.program);
     }
-    enterPrompt("⭐ Enter Year Level : ", s.yearLevel);
+    enterPrompt("⭐ Enter Year Level: ", s.yearLevel);
     while(s.yearLevel < 1 || s.yearLevel > 4){
         cout << "\n[!] Valid year levels are 1 to 4 only.\n\n";
-        enterPrompt("⭐ Enter Year Level : ", s.yearLevel);
+        enterPrompt("⭐ Enter Year Level: ", s.yearLevel);
     }
+
     s.passcode = createPasscode();
     savePendingStudent(s);
 
     cout << "\n[✔] Registration request submitted!\n";
     cout << "[i] Your account is pending Officer approval. Come back once notified.\n";
+
     pauseScreen();
 }
 
-void createAccount(int role,
-          Officer* officers, int& officerCount,
-          Faculty* faculty,  int& facultyCount){
+void createAccount(int role, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount){
     cls();
     displayHeader();
+
     SetConsoleOutputCP(CP_UTF8);
     cout << "\n" << right << setw(49) << "📋 >>> Create Account <<< 📋\n";
     cout << right << setw(43) << " Enter required details.\n";
@@ -521,23 +515,22 @@ void createAccount(int role,
         cout << "-----------------------------------------------------------\n\n";
 
         int i = officerCount;
-        enterPrompt("🆔 Enter ID       : ", officers[i].ID);
-        enterPrompt("👤 Enter Name     : ", officers[i].name);
-        enterPrompt("💻 Enter Program  : ", officers[i].program);
+        enterPrompt("🆔 Enter ID: ", officers[i].ID);
+        enterPrompt("👤 Enter Name: ", officers[i].name);
+        enterPrompt("💻 Enter Program: ", officers[i].program);
         while(officers[i].program != "BSIT" && officers[i].program != "bsit" &&
               officers[i].program != "DIT"  && officers[i].program != "dit"){
             cout << "\n[!] Program must be BSIT or DIT only.\n\n";
-            enterPrompt("💻 Enter Program  : ", officers[i].program);
+            enterPrompt("💻 Enter Program: ", officers[i].program);
         }
         enterPrompt("📈 Enter Year Level: ", officers[i].yearLevel);
         while(officers[i].yearLevel < 1 || officers[i].yearLevel > 4){
             cout << "\n[!] Valid year levels are 1 to 4 only.\n\n";
             enterPrompt("📈 Enter Year Level: ", officers[i].yearLevel);
         }
-        enterPrompt("🎖️ Enter Position  : ", officers[i].position);
+        enterPrompt("🎖️ Enter Position: ", officers[i].position);
         officers[i].passcode = createPasscode();
 
-        // pointer usage — write via pointer arithmetic
         appendToCSV("officers.csv", OFFICER, nullptr, 0, officers, i, nullptr, 0);
         officerCount++;
 
@@ -547,7 +540,7 @@ void createAccount(int role,
         cout << "-----------------------------------------------------------\n\n";
 
         int i = facultyCount;
-        enterPrompt("🆔 Enter ID  : ", faculty[i].ID);
+        enterPrompt("🆔 Enter ID: ", faculty[i].ID);
         enterPrompt("👤 Enter Name: ", faculty[i].name);
         faculty[i].passcode = createPasscode();
 
@@ -564,29 +557,27 @@ string createPasscode(){
     cout << "-----------------------------------------------------------\n\n";
 
     string passcode = "";
-    enterPrompt("🔑 Enter passcode   : ", passcode);
+    enterPrompt("🔑 Enter passcode: ", passcode);
     while(passcode.length() < 8){
         cout << "\n[!] Must be 8 or more characters.\n";
-        enterPrompt("\n🔑 Enter passcode   : ", passcode);
+        enterPrompt("\n🔑 Enter passcode: ", passcode);
     }
     string confirm = "";
-    enterPrompt("🔄 Confirm passcode : ", confirm);
+    enterPrompt("🔄 Confirm passcode: ", confirm);
     while(confirm != passcode){
         cout << "\n[!] Passcodes do not match. Try again.\n";
-        enterPrompt("\n🔄 Confirm passcode : ", confirm);
+        enterPrompt("\n🔄 Confirm passcode: ", confirm);
     }
     cout << "\n[🔒] Passcode created.\n";
     return passcode;
 }
 
-void login(int role,
-          Student* students, int studentCount,
-          Officer* officers, int officerCount,
-          Faculty* faculty,  int facultyCount,
-          int& accIndex, bool& isLoggedIn){
+void login(int role, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty,  int facultyCount,
+           int& accIndex, bool& isLoggedIn){
 
     cls();
     displayHeader();
+
     cout << "\n============== >>> Login to your account <<< ==============\n";
 
     string roleLabel = (role == STUDENT) ? "Student" :
@@ -602,12 +593,22 @@ void login(int role,
                    (role == OFFICER) ? officerCount : facultyCount;
 
     while(!idFound){
-        enterPrompt("🪪 Enter ID      : ", id);
+        enterPrompt("🪪 Enter ID: ", id);
         for(int j = 0; j < maxCount; j++){
-            if(role == STUDENT && students[j].ID == id){ idFound = true; accIndex = j; break; }
-            if(role == OFFICER && officers[j].ID == id){ idFound = true; accIndex = j; break; }
-            if(role == FACULTY && faculty[j].ID  == id){ idFound = true; accIndex = j; break; }
+            if(role == STUDENT && students[j].ID == id){
+                idFound = true; accIndex = j;
+                break;
+            }
+            if(role == OFFICER && officers[j].ID == id){
+                idFound = true; accIndex = j;
+                break;
+            }
+            if(role == FACULTY && faculty[j].ID  == id){
+                idFound = true; accIndex = j;
+                break;
+            }
         }
+
         if(idpassNotFound(idFound, attempt, "[!] ID not found. Try again.\n")){
             if(role == STUDENT){
                 cout << "\n-----------------------------------------------------------\n";
@@ -628,14 +629,15 @@ void login(int role,
         enterPrompt("🔑 Enter passcode: ", pass);
 
         string storedPass = (role == STUDENT) ? students[accIndex].passcode :
-                            (role == OFFICER) ? officers[accIndex].passcode :
-                                                faculty[accIndex].passcode;
+                            (role == OFFICER) ? officers[accIndex].passcode : faculty[accIndex].passcode;
 
-        if(storedPass == pass) passFound = true;
+        if(storedPass == pass)
+            passFound = true;
 
         if(idpassNotFound(passFound, attempt, "[!] Wrong passcode.\n")){
             // reset passcode
             string newPass = createPasscode();
+
             if(role == STUDENT){
                 students[accIndex].passcode = newPass;
                 saveStudentsCSV(students, studentCount);
@@ -649,12 +651,13 @@ void login(int role,
                 saveFacultyCSV(faculty, facultyCount);
                 loadFaculty(faculty, facultyCount);
             }
+
             attempt = 0;
             cout << "\n[i] Passcode reset. Please log in with your new passcode.\n";
         }
     }
 
-    cout << "\n[✔] Login Successful!\n";
+    cout << "\n[✔ ] Login Successful!\n";
     isLoggedIn = true;
     pauseScreen();
 }
@@ -681,22 +684,23 @@ bool idpassNotFound(bool& var, int& attempt, const string& displayMessage){
     return false;
 }
 
-// ═══════════════════════════════════════════
-//  FILE HANDLING
-// ═══════════════════════════════════════════
 void loadStudents(Student* s, int& count){
     ifstream file("students.csv");
     count = 0;
-    if(!file.is_open()) return;
+
+    if(!file.is_open())
+        return;
+
     string line;
     if(getline(file, line)){
         while(getline(file, line) && count < MAX_STUDENT){
             stringstream ss(line);
             string yr;
-            getline(ss, s[count].ID,       ',');
-            getline(ss, s[count].name,     ',');
-            getline(ss, s[count].program,  ',');
-            getline(ss, yr,                ',');
+
+            getline(ss, s[count].ID, ',');
+            getline(ss, s[count].name, ',');
+            getline(ss, s[count].program, ',');
+            getline(ss, yr, ',');
             getline(ss, s[count].passcode);
             s[count].yearLevel = yr.empty() ? 0 : atoi(yr.c_str());
             count++;
@@ -708,16 +712,20 @@ void loadStudents(Student* s, int& count){
 void loadOfficers(Officer* o, int& count){
     ifstream file("officers.csv");
     count = 0;
-    if(!file.is_open()) return;
+
+    if(!file.is_open())
+        return;
+
     string line;
     if(getline(file, line)){
         while(getline(file, line) && count < MAX_OFFICER){
             stringstream ss(line);
             string yr;
-            getline(ss, o[count].ID,       ',');
-            getline(ss, o[count].name,     ',');
-            getline(ss, o[count].program,  ',');
-            getline(ss, yr,                ',');
+
+            getline(ss, o[count].ID, ',');
+            getline(ss, o[count].name, ',');
+            getline(ss, o[count].program, ',');
+            getline(ss, yr, ',');
             getline(ss, o[count].position, ',');
             getline(ss, o[count].passcode);
             o[count].yearLevel = yr.empty() ? 0 : atoi(yr.c_str());
@@ -730,13 +738,17 @@ void loadOfficers(Officer* o, int& count){
 void loadFaculty(Faculty* f, int& count){
     ifstream file("faculty.csv");
     count = 0;
-    if(!file.is_open()) return;
+
+    if(!file.is_open())
+        return;
+
     string line;
     if(getline(file, line)){
         while(getline(file, line) && count < MAX_FACULTY){
             stringstream ss(line);
-            getline(ss, f[count].ID,       ',');
-            getline(ss, f[count].name,     ',');
+
+            getline(ss, f[count].ID, ',');
+            getline(ss, f[count].name, ',');
             getline(ss, f[count].passcode);
             count++;
         }
@@ -746,58 +758,71 @@ void loadFaculty(Faculty* f, int& count){
 
 void saveStudentsCSV(Student* s, int count){
     ofstream file("students.csv", ios::trunc);
-    if(!file.is_open()) return;
+
+    if(!file.is_open())
+        return;
+
     file << "ID,Name,Program,Year Level,Passcode\n";
+
     for(int i = 0; i < count; i++)
-        file << s[i].ID << ',' << s[i].name << ',' << s[i].program << ','
-             << s[i].yearLevel << ',' << s[i].passcode << "\n";
+        file << s[i].ID << ',' << s[i].name << ',' << s[i].program << ',' << s[i].yearLevel << ',' << s[i].passcode << "\n";
+
     file.close();
 }
 
 void saveOfficersCSV(Officer* o, int count){
     ofstream file("officers.csv", ios::trunc);
-    if(!file.is_open()) return;
+
+    if(!file.is_open())
+        return;
+
     file << "ID,Name,Program,Year Level,Position,Passcode\n";
+
     for(int i = 0; i < count; i++)
-        file << o[i].ID << ',' << o[i].name << ',' << o[i].program << ','
-             << o[i].yearLevel << ',' << o[i].position << ',' << o[i].passcode << "\n";
+        file << o[i].ID << ',' << o[i].name << ',' << o[i].program << ',' << o[i].yearLevel << ',' << o[i].position << ',' << o[i].passcode << "\n";
+
     file.close();
 }
 
 void saveFacultyCSV(Faculty* f, int count){
     ofstream file("faculty.csv", ios::trunc);
-    if(!file.is_open()) return;
+
+    if(!file.is_open())
+        return;
+
     file << "ID,Name,Passcode\n";
+
     for(int i = 0; i < count; i++)
         file << f[i].ID << ',' << f[i].name << ',' << f[i].passcode << "\n";
+
     file.close();
 }
 
-// append a single record (used right after createAccount)
-void appendToCSV(const string& file, int role,
-          Student* s,  int si,
-          Officer* o,  int oi,
-          Faculty* f,  int fi){
-
+void appendToCSV(const string& file, int role, Student* s,  int si, Officer* o,  int oi, Faculty* f,  int fi){
     ifstream check(file);
     bool empty = (check.peek() == ifstream::traits_type::eof());
     check.close();
 
     ofstream out(file, ios::app);
-    if(!out.is_open()){ cout << "\n[!] Could not open " << file << "\n"; return; }
+
+    if(!out.is_open()){
+        cout << "\n[!] Could not open " << file << "\n";
+        return;
+    }
 
     if(empty){
-        if(role == STUDENT)  out << "ID,Name,Program,Year Level,Passcode\n";
-        if(role == OFFICER)  out << "ID,Name,Program,Year Level,Position,Passcode\n";
-        if(role == FACULTY)  out << "ID,Name,Passcode\n";
+        if(role == STUDENT)
+            out << "ID,Name,Program,Year Level,Passcode\n";
+        if(role == OFFICER)
+            out << "ID,Name,Program,Year Level,Position,Passcode\n";
+        if(role == FACULTY)
+            out << "ID,Name,Passcode\n";
     }
 
     if(role == STUDENT && s)
-        out << s[si].ID << ',' << s[si].name << ',' << s[si].program << ','
-            << s[si].yearLevel << ',' << s[si].passcode << "\n";
+        out << s[si].ID << ',' << s[si].name << ',' << s[si].program << ',' << s[si].yearLevel << ',' << s[si].passcode << "\n";
     if(role == OFFICER && o)
-        out << o[oi].ID << ',' << o[oi].name << ',' << o[oi].program << ','
-            << o[oi].yearLevel << ',' << o[oi].position << ',' << o[oi].passcode << "\n";
+        out << o[oi].ID << ',' << o[oi].name << ',' << o[oi].program << ',' << o[oi].yearLevel << ',' << o[oi].position << ',' << o[oi].passcode << "\n";
     if(role == FACULTY && f)
         out << f[fi].ID << ',' << f[fi].name << ',' << f[fi].passcode << "\n";
 
@@ -811,27 +836,34 @@ void savePendingStudent(Student& s){
     check.close();
 
     ofstream out("pending_students.csv", ios::app);
+
     if(out.is_open()){
-        if(empty) out << "ID,Name,Program,Year Level,Passcode\n";
-        out << s.ID << ',' << s.name << ',' << s.program << ','
-            << s.yearLevel << ',' << s.passcode << "\n";
+        if(empty)
+            out << "ID,Name,Program,Year Level,Passcode\n";
+
+        out << s.ID << ',' << s.name << ',' << s.program << ',' << s.yearLevel << ',' << s.passcode << "\n";
     }
+
     out.close();
 }
 
 void loadPendingStudents(Student* pending, int& count){
     ifstream file("pending_students.csv");
     count = 0;
-    if(!file.is_open()) return;
+
+    if(!file.is_open())
+        return;
+
     string line;
     if(getline(file, line)){
         while(getline(file, line) && count < MAX_PENDING){
             stringstream ss(line);
             string yr;
-            getline(ss, pending[count].ID,      ',');
-            getline(ss, pending[count].name,    ',');
+
+            getline(ss, pending[count].ID, ',');
+            getline(ss, pending[count].name, ',');
             getline(ss, pending[count].program, ',');
-            getline(ss, yr,                     ',');
+            getline(ss, yr, ',');
             getline(ss, pending[count].passcode);
             pending[count].yearLevel = yr.empty() ? 0 : atoi(yr.c_str());
             count++;
@@ -842,31 +874,40 @@ void loadPendingStudents(Student* pending, int& count){
 
 void updatePendingCSV(Student* pending, int count){
     ofstream file("pending_students.csv", ios::trunc);
-    if(!file.is_open()) return;
+
+    if(!file.is_open())
+        return;
+
     file << "ID,Name,Program,Year Level,Passcode\n";
+
     for(int i = 0; i < count; i++)
-        file << pending[i].ID << ',' << pending[i].name << ','
-             << pending[i].program << ',' << pending[i].yearLevel << ','
-             << pending[i].passcode << "\n";
+        file << pending[i].ID << ',' << pending[i].name << ',' << pending[i].program << ',' << pending[i].yearLevel << ',' << pending[i].passcode << "\n";
+
     file.close();
 }
 
 int getPendingRequestCount(){
     Student temp[MAX_PENDING];
     int count = 0;
+
     loadPendingStudents(temp, count);
+
     return count;
 }
 
 void loadAnnouncements(Announcement* a, int& count){
     ifstream file("announcements.txt");
     count = 0;
-    if(!file.is_open()) return;
+
+    if(!file.is_open())
+        return;
+
     string line;
     while(getline(file, line) && count < MAX_ANNOUNCE){
         if(line == "---"){
             Announcement x;
             string idStr, pinStr, urgStr;
+
             getline(file, idStr);
             getline(file, x.title);
             getline(file, x.content);
@@ -877,6 +918,7 @@ void loadAnnouncements(Announcement* a, int& count){
             getline(file, x.rejectionReason);
             getline(file, pinStr);
             getline(file, urgStr);
+
             if(!idStr.empty()){
                 x.id        = atoi(idStr.c_str());
                 x.isPinned  = (pinStr == "1");
@@ -890,16 +932,21 @@ void loadAnnouncements(Announcement* a, int& count){
 
 void saveAllAnnouncements(Announcement* a, int count){
     ofstream file("announcements.txt", ios::trunc);
-    if(!file.is_open()){ cout << "\n[!] Could not open announcements.txt\n"; return; }
+
+    if(!file.is_open()){
+        cout << "\n[!] Could not open announcements.txt\n";
+        return;
+    }
+
     for(int i = 0; i < count; i++){
         file << "---\n"
-             << a[i].id              << "\n"
-             << a[i].title           << "\n"
-             << a[i].content         << "\n"
-             << a[i].category        << "\n"
-             << a[i].date            << "\n"
-             << a[i].postedBy        << "\n"
-             << a[i].status          << "\n"
+             << a[i].id << "\n"
+             << a[i].title << "\n"
+             << a[i].content << "\n"
+             << a[i].category << "\n"
+             << a[i].date << "\n"
+             << a[i].postedBy << "\n"
+             << a[i].status << "\n"
              << a[i].rejectionReason << "\n"
              << (a[i].isPinned ? 1 : 0) << "\n"
              << (a[i].isUrgent ? 1 : 0) << "\n";
@@ -910,12 +957,16 @@ void saveAllAnnouncements(Announcement* a, int count){
 void loadActivities(Activity* a, int& count){
     ifstream file("activities.txt");
     count = 0;
-    if(!file.is_open()) return;
+
+    if(!file.is_open())
+        return;
+
     string line;
     while(getline(file, line) && count < MAX_ACTIVITY){
         if(line == "---"){
             Activity x;
             string idStr;
+
             getline(file, idStr);
             getline(file, x.name);
             getline(file, x.description);
@@ -932,17 +983,22 @@ void loadActivities(Activity* a, int& count){
 
 void saveAllActivities(Activity* a, int count){
     ofstream file("activities.txt", ios::trunc);
-    if(!file.is_open()){ cout << "\n[!] Could not open activities.txt\n"; return; }
+
+    if(!file.is_open()){
+        cout << "\n[!] Could not open activities.txt\n";
+        return;
+    }
+
     for(int i = 0; i < count; i++){
         file << "---\n"
-             << a[i].id           << "\n"
-             << a[i].name         << "\n"
-             << a[i].description  << "\n"
-             << a[i].date         << "\n"
-             << a[i].time         << "\n"
-             << a[i].location     << "\n"
+             << a[i].id << "\n";
+             << a[i].name << "\n"
+             << a[i].description << "\n"
+             << a[i].date << "\n"
+             << a[i].time << "\n"
+             << a[i].location << "\n"
              << a[i].participants << "\n"
-             << a[i].status       << "\n";
+             << a[i].status << "\n";
     }
     file.close();
 }
@@ -950,12 +1006,16 @@ void saveAllActivities(Activity* a, int count){
 void loadFeedbacks(Feedback* fb, int& count){
     ifstream file("feedback.txt");
     count = 0;
-    if(!file.is_open()) return;
+
+    if(!file.is_open())
+        return;
+
     string line;
     while(getline(file, line) && count < MAX_FEEDBACK){
         if(line == "---"){
             Feedback x;
             string idStr;
+
             getline(file, idStr);
             getline(file, x.studentID);
             getline(file, x.recipient);
@@ -963,7 +1023,10 @@ void loadFeedbacks(Feedback* fb, int& count){
             getline(file, x.content);
             getline(file, x.date);
             getline(file, x.status);
-            if(!idStr.empty()){ x.id = atoi(idStr.c_str()); fb[count++] = x; }
+            if(!idStr.empty()){
+                x.id = atoi(idStr.c_str());
+                fb[count++] = x;
+            }
         }
     }
     file.close();
@@ -971,16 +1034,21 @@ void loadFeedbacks(Feedback* fb, int& count){
 
 void saveAllFeedbacks(Feedback* fb, int count){
     ofstream file("feedback.txt", ios::trunc);
-    if(!file.is_open()){ cout << "\n[!] Could not open feedback.txt\n"; return; }
+
+    if(!file.is_open()){
+        cout << "\n[!] Could not open feedback.txt\n";
+        return;
+    }
+
     for(int i = 0; i < count; i++){
         file << "---\n"
-             << fb[i].id        << "\n"
+             << fb[i].id << "\n"
              << fb[i].studentID << "\n"
              << fb[i].recipient << "\n"
-             << fb[i].category  << "\n"
-             << fb[i].content   << "\n"
-             << fb[i].date      << "\n"
-             << fb[i].status    << "\n";
+             << fb[i].category << "\n"
+             << fb[i].content << "\n"
+             << fb[i].date << "\n"
+             << fb[i].status << "\n";
     }
     file.close();
 }
@@ -988,24 +1056,31 @@ void saveAllFeedbacks(Feedback* fb, int count){
 // generic next-ID using template
 template<typename T>
 T getMaxID(T* arr, int count){
-    if(count == 0) return (T)0;
+    if(count == 0)
+        return (T)0;
+
     T maxVal = arr[0];
+
     for(int i = 1; i < count; i++)
         if(arr[i] > maxVal) maxVal = arr[i];
+
     return maxVal;
 }
 
 int getNextID(int* ids, int count){
-    if(count == 0) return 1;
+    if(count == 0)
+        return 1;
+
     int* maxPtr = ids;
+
     for(int i = 1; i < count; i++)
         if(*(ids + i) > *maxPtr) maxPtr = ids + i;   // pointer arithmetic
+
     return *maxPtr + 1;
 }
 
-// ═══════════════════════════════════════════
-//  SORTING — Bubble Sort
-// ═══════════════════════════════════════════
+// dito continuation
+
 void sortStudents(Student* s, int count, int method){
     // 1=ID 2=Name 3=Program 4=YearLevel
     for(int i = 0; i < count - 1; i++){
@@ -2370,15 +2445,8 @@ void facultyViewFeedbacks(Feedback* fb, int& fbCount,
     pauseScreen();
 }
 
-// ═══════════════════════════════════════════
-//  STUDENT MODULE
-// ═══════════════════════════════════════════
-void studentDashboard(Student* students, int studentCount, int accIndex,
-                      Announcement* ann, int& annCount,
-                      Activity* act, int& actCount,
-                      Officer* officers, int officerCount,
-                      Faculty* faculty, int facultyCount,
-                      Feedback* fb, int& fbCount){
+void studentDashboard(Student* students, int studentCount, int accIndex, Announcement* ann, int& annCount, Activity* act, int& actCount, Officer* officers, int officerCount,
+                      Faculty* faculty, int facultyCount, Feedback* fb, int& fbCount){
     cls();
 
     int choice = 0;
