@@ -65,6 +65,7 @@ struct Feedback {
     string date;
     string status;
 };
+// 6 structures
 
 const int MAX_STUDENT = 200;
 const int MAX_OFFICER = 30;
@@ -80,15 +81,15 @@ enum Role {
     FACULTY
 };
 
-//_FUNCTIONS DECLARATION
+//_FUNCTIONS DECLARATION w/total of 106
 
-//_header
+//_header = 4
 void displayHeader();
 void displayHeader2();
 void displayHeader3();
 void displayStudentHeader(const string& name);
 
-//_auth
+//_auth = 8
 void auth(Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount, int& role, int& accIndex, bool& isLoggedIn);
 void askRole(int& role);
 void registerAccountHandler(int role, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount);
@@ -98,7 +99,7 @@ string createPasscode();
 void login(int role, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty,  int facultyCount, int& accIndex, bool& isLoggedIn);
 bool idpassNotFound(bool& var, int& attempt, const string& displayMessage);
 
-//_file_handling
+//_file_handling = 18
 void loadStudents(Student* s, int& count);
 void loadOfficers(Officer* o, int& count);
 void loadFaculty(Faculty* f, int& count);
@@ -118,13 +119,13 @@ void loadFeedbacks(Feedback* fb, int& count);
 void saveAllFeedbacks(Feedback* fb, int count);
 int getNextID(int* ids, int count);
 
-//_sorting (Bubble Sort)
+//_sorting (Bubble Sort) = 5
 void sortStudents(Student* s, int count, int method);
 void sortOfficers(Officer* o, int count, int method);
 void sortActivities(Activity* a, int count, int method);
 void sortAnnouncements(Announcement* a, int count);
 
-//_searching
+//_searching = 7
 int searchByID(Student* s, int count, const string& id);  // Binary
 int searchByName(Student* s, int count, const string& name);  // Sequential
 int searchOfficerByName(Officer* o, int count, const string& name);
@@ -133,59 +134,59 @@ int searchActivityByID(Activity* a, int count, int id);  // Binary
 int searchAnnouncementByID(Announcement* a, int count, int id);
 void searchActivityLinear(Activity* a, int count, const string& query, int* results, int& rCount);
 
-//_bulletin board - 2D Array
+//_bulletin board - 2D Array = 5
 void buildAnnouncementTable(Announcement* a, int count, string table[][5], int& rows);
 void buildActivityTable(Activity* a, int count, string table[][6], int& rows);
 void displayCounterUpdates(int studentCount, int pendingCount, int annCount, int actCount);
 int getApprovedAnnCount(Announcement* a, int count);
 int getUpcomingActCount(Activity* a, int count);
 
-//_template function
+//_template function = 1
 template<typename T>
 T getMaxID(T* arr, int count);  // returns max id field
 
-//_dynamic memory allocation | pointer to poiter
+//_dynamic memory allocation | pointer to poiter = 1 
 Announcement** buildPinnedFirst(Announcement* a, int count, int& outCount);
 
-//_sorting - bubble sort
+//_sorting - bubble sort = 2
 void sortStudents(Student* s, int count, int method);
 void sortOfficers(Officer* o, int count, int method);
 
-//_officer module
+//_officer module = 2
 void officerMenu();
 void officerSwitch(int choice, Student* students, int& studentCount, Announcement* ann, int& annCount, Activity* act, int& actCount, Officer* officers, int officerCount,
                    int accIndex, Feedback* fb, int& fbCount);  // officer module handler - handles the main officer switch
-//--member management functoins
+//--member management functoins = 4
 void memberManagement(Student* students, int& studentCount);
 void approveStudentRequests(Student* students, int& studentCount);
 void viewMembers(Student* students, int studentCount);
 void removeMember(Student* students, int& studentCount);
-//--announcement manfaement functions
+//--announcement manfaement functions = 5
 void announcementManagement(Announcement* ann, int& annCount, const string& officerName);
 void proposeAnnouncement(Announcement* ann, int& annCount, const string& officerName);
 void editAnnouncement(Announcement* ann, int annCount);
 void removeAnnouncement(Announcement* ann, int& annCount);
 void pinUrgentAnnouncement(Announcement* ann, int annCount);
-//--announcement display helpers
+//--announcement display helpers = 2
 void displayOneAnnouncement(Announcement& a);
 void displayAllAnn(Announcement* a, int count, const string& filter);
-//--activuty management functions
+//--activuty management functions = 5
 void activityManagement(Activity* act, int& actCount);
 void addActivity(Activity* act, int& actCount);
 void viewActivities(Activity* act, int& actCount);
 void updateActivity(Activity* act, int actCount);
 void deleteActivity(Activity* act, int& actCount);
-//--activity display helpers
+//--activity display helpers = 3
 void displayOneActivity(Activity& a);
 void displayAllAct(Activity* a, int count);
 void displayBulletinBoard(Announcement* ann, int annCount, Activity* act, int actCount, int role);
-//--feedbacks and cocnerns functions
+//--feedbacks and cocnerns functions = 4
 void officerViewFeedbacks(Feedback* fb, int& fbCount, Officer* officers, int accIndex,Student* students, int studentCount);
 void displayCounterUpdates(int studentCount, int pendingCount, int annCount, int actCount);
 int getApprovedAnnCount(Announcement* a, int count);
 int getUpcomingActCount(Activity* a, int count);
 
-//_faculty module
+//_faculty module = 6
 void facultyMenu();
 void facultySwitch(int choice, Announcement* ann, int& annCount, Student* students, int studentCount, Officer* officers, int officerCount, Feedback* fb, int& fbCount,
                    Faculty* faculty, int facultyCount, int accIndex);  // faculty module handler - handles the main faculty switch
@@ -194,7 +195,7 @@ void reviewPendingAnn(Announcement* ann, int& annCount);
 void viewOfficersAndMembers(Student* students, int studentCount, Officer* officers, int officerCount);
 void facultyViewFeedbacks(Feedback* fb, int& fbCount, Faculty* faculty, int accIndex,  Student* students, int studentCount);
 
-//_student module
+//_student module = 6
 void studentDashboard(Student* students, int studentCount, int accIndex, Announcement* ann, int& annCount, Activity* act, int& actCount, Officer* officers,
                       int officerCount, Faculty* faculty, int facultyCount, Feedback* fb, int& fbCount);  // student module handler - handles the main student switch
 void studentMenu();
@@ -202,17 +203,17 @@ void viewAnnouncements(Announcement* ann, int& annCount);
 void studentViewActivities(Activity* act, int& actCount);
 void studentViewFaculty(Faculty* faculty, int& facultyCount);
 void studentViewOfficers(Officer* officers, int officerCount);
-//--feedbacks and concers
+//--feedbacks and concers = 3
 void feedbacksAndConcerns(Feedback* fb, int& fbCount, int accIndex, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty, int facultyCount);
 void submitFeedback(Feedback* fb, int& fbCount, int accIndex, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty, int facultyCount);
 void viewMyFeedbacks(Feedback* fb, int fbCount, int accIndex, Student* students, int studentCount);
-//--account management
+//--account management = 4
 void accountManagement(Student* students, int& studentCount, int accIndex);
 void viewMyInfo(Student* students, int accIndex);
 void editMyInfo(Student* students, int& studentCount, int accIndex);
 void changePasscode(Student* students, int& studentCount, int accIndex);
 
-//_helpers
+//_helpers = 10
 void pauseScreen();
 void cls();
 void enterPrompt(const string& prompt, string& val);
