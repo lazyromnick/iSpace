@@ -571,19 +571,19 @@ string createPasscode(){
     cout << "\n[🔒] Passcode created.\n";
     return passcode;
 
-     pauseScreen();
     //pauseScreen();
 }
 
 void login(int role, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty,  int facultyCount,
            int& accIndex, bool& isLoggedIn){
-    //cls();
+    displayHeader();
+   // pauseScreen();
+    cls();
     displayHeader();
 
     cout << "\n============== >>> Login to your account <<< ==============\n";
 
-    string roleLabel = (role == STUDENT) ? "Student" :
-                       (role == OFFICER) ? "Officer" : "Faculty";
+    string roleLabel = (role == STUDENT) ? "Student" : (role == OFFICER) ? "Officer" : "Faculty";
     cout << "\n                   ==> Role: " << roleLabel << " <==\n\n";
 
     string id = "", pass = "";
@@ -1334,7 +1334,7 @@ void displayAllAnn(Announcement* a, int count, const string& filter){
     if(filter == "Pending"  || filter == "") show("Pending");
     if(filter == "Rejected" || filter == "") show("Rejected");
 
-    if(!anyShown) cout << "  [!] No announcements to show.\n";
+    if(!anyShown) cout << "\n[!] No announcements to show.\n";
 }
 
 void displayOneActivity(Activity& a){
@@ -1362,9 +1362,9 @@ void displayOneActivity(Activity& a){
 }
 
 void displayAllAct(Activity* a, int count){
-    cout << "\n" << string(59,'=') << "\n";
-    cout << "                    📅 ACTIVITIES LIST 📅";
-    cout << "\n" << string(59,'=') << "\n";
+   // cout << "\n" << string(59,'=') << "\n";
+    cout << "\n                    📅 ACTIVITIES LIST 📅\n\n";
+   // cout << "\n" << string(59,'=') << "\n";
     cout << left << setw(6) << "ID" << setw(22) << "Name"
          << setw(12) << "Date" << setw(8) << "Time" << "Location\n";
     cout << string(59,'=') << "\n";
@@ -1380,9 +1380,9 @@ void displayAllAct(Activity* a, int count){
 
 void displayBulletinBoard(Announcement* ann, int annCount,
                           Activity* act, int actCount, int role){
-    cout << "\n\n" << string(59, '=') << "\n";
-    cout <<"               >>> 📋 BULLETIN BOARD 📋 <<< \n";
-    cout << string(59, '=') << "\n";
+    //cout << "\n\n" << string(59, '=') << "\n";
+    cout << "\n\n" <<"                >>> 📋 BULLETIN BOARD 📋 <<< \n";
+   // cout << string(59, '=') << "\n";
 
     //_Announcement
     cout << "\n📢 ANNOUNCEMENTS\n";
@@ -1590,7 +1590,7 @@ void viewMembers(Student* students, int studentCount){
         displayHeader2();
         loadStudents(students, studentCount);
 
-        cout << "\n🎓 MEMBERS LIST\n";
+        cout << "\n                      🎓 MEMBERS LIST\n\n";
         cout << string(59, '-') << "\n";
         cout << left << setw(17) << "ID" << setw(25) << "Name" << setw(11) << "Program" << "Year";
         cout << "\n" << string(59, '-') << "\n";
@@ -1660,7 +1660,7 @@ void removeMember(Student* students, int& studentCount){
     enterPrompt("Confirm removal? (Y/N): ", confirm);
 
     if(confirm == 'Y' || confirm == 'y'){
-        // i = member index, loop starting from member's index then assign the value 
+        // i = member index, loop starting from member's index then assign the value
         // stored on the next index on member's index to overwrite the data stored on it
         for(int i = idx; i < studentCount - 1; i++){
             students[i] = students[i+1];
@@ -1819,7 +1819,12 @@ void editAnnouncement(Announcement* ann, int annCount){
         cout << "\n[!] ID not found or announcement is already approved.\n";
         pauseScreen(); return;
     }
+    pauseScreen();
+    cls();
+    displayHeader2();
+    //
 
+    //cout << "\n✏️ EDIT ANNOUNCEMENT\n"
     cout << "\nEdit:\n[1] Title\n[2] Content\n[3] Category\n";
     int editChoice;
     enterPrompt("Choose: ", editChoice);
@@ -1847,6 +1852,10 @@ void removeAnnouncement(Announcement* ann, int& annCount){
     int found = searchAnnouncementByID(ann, annCount, targetID);
     if(found == -1){ cout << "\n[!] Announcement ID not found.\n"; pauseScreen(); return; }
 
+    pauseScreen();
+    system("cls");
+    displayHeader2();
+    cout << "\n                 📢 ANNOUNCEMENTS BOARD 📢\n";
     displayOneAnnouncement(ann[found]);
     char confirm;
     cout << "\n--------------------------------------------------------------------\n";
@@ -1996,7 +2005,11 @@ void updateActivity(Activity* act, int actCount){
 
     int found = searchActivityByID(act, actCount, targetID);
     if(found == -1){ cout << "\n[!] Activity not found.\n"; pauseScreen(); return; }
-
+    pauseScreen();
+    system("cls");
+    displayHeader2();
+    cout << "\n                    📅 ACTIVITIES LIST 📅\n";
+    cout << "\n📝FULL DETAILS\n";
     displayOneActivity(act[found]);
     cout << "\n[1] Name  [2] Description  [3] Date  [4] Time  [5] Location  [6] Participants  [7] Status\n";
     int editChoice;
@@ -2048,6 +2061,11 @@ void deleteActivity(Activity* act, int& actCount){
     int found = searchActivityByID(act, actCount, targetID);
     if(found == -1){ cout << "\n[!] Activity not found.\n"; pauseScreen(); return; }
 
+    pauseScreen();
+    system("cls");
+    displayHeader2();
+    cout << "\n                    📅 ACTIVITIES LIST 📅\n";
+    cout << "\n📝FULL DETAILS\n";
     displayOneActivity(act[found]);
     char confirm;
     cout << "\n----------------------------------------------------------\n";
@@ -2090,7 +2108,7 @@ void viewFeedbacks(Feedback* fb, int& fbCount, int role, int accIndex, Officer* 
     cout << "\n" << right << setw(49) << "📩 Feedbacks & Concerns 📩\n\n";
     cout << left << setw(6) << "ID" << setw(20) << "Sender"
          << setw(13) << "Category" << setw(12) << "Date" << "Status\n";
-    cout << string(62, '-') << "\n";
+    cout << string(59, '-') << "\n";
 
     for(int i = 0; i < mCount; i++){
         Feedback* f = &fb[matches[i]];  // pointer
@@ -2129,7 +2147,11 @@ void viewFeedbacks(Feedback* fb, int& fbCount, int role, int accIndex, Officer* 
                         if(students[j].ID == f->studentID){ senderName = students[j].name; break; }
                     }
                 }
-
+                pauseScreen();
+                cls();
+                displayHeader2();
+                cout << "\n" << right << setw(49) << "📩 Feedbacks & Concerns 📩\n\n";
+                cout << "📩 FULL DETAILS\n";
                 cout << "\n----------------------------------------------------------\n";
                 cout << "  ID        : " << f->id         << "\n";
                 cout << "  Sender    : " << senderName    << "\n";
@@ -2150,6 +2172,7 @@ void viewFeedbacks(Feedback* fb, int& fbCount, int role, int accIndex, Officer* 
         if(!found) cout << "\n[!] Feedback not found.\n";
     }
     pauseScreen();
+    cls();
 }
 
 /** FACULTY MODULE **/
@@ -2398,13 +2421,15 @@ void studentMenu(){
 }
 
 void viewAnnouncements(Announcement* ann, int& annCount){
-    cls(); displayHeader();
+    cls();
+    displayHeader();
     loadAnnouncements(ann, annCount);
 
     // only approved
     bool any = false;
     for(int i = 0; i < annCount; i++)
-        if(ann[i].status == "Approved" || ann[i].isPinned || ann[i].isUrgent){ any = true; break; }
+        if(ann[i].status == "Approved" || ann[i].isPinned || ann[i].isUrgent)
+            { any = true; break; }
 
     if(!any){
         cout << "\n[!] No announcements available.\n";
@@ -2415,8 +2440,8 @@ void viewAnnouncements(Announcement* ann, int& annCount){
     int outCount = 0;
     Announcement** sorted = buildPinnedFirst(ann, annCount, outCount);
 
-    cout << right << setw(37) << "\n📢 ANNOUNCEMENTS 📢\n\n";
-    cout << string(59, '-') << "\n";
+    cout <<"\n" << right << setw(44) << "📢 ANNOUNCEMENTS 📢" << "\n\n";
+   // cout << string(59, '-') << "\n";
     cout << left << setw(5) << "ID" << setw(31) << "Title" << setw(14) << "Category" << "Date\n";
     cout << string(59, '-') << "\n";
     for(int i = 0; i < outCount; i++){
@@ -2439,6 +2464,11 @@ void viewAnnouncements(Announcement* ann, int& annCount){
         if(idx == -1 || (ann[idx].status != "Approved" && !ann[idx].isPinned && !ann[idx].isUrgent)){
             cout << "\n[!] Announcement not found or not available.\n";
         } else {
+            pauseScreen();
+            system("cls");
+            displayHeader();
+            cout <<"\n" << right << setw(44) << "📢 ANNOUNCEMENTS 📢" << "\n";
+            cout << "\n📝FULL DETAILS\n";
             displayOneAnnouncement(ann[idx]);
         }
     }
@@ -2460,8 +2490,15 @@ void studentViewActivities(Activity* act, int& actCount){
         int aid;
         enterPrompt("\n🆔 Enter Activity ID: ", aid);
         int idx = searchActivityByID(act, actCount, aid);
-        if(idx == -1) cout << "\n[!] Activity not found.\n";
-        else displayOneActivity(act[idx]);
+        if(idx == -1) {
+            cout << "\n[!] Activity not found.\n"; }
+        else {
+            pauseScreen();
+            system("cls");
+            displayHeader();
+            cout << "\n                    📅 ACTIVITIES LIST 📅\n\n";
+            displayOneActivity(act[idx]);
+        }
     }
     pauseScreen();
 }
@@ -2476,13 +2513,13 @@ void studentViewFaculty(Faculty* faculty, int& facultyCount){
         return;
     }
 
-    cout << "\n🧑‍🏫 FACULTY LIST\n";
-    cout << string(40, '-') << "\n";
-    cout << left << setw(17) << "ID" << "Name\n";
-    cout << string(40, '-') << "\n";
+    cout << "\n                      🧑‍🏫 FACULTY LIST\n\n";
+    cout << string(59, '-') << "\n";
+    cout << left << setw(22) << "ID" << "Name\n";
+    cout << string(59, '-') << "\n";
     for(int i = 0; i < facultyCount; i++){
         Faculty* fp = faculty + i;  // pointer arithmetic
-        cout << left << setw(17) << fp->ID << fp->name << "\n";
+        cout << left << setw(22) << fp->ID << fp->name << "\n";
     }
 
     int choice = 0;
@@ -2511,12 +2548,12 @@ void studentViewFaculty(Faculty* faculty, int& facultyCount){
         cls();
         displayHeader();
 
-        cout << "\n  🧑‍🏫 FACULTY LIST\n";
-        cout << string(40, '-') << "\n";
-        cout << left << setw(17) << "ID" << "Name\n";
-        cout << string(40, '-') << "\n";
+        cout << "\n                      🧑‍🏫 FACULTY LIST\n\n";
+        cout << string(59, '-') << "\n";
+        cout << left << setw(35) << "ID" << "Name\n";
+        cout << string(59, '-') << "\n";
         for(int i = 0; i < facultyCount; i++){
-            cout << left << setw(17) << faculty[i].ID << faculty[i].name << "\n";
+            cout << left << setw(35) << faculty[i].ID << faculty[i].name << "\n";
         }
         pauseScreen();
     }
@@ -2529,7 +2566,7 @@ void viewOfficers(Officer* officers, int officerCount){
 
     sortOfficers(officers, officerCount, 2); // sort by name
 
-    cout << "\n🎓 OFFICERS LIST\n";
+    cout << "\n                     🎓OFFICERS LIST\n\n";
     cout << string(59, '-') << "\n";
     cout << left << setw(17) << "ID" << setw(25) << "Name" << "Position";
     cout << "\n" << string(59, '-') << "\n";
@@ -2551,6 +2588,7 @@ void viewOfficers(Officer* officers, int officerCount){
         int idx = searchOfficerByName(officers, officerCount, oname);
         if(idx == -1) cout << "\n[!] Officer not found.\n";
         else {
+            cout << "\n📋RESULT";
             cout << "\n----------------------------------------------------------\n";
             cout << "  ID        : " << officers[idx].ID        << "\n";
             cout << "  Name      : " << officers[idx].name      << "\n";
@@ -2884,6 +2922,15 @@ void landingPage(bool& isLoggedIn){
     } else {
         cls(); displayHeader();
         cout << "\n       Thank you for using iSPACE Portal. Goodbye! 👋\n\n";
+        cout << "\033[94m" << R"(
+                           /\_/\  /\
+                          ( o.o )/ /
+                           > ^ <  /
+                          /     \/
+
+                         |       |
+                        (___)___)
+                        )" << "\033[0m" << endl;
         Sleep(1500);
         isLoggedIn = false;
     }
