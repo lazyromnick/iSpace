@@ -352,12 +352,12 @@ void displayHeader(){
 }
 
 void displayHeader2(){
-    cout << "==========================================================";
-    cout << "\n|" << right << setw(39) << " __✨ iSpace ✨__" << right << setw(21) << "|\n";
-    cout << "|" << right << setw(58) << "|\n";
-    cout << "|" << right << setw(48) << "⚙️ OFFICER'S DASHBOARD 📊 " << right << setw(16) << "|\n";
-    cout << "|" << right << setw(57) << "|";
-    cout << "\n==========================================================\n";
+    cout << "===========================================================";
+    cout << "\n|" << right << setw(39) << " __✨ iSpace ✨__" << right << setw(22) << "|\n";
+    cout << "|" << right << setw(59) << "|\n";
+    cout << "|" << right << setw(48) << "⚙️ OFFICER'S DASHBOARD 📊 " << right << setw(17) << "|\n";
+    cout << "|" << right << setw(58) << "|";
+    cout << "\n===========================================================\n";
 }
 
 void displayHeader3(){
@@ -380,7 +380,7 @@ void displayStudentHeader(const string& name){
     cout << "  " << left << setw(56) << line1 << "\n";
     cout << "  " << line2 << "\n";
     cout << "  " << line3 << "\n";
-    cout << "+--------------------------------------------------------+";
+    cout << "+---------------------------------------------------------+";
 }
 
 string getCurrentDate(){
@@ -1356,35 +1356,33 @@ void displayOneActivity(Activity& a){
 }
 
 void displayAllAct(Activity* a, int count){
-    cout << "\n==========================================================\n";
-    cout << "                 📅 ACTIVITIES LIST 📅\n";
-    cout << "==========================================================\n";
+    cout << "\n" << string(59,'=') << "\n";
+    cout << "                    📅 ACTIVITIES LIST 📅";
+    cout << "\n" << string(59,'=') << "\n";
     cout << left << setw(6) << "ID" << setw(22) << "Name"
-         << setw(13) << "Date" << setw(8) << "Time" << "Location\n";
-    cout << "----------------------------------------------------------\n";
+         << setw(12) << "Date" << setw(8) << "Time" << "Location\n";
+    cout << string(59,'=') << "\n";
     for(int i = 0; i < count; i++){
         string flag = (a[i].status == "Scheduled") ? "📆 " :
                       (a[i].status == "Ongoing")   ? "🔁" : "";
-        cout << left << setw(6)  << a[i].id
-                     << setw(13) << (flag + a[i].name).substr(0, 21)
-                     << setw(13) << a[i].date
-                     << setw(8)  << a[i].time
-                     << a[i].location << "\n";
+        cout << left << setw(6)  << a[i].id << setw(24) << (flag + a[i].name).substr(0, 21)
+                     << setw(12) << a[i].date << setw(8)  << a[i].time << a[i].location << "\n";
     }
-    cout << "----------------------------------------------------------\n";
+
+    cout << string(59,'=') << "\n";
 }
 
 void displayBulletinBoard(Announcement* ann, int annCount,
                           Activity* act, int actCount, int role){
-   // cout << "\n\n─────────────────────────────────────────────────────────\n";
-    cout << "\n\n" <<"               >>> 📋 BULLETIN BOARD 📋 <<< \n";
-   // cout << "─────────────────────────────────────────────────────────\n";
+    cout << "\n\n" << string(59, '=') << "\n";
+    cout <<"               >>> 📋 BULLETIN BOARD 📋 <<< \n";
+    cout << string(59, '=') << "\n";
 
     //_Announcement
     cout << "\n📢 ANNOUNCEMENTS\n";
-    cout << string(57, '-') << "\n";
-    cout << left << setw(32) << "Title" << setw(13) << "Category" << "Date\n";
-    cout << string(57, '-') << "\n";
+    cout << string(59, '-') << "\n";
+    cout << left << setw(32) << " Title" << setw(14) << "Category" << "Date\n";
+    cout << string(59, '-') << "\n";
 
      // Use 2D array + buildPinnedFirst (dynamic) for display
     string annTable[MAX_ANNOUNCE][5];
@@ -1395,34 +1393,35 @@ void displayBulletinBoard(Announcement* ann, int annCount,
         cout << "  No announcements to show.\n";
     } else {
         for(int r = 0; r < annRows; r++){
-            cout << left << setw(33) << annTable[r][1].substr(0, 31) << setw(11) << annTable[r][2] << annTable[r][3] << "\n";
+            cout << left << setw(33) << annTable[r][1].substr(0, 31) << setw(14) << annTable[r][2] << annTable[r][3] << "\n";
         }
     }
 
     // ── Activities ──
     cout << "\n\n📅 UPCOMING ACTIVITIES\n";
-    cout << string(57, '-') << "\n";
-    cout << left << setw(31) << " Title" << setw(10) << "Date" << "Location\n";
-    cout << string(57, '-') << "\n";
+    cout << string(59, '-') << "\n";
+    cout << left << setw(32) << " Title" << setw(14) << "Date" << "Location\n";
+    cout << string(59, '-') << "\n";
 
     string actTable[MAX_ACTIVITY][6];
-    int    actRows = 0;
+    int actRows = 0;
     buildActivityTable(act, actCount, actTable, actRows);
 
     if(actRows == 0){
         cout << "  No activities to show.\n";
     } else {
         for(int r = 0; r < actRows; r++){
-            cout << left << setw(32) << actTable[r][1].substr(0, 29) << setw(14) << actTable[r][2] << actTable[r][4] << "\n";
+            cout << left << setw(34) << actTable[r][1].substr(0, 29) << setw(14) << actTable[r][2] << actTable[r][4] << "\n";
         }
     }
-    cout << "\n─────────────────────────────────────────────────────────\n\n";
+    cout << "\n" << string(59,'=') << "\n";
 }
 
 
 /**  OFFICER MODULE **/
 
 void officerMenu(){
+    cout << "\n--- MENU ---\n";
     cout << "\n[1] 👥 Member Management";
     cout << "\n[2] 📢 Announcement Management";
     cout << "\n[3] 📅 Activity Management";
@@ -1431,11 +1430,11 @@ void officerMenu(){
 }
 
 void displayCounterUpdates(int studentCount, int pendingCount, int annCount, int actCount){
-    cout << "\n|  \033[1m" << studentCount  << "\033[0m \033[3mTotal Members\033[0m                                       |";
-    cout << "\n|  \033[1m" << pendingCount  << "\033[0m \033[3mPending Account Requests\033[0m                            |";
-    cout << "\n|  \033[1m" << annCount      << "\033[0m \033[3mActive Announcements\033[0m                                |";
-    cout << "\n|  \033[1m" << actCount      << "\033[0m \033[3mUpcoming Activities\033[0m                                 |\n";
-    cout << "==========================================================\n";
+    cout << "\n|  \033[1m" << studentCount  << "\033[0m \033[3mTotal Members\033[0m                                        |";
+    cout << "\n|  \033[1m" << pendingCount  << "\033[0m \033[3mPending Account Requests\033[0m                             |";
+    cout << "\n|  \033[1m" << annCount      << "\033[0m \033[3mActive Announcements\033[0m                                 |";
+    cout << "\n|  \033[1m" << actCount      << "\033[0m \033[3mUpcoming Activities\033[0m                                  |\n";
+    cout << "===========================================================\n";
 }
 
 int getApprovedAnnCount(Announcement* a, int count){
@@ -2114,7 +2113,7 @@ void officerViewFeedbacks(Feedback* fb, int& fbCount,
                          /** FACULTY MODULE **/
 
 void facultyMenu(){
-    cout << "\n" << right << setw(40) << ">>> Role: Faculty <<<\n";
+    cout << "\n--- MENU ---\n";
     cout << "\n[1] 📢 Announcement Management";
     cout << "\n[2] 👥 View Officers and Members";
     cout << "\n[3] 📩 View Feedbacks & Concerns";
@@ -2462,20 +2461,21 @@ void studentDashboard(Student* students, int studentCount, int accIndex, Announc
                                          faculty, facultyCount);
                     break;
             case 6: accountManagement(students, studentCount, accIndex); break;
-            case 0: cout << "\n[i] Logging out. Goodbye!\n"; break;
+            case 7: cout << "\n[i] Logging out. Goodbye!\n"; break;
             default: cout << "\n[!] Invalid choice. Please try again.\n";
         }
-    } while(choice != 0);
+    } while(choice != 7);
 }
 
 void studentMenu(){
-    cout << "[1] 📢 View Announcements";
+    cout << "\n--- MENU ---\n";
+    cout << "\n[1] 📢 View Announcements";
     cout << "\n[2] 📅 View Activities";
     cout << "\n[3] 🧑‍🏫 View Faculty";
     cout << "\n[4] 🎓 View Officers";
     cout << "\n[5] 📩 Feedbacks & Concerns";
     cout << "\n[6] ⚙️ Account Management";
-    cout << "\n[0] 🚪 Log Out\n";
+    cout << "\n[7] 🚪 Log Out\n";
 }
 
 void viewAnnouncements(Announcement* ann, int& annCount){
@@ -2487,15 +2487,19 @@ void viewAnnouncements(Announcement* ann, int& annCount){
     for(int i = 0; i < annCount; i++)
         if(ann[i].status == "Approved" || ann[i].isPinned || ann[i].isUrgent){ any = true; break; }
 
-    if(!any){ cout << "\n[!] No announcements available.\n"; pauseScreen(); return; }
+    if(!any){
+        cout << "\n[!] No announcements available.\n";
+        pauseScreen();
+        return;
+    }
 
     int outCount = 0;
     Announcement** sorted = buildPinnedFirst(ann, annCount, outCount);
 
-    cout << "\n                📢 ANNOUNCEMENTS 📢\n\n";
-    cout << string(58, '-') << "\n";
+    cout << right << setw(37) << "\n📢 ANNOUNCEMENTS 📢\n\n";
+    cout << string(59, '-') << "\n";
     cout << left << setw(5) << "ID" << setw(31) << "Title" << setw(14) << "Category" << "Date\n";
-    cout << string(58, '-') << "\n";
+    cout << string(59, '-') << "\n";
     for(int i = 0; i < outCount; i++){
         string flag = sorted[i]->isUrgent ? "🚨 " :
                       sorted[i]->isPinned ? "📌 " : "   ";
@@ -2503,6 +2507,7 @@ void viewAnnouncements(Announcement* ann, int& annCount){
                      << sorted[i]->date << "\n";
 
     }
+    cout << string(59, '-') << "\n";
     delete[] sorted;
 
     char viewDetail;
@@ -2510,7 +2515,7 @@ void viewAnnouncements(Announcement* ann, int& annCount){
     cin >> viewDetail; cin.ignore();
     if(viewDetail == 'Y' || viewDetail == 'y'){
         int aid;
-        enterPrompt("🆔 Enter Announcement ID: ", aid);
+        enterPrompt("\n🆔 Enter Announcement ID: ", aid);
         int idx = searchAnnouncementByID(ann, annCount, aid);
         if(idx == -1 || (ann[idx].status != "Approved" && !ann[idx].isPinned && !ann[idx].isUrgent)){
             cout << "\n[!] Announcement not found or not available.\n";
@@ -2544,10 +2549,15 @@ void studentViewActivities(Activity* act, int& actCount){
 
 // ── View Faculty — sort by ID or Name instead of specific view ──
 void studentViewFaculty(Faculty* faculty, int& facultyCount){
-    cls(); displayHeader();
-    if(facultyCount == 0){ cout << "\n[!] No faculty records available.\n"; pauseScreen(); return; }
+    cls();
+    displayHeader();
+    if(facultyCount == 0){
+        cout << "\n[!] No faculty records available.\n";
+        pauseScreen();
+        return;
+    }
 
-    cout << "\n  🧑‍🏫 FACULTY LIST\n";
+    cout << "\n🧑‍🏫 FACULTY LIST\n";
     cout << string(40, '-') << "\n";
     cout << left << setw(17) << "ID" << "Name\n";
     cout << string(40, '-') << "\n";
@@ -2558,7 +2568,8 @@ void studentViewFaculty(Faculty* faculty, int& facultyCount){
 
     int choice = 0;
 
-    enterPrompt("\n[1] Sort faculty list  [2] Return to Menu: ", choice);
+    cout << "\n[1] Sort [2] Return to Menu\n";
+    enterPrompt("Choose: ",choice);
 
     if(choice == 'Y' || choice == 'y'){
         cout << "\nSort by: [1] ID  [2] Name\n";
@@ -2600,18 +2611,22 @@ void studentViewOfficers(Officer* officers, int officerCount){
 
     sortOfficers(officers, officerCount, 2); // sort by name
 
-    cout << "\n  🎓 OFFICERS LIST\n";
-    cout << string(80, '-') << "\n";
-    cout << left << setw(17) << "ID" << setw(25) << "Name" << setw(13) << "Program" << setw(12) << "Year" << "Position\n";
-    cout << string(80, '-') << "\n";
+    cout << "\n🎓 OFFICERS LIST\n";
+    cout << string(59, '-') << "\n";
+    cout << left << setw(17) << "ID" << setw(25) << "Name" << "Position";
+    cout << "\n" << string(59, '-') << "\n";
+
     for(int i = 0; i < officerCount; i++){
-        cout << left << setw(17) << officers[i].ID   << setw(25) << officers[i].name << setw(13) << officers[i].program
-               << setw(12) << officers[i].yearLevel << officers[i].position << "\n";
+        cout << left << setw(17) << officers[i].ID  << setw(25) << officers[i].name << "\n";
     }
+
+    cout << string(59, '-') << "\n";
 
     char viewDetail;
     cout << "\nView a specific officer? (Y/N): ";
-    cin >> viewDetail; cin.ignore();
+    cin >> viewDetail;
+    cin.ignore();
+
     if(viewDetail == 'Y' || viewDetail == 'y'){
         string oname;
         enterPrompt("\n🆔 Enter Officer Name: ", oname);
@@ -2955,9 +2970,6 @@ void landingPage(bool& isLoggedIn){
     }
 }
 
-// ═══════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════
 bool isValidDate(const string& date){
     if(date.length() != 10) return false;
     if(date[2] != '/' || date[5] != '/') return false;
