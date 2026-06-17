@@ -445,7 +445,7 @@ void askRole(int& role){
     cout << "\n" << right << setw(42) << "🚀>>> Roles <<<🚀\n";
     cout << right << setw(37) << " ---------------\n";
     SetConsoleOutputCP(CP_UTF8);
-    cout << "\n[1-👩‍🚀] Student \n[2-🧑‍🎓]️ Officer \n[3-🧑‍🏫] Faculty";
+    cout << "\n[1-👩‍🚀] Student \n[2-🧑‍🎓]️Officer \n[3-🧑‍🏫] Faculty";
     enterPrompt("\n\nEnter role: ", role);
 
     while(role < 1 || role > 3){
@@ -473,8 +473,8 @@ void studentRegistration(){
     cls();
     displayHeader();
     SetConsoleOutputCP(CP_UTF8);
-    cout << "\n" << right << setw(49) << "📋 >>> Student Registration <<< 📋\n";
-    cout << "       Fill in your details to request an account.\n";
+    cout << "\n" << right << setw(54) << "📋 >>> Student Registration <<< 📋\n";
+    cout << "           Fill in your details to request an account.\n";
     cout << "\n-----------------------------------------------------------\n";
 
     Student s;
@@ -495,7 +495,7 @@ void studentRegistration(){
     s.passcode = createPasscode();
     savePendingStudent(s);
 
-    cout << "\n[✔] Registration request submitted!\n";
+    cout << "\n[✔ ] Registration request submitted!\n";
     cout << "[i] Your account is pending Officer approval. Come back once notified.\n";
 
     pauseScreen();
@@ -570,12 +570,14 @@ string createPasscode(){
     }
     cout << "\n[🔒] Passcode created.\n";
     return passcode;
+
+     pauseScreen();
+    //pauseScreen();
 }
 
 void login(int role, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty,  int facultyCount,
            int& accIndex, bool& isLoggedIn){
-
-    cls();
+    //cls();
     displayHeader();
 
     cout << "\n============== >>> Login to your account <<< ==============\n";
@@ -826,7 +828,7 @@ void appendToCSV(const string& file, int role, Student* s,  int si, Officer* o, 
     if(role == FACULTY && f)
         out << f[fi].ID << ',' << f[fi].name << ',' << f[fi].passcode << "\n";
 
-    cout << "\n[✔] Information saved.\n";
+    cout << "\n[✔ ] Information saved.\n";
     out.close();
 }
 
@@ -990,15 +992,8 @@ void saveAllActivities(Activity* a, int count){
     }
 
     for(int i = 0; i < count; i++){
-        file << "---\n"
-             << a[i].id << "\n";
-             << a[i].name << "\n"
-             << a[i].description << "\n"
-             << a[i].date << "\n"
-             << a[i].time << "\n"
-             << a[i].location << "\n"
-             << a[i].participants << "\n"
-             << a[i].status << "\n";
+        file << "---\n"<< a[i].id << "\n" << a[i].name << "\n" << a[i].description << "\n" << a[i].date << "\n"
+             << a[i].time << "\n"<< a[i].location << "\n" << a[i].participants << "\n" << a[i].status << "\n";
     }
     file.close();
 }
@@ -1139,9 +1134,8 @@ void sortAnnouncements(Announcement* a, int count){
     }
 }
 
-// ═══════════════════════════════════════════
+
 //  SEARCHING
-// ═══════════════════════════════════════════
 // Binary search by ID (array must be sorted by ID)
 int searchByID(Student* s, int count, const string& id){
     // sort a copy mentally — here we do linear since IDs are strings
@@ -1382,9 +1376,9 @@ void displayAllAct(Activity* a, int count){
 
 void displayBulletinBoard(Announcement* ann, int annCount,
                           Activity* act, int actCount, int role){
-    cout << "\n\n─────────────────────────────────────────────────────────\n";
-    cout << "                    📋 BULLETIN BOARD 📋\n";
-    cout << "─────────────────────────────────────────────────────────\n";
+   // cout << "\n\n─────────────────────────────────────────────────────────\n";
+    cout << "\n\n" <<"               >>> 📋 BULLETIN BOARD 📋 <<< \n";
+   // cout << "─────────────────────────────────────────────────────────\n";
 
     //_Announcement
     cout << "\n📢 ANNOUNCEMENTS\n";
@@ -1407,9 +1401,9 @@ void displayBulletinBoard(Announcement* ann, int annCount,
 
     // ── Activities ──
     cout << "\n\n📅 UPCOMING ACTIVITIES\n";
-    cout << string(54, '-') << "\n";
+    cout << string(57, '-') << "\n";
     cout << left << setw(31) << " Title" << setw(10) << "Date" << "Location\n";
-    cout << string(54, '-') << "\n";
+    cout << string(57, '-') << "\n";
 
     string actTable[MAX_ACTIVITY][6];
     int    actRows = 0;
@@ -1425,9 +1419,9 @@ void displayBulletinBoard(Announcement* ann, int annCount,
     cout << "\n─────────────────────────────────────────────────────────\n\n";
 }
 
-// ═══════════════════════════════════════════
-//  OFFICER MODULE
-// ═══════════════════════════════════════════
+
+/**  OFFICER MODULE **/
+
 void officerMenu(){
     cout << "\n[1] 👥 Member Management";
     cout << "\n[2] 📢 Announcement Management";
@@ -1436,8 +1430,7 @@ void officerMenu(){
     cout << "\n[5] 🚪 Log Out\n";
 }
 
-void displayCounterUpdates(int studentCount, int pendingCount,
-                           int annCount, int actCount){
+void displayCounterUpdates(int studentCount, int pendingCount, int annCount, int actCount){
     cout << "\n|  \033[1m" << studentCount  << "\033[0m \033[3mTotal Members\033[0m                                       |";
     cout << "\n|  \033[1m" << pendingCount  << "\033[0m \033[3mPending Account Requests\033[0m                            |";
     cout << "\n|  \033[1m" << annCount      << "\033[0m \033[3mActive Announcements\033[0m                                |";
@@ -1459,12 +1452,8 @@ int getUpcomingActCount(Activity* a, int count){
     return c;
 }
 
-void officerSwitch(int choice,
-          Student* students, int& studentCount,
-          Announcement* ann, int& annCount,
-          Activity* act, int& actCount,
-          Officer* officers, int officerCount, int accIndex,
-          Feedback* fb, int& fbCount){
+void officerSwitch(int choice, Student* students, int& studentCount, Announcement* ann, int& annCount, Activity* act, int& actCount,
+                  Officer* officers, int officerCount, int accIndex, Feedback* fb, int& fbCount){
     switch(choice){
         case 1: displayHeader2(); memberManagement(students, studentCount); break;
         case 2: displayHeader2();
@@ -1528,7 +1517,7 @@ void approveStudentRequests(Student* students, int& studentCount){
     loadPendingStudents(pending, pendingCount);
 
     if(pendingCount == 0){
-        cout << "\n[✔] No pending account requests.\n";
+        cout << "\n[✔ ] No pending account requests.\n";
         pauseScreen(); return;
     }
 
@@ -1556,13 +1545,13 @@ void approveStudentRequests(Student* students, int& studentCount){
             for(int i = p; i < pendingCount - 1; i++) pending[i] = pending[i+1];
             pendingCount--; p--;
             updatePendingCSV(pending, pendingCount);
-            cout << "\n[✔] Account approved. Student can now log in.\n";
+            cout << "\n[✔ ] Account approved. Student can now log in.\n";
             Sleep(1200);
         } else if(decision == 2){
             for(int i = p; i < pendingCount - 1; i++) pending[i] = pending[i+1];
             pendingCount--; p--;
             updatePendingCSV(pending, pendingCount);
-            cout << "\n[✔] Request rejected and removed.\n";
+            cout << "\n[✔ ] Request rejected and removed.\n";
             Sleep(1200);
         } else {
             cout << "\n[i] Skipped.\n"; Sleep(800);
@@ -1570,7 +1559,7 @@ void approveStudentRequests(Student* students, int& studentCount){
     }
 
     loadStudents(students, studentCount);
-    cout << "\n[✔] Done reviewing all requests.\n";
+    cout << "\n[✔ ] Done reviewing all requests.\n";
     pauseScreen();
 }
 
@@ -1638,7 +1627,7 @@ void removeMember(Student* students, int& studentCount){
         for(int i = idx; i < studentCount - 1; i++) students[i] = students[i+1];
         studentCount--;
         saveStudentsCSV(students, studentCount);
-        cout << "\n[✔] Member removed successfully.\n";
+        cout << "\n[✔ ] Member removed successfully.\n";
     } else {
         cout << "\n[i] Operation cancelled.\n";
     }
@@ -1646,8 +1635,7 @@ void removeMember(Student* students, int& studentCount){
 }
 
 // ── Announcement Management (Officer) ──
-void announcementManagement(Announcement* ann, int& annCount,
-                            const string& officerName){
+void announcementManagement(Announcement* ann, int& annCount, const string& officerName){
     loadAnnouncements(ann, annCount);
     int choice = 0;
 
@@ -1752,10 +1740,10 @@ void proposeAnnouncement(Announcement* ann, int& annCount,
     if(statusChoice == 2){
         n.status   = "Approved";
         n.isUrgent = true;
-        cout << "\n[✔] Announcement marked Urgent and posted immediately.\n";
+        cout << "\n[✔ ] Announcement marked Urgent and posted immediately.\n";
     } else {
         n.status = "Pending";
-        cout << "\n[✔] Announcement submitted! Awaiting faculty approval.\n";
+        cout << "\n[✔ ] Announcement submitted! Awaiting faculty approval.\n";
     }
 
     ann[annCount++] = n;
@@ -1804,7 +1792,7 @@ void editAnnouncement(Announcement* ann, int annCount){
     ann[found].status          = "Pending";
     ann[found].rejectionReason = "";
     saveAllAnnouncements(ann, annCount);
-    cout << "\n[✔] Announcement updated and re-submitted for faculty approval.\n";
+    cout << "\n[✔ ] Announcement updated and re-submitted for faculty approval.\n";
     pauseScreen();
 }
 
@@ -1826,7 +1814,7 @@ void removeAnnouncement(Announcement* ann, int& annCount){
         for(int i = found; i < annCount - 1; i++) ann[i] = ann[i+1];
         annCount--;
         saveAllAnnouncements(ann, annCount);
-        cout << "\n[✔] Announcement removed successfully.\n";
+        cout << "\n[✔ ] Announcement removed successfully.\n";
     } else {
         cout << "\n[i] Operation cancelled.\n";
     }
@@ -1869,7 +1857,7 @@ void pinUrgentAnnouncement(Announcement* ann, int annCount){
     }
 
     saveAllAnnouncements(ann, annCount);
-    cout << "\n[✔] Status updated successfully.\n";
+    cout << "\n[✔ ] Status updated successfully.\n";
     pauseScreen();
 }
 
@@ -1937,7 +1925,7 @@ void addActivity(Activity* act, int& actCount){
 
     act[actCount++] = n;
     saveAllActivities(act, actCount);
-    cout << "\n[✔] Activity added successfully.\n";
+    cout << "\n[✔ ] Activity added successfully.\n";
     pauseScreen();
 }
 
@@ -2004,7 +1992,7 @@ void updateActivity(Activity* act, int actCount){
 
     if(editChoice != 7) act[found].status = "Modified";
     saveAllActivities(act, actCount);
-    cout << "\n[✔] Activity updated successfully.\n";
+    cout << "\n[✔ ] Activity updated successfully.\n";
     pauseScreen();
 }
 
@@ -2027,7 +2015,7 @@ void deleteActivity(Activity* act, int& actCount){
         for(int i = found; i < actCount - 1; i++) act[i] = act[i+1];
         actCount--;
         saveAllActivities(act, actCount);
-        cout << "\n[✔] Activity deleted successfully.\n";
+        cout << "\n[✔ ] Activity deleted successfully.\n";
     } else {
         cout << "\n[i] Operation cancelled.\n";
     }
@@ -2122,9 +2110,9 @@ void officerViewFeedbacks(Feedback* fb, int& fbCount,
     pauseScreen();
 }
 
-// ═══════════════════════════════════════════
-//  FACULTY MODULE
-// ═══════════════════════════════════════════
+
+                         /** FACULTY MODULE **/
+
 void facultyMenu(){
     cout << "\n" << right << setw(40) << ">>> Role: Faculty <<<\n";
     cout << "\n[1] 📢 Announcement Management";
@@ -2213,7 +2201,7 @@ void facultyAnnouncementMgmt(Announcement* ann, int& annCount,
 
                 ann[annCount++] = n;
                 saveAllAnnouncements(ann, annCount);
-                cout << "\n[✔] Announcement posted successfully.\n";
+                cout << "\n[✔ ] Announcement posted successfully.\n";
                 pauseScreen();
                 break;
             }
@@ -2233,7 +2221,7 @@ void reviewPendingAnn(Announcement* ann, int& annCount){
         if(ann[i].status == "Pending") pendingIdx[pendingCount++] = i;
 
     if(pendingCount == 0){
-        cout << "\n[✔] No pending announcements. All caught up!\n";
+        cout << "\n[✔ ] No pending announcements. All caught up!\n";
         pauseScreen(); return;
     }
 
@@ -2253,7 +2241,7 @@ void reviewPendingAnn(Announcement* ann, int& annCount){
             ann[i].status          = "Approved";
             ann[i].rejectionReason = "";
             saveAllAnnouncements(ann, annCount);
-            cout << "\n[✔] Announcement approved and posted to the board.\n";
+            cout << "\n[✔ ] Announcement approved and posted to the board.\n";
             Sleep(1200);
         } else if(decision == 2){
             string reason = "";
@@ -2261,13 +2249,13 @@ void reviewPendingAnn(Announcement* ann, int& annCount){
             ann[i].status          = "Rejected";
             ann[i].rejectionReason = reason;
             saveAllAnnouncements(ann, annCount);
-            cout << "\n[✔] Announcement rejected.\n";
+            cout << "\n[✔ ] Announcement rejected.\n";
             Sleep(1200);
         } else {
             cout << "\n[i] Skipped.\n"; Sleep(800);
         }
     }
-    cout << "\n[✔] Done reviewing all pending announcements.\n";
+    cout << "\n[✔ ] Done reviewing all pending announcements.\n";
     pauseScreen();
 }
 
@@ -2486,7 +2474,7 @@ void studentMenu(){
     cout << "\n[3] 🧑‍🏫 View Faculty";
     cout << "\n[4] 🎓 View Officers";
     cout << "\n[5] 📩 Feedbacks & Concerns";
-    cout << "\n[6] ⚙️  Account Management";
+    cout << "\n[6] ⚙️ Account Management";
     cout << "\n[0] 🚪 Log Out\n";
 }
 
@@ -2613,14 +2601,12 @@ void studentViewOfficers(Officer* officers, int officerCount){
     sortOfficers(officers, officerCount, 2); // sort by name
 
     cout << "\n  🎓 OFFICERS LIST\n";
-    cout << string(65, '-') << "\n";
-    cout << left << setw(17) << "ID" << setw(25) << "Name"
-         << setw(13) << "Program" << setw(12) << "Year" << "Position\n";
-    cout << string(65, '-') << "\n";
+    cout << string(80, '-') << "\n";
+    cout << left << setw(17) << "ID" << setw(25) << "Name" << setw(13) << "Program" << setw(12) << "Year" << "Position\n";
+    cout << string(80, '-') << "\n";
     for(int i = 0; i < officerCount; i++){
-        cout << left << setw(17) << officers[i].ID   << setw(25) << officers[i].name
-                     << setw(13) << officers[i].program << setw(12) << officers[i].yearLevel
-                     << officers[i].position << "\n";
+        cout << left << setw(17) << officers[i].ID   << setw(25) << officers[i].name << setw(13) << officers[i].program
+               << setw(12) << officers[i].yearLevel << officers[i].position << "\n";
     }
 
     char viewDetail;
@@ -2674,9 +2660,7 @@ void feedbacksAndConcerns(Feedback* fb, int& fbCount, int accIndex,
     } while(choice != 3);
 }
 
-void submitFeedback(Feedback* fb, int& fbCount, int accIndex,
-                    Student* students, int studentCount,
-                    Officer* officers, int officerCount,
+void submitFeedback(Feedback* fb, int& fbCount, int accIndex, Student* students, int studentCount, Officer* officers, int officerCount,
                     Faculty* faculty, int facultyCount){
     cout << "\n" << right << setw(47) << "📝 Submit Feedback 📝\n\n";
 
@@ -2750,6 +2734,10 @@ void submitFeedback(Feedback* fb, int& fbCount, int accIndex,
             cout << "\n[!] Invalid choice.\n";
         }
     }
+    pauseScreen();
+    cls();
+    displayHeader2();
+    cout << "\n" << right << setw(47) << "📝 Submit Feedback 📝\n\n";
 
     // category
     cout << "\nCategory:\n[1] Concern\n[2] Suggestion\n[3] Complaint\n";
@@ -2757,18 +2745,22 @@ void submitFeedback(Feedback* fb, int& fbCount, int accIndex,
     enterPrompt("Choose: ", catChoice);
     while(catChoice < 1 || catChoice > 3){
         cout << "\n[!] Invalid category.\n";
-        enterPrompt("Choose: ", catChoice);
+        enterPrompt("\nChoose: ", catChoice);
     }
     n->category = (catChoice == 1) ? "Concern" :
                   (catChoice == 2) ? "Suggestion" : "Complaint";
 
-    enterPrompt("📝 Feedback Content: ", n->content);
+    pauseScreen();
+    cls();
+    displayHeader2();
+    cout << "\n" << right << setw(47) << "📝 Submit Feedback 📝\n\n";
+    enterPrompt("\n📝 Feedback Content: ", n->content);
 
     fb[fbCount++] = *n;
     delete n;
 
     saveAllFeedbacks(fb, fbCount);
-    cout << "\n[✔] Feedback submitted successfully.\n";
+    cout << "\n[✔ ] Feedback submitted successfully.\n";
     pauseScreen();
 }
 
@@ -2909,7 +2901,7 @@ void editMyInfo(Student* students, int& studentCount, int accIndex){
     }
 
     saveStudentsCSV(students, studentCount);
-    cout << "\n[✔] Information updated successfully.\n";
+    cout << "\n[✔ ] Information updated successfully.\n";
     pauseScreen();
 }
 
@@ -2936,7 +2928,7 @@ void changePasscode(Student* students, int& studentCount, int accIndex){
 
     students[accIndex].passcode = newPass;
     saveStudentsCSV(students, studentCount);
-    cout << "\n[✔] Passcode changed successfully.\n";
+    cout << "\n[✔ ] Passcode changed successfully.\n";
     pauseScreen();
 }
 
