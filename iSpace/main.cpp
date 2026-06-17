@@ -154,8 +154,8 @@ void sortOfficers(Officer* o, int count, int method);
 
 //_officer module = 2
 void officerMenu();
-void officerSwitch(int choice, Student* students, int& studentCount, Announcement* ann, int& annCount, Activity* act, int& actCount, Officer* officers, int officerCount,
-                   Faculty* faculty, int accIndex, Feedback* fb, int& fbCount, int role);  // officer module handler - handles the main officer switch
+void officerSwitch(int choice, Student* students, int& studentCount, Announcement* ann, int& annCount, Activity* act, int& actCount,
+                  Officer* officers, int officerCount, Faculty* faculty, int facultyCount, int accIndex, Feedback* fb, int& fbCount, int role);// officer module handler - handles the main officer switch
 //--member management functoins = 4
 void memberManagement(Student* students, int& studentCount);
 void approveStudentRequests(Student* students, int& studentCount);
@@ -200,18 +200,18 @@ void studentDashboard(Student* students, int studentCount, int accIndex, Announc
                       int officerCount, Faculty* faculty, int facultyCount, Feedback* fb, int& fbCount);  // student module handler - handles the main student switch
 void studentMenu();
 void viewAnnouncements(Announcement* ann, int& annCount);
-void studentViewActivities(Activity* act, int& actCount);
 void studentViewFaculty(Faculty* faculty, int& facultyCount);
 void viewOfficers(Officer* officers, int officerCount);
 //--feedbacks and concers = 3
 void feedbacksAndConcerns(Feedback* fb, int& fbCount, int accIndex, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty, int facultyCount);
 void submitFeedback(Feedback* fb, int& fbCount, int accIndex, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty, int facultyCount);
 void viewMyFeedbacks(Feedback* fb, int fbCount, int accIndex, Student* students, int studentCount);
-//--account management = 4
-void accountManagement(Student* students, int& studentCount, int accIndex);
-void viewMyInfo(Student* students, int accIndex);
-void editMyInfo(Student* students, int& studentCount, int accIndex);
-void changePasscode(Student* students, int& studentCount, int accIndex);
+
+//_account management = 4
+void accountManagement(int role, int accIndex, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount);
+void viewMyInfo(int role, int accIndex, Student* students, Officer* officers, Faculty* faculty);
+void editMyInfo(int role, int accIndex, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount);
+void changePasscode(int role, int accIndex, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount);
 
 //_helpers = 10
 void pauseScreen();
@@ -309,8 +309,8 @@ int main(){
                         enterPrompt("\nEnter choice: ", choice);
                         cls();
 
-                        officerSwitch(choice, students, studentCount, ann, annCount, act, actCount, officers, officerCount, faculty, accIndex, fb, fbCount,role);
-                    } while(choice != 5);
+                        officerSwitch(choice, students, studentCount, ann, annCount, act, actCount, officers, officerCount, faculty, facultyCount, accIndex, fb, fbCount,role);
+                    } while(choice != 6);
                     break;
                 }
 
@@ -328,7 +328,7 @@ int main(){
                         enterPrompt("\nEnter choice: ", choice);
                         cls();
                         facultySwitch(choice, ann, annCount, students, studentCount, officers, officerCount, fb, fbCount, faculty, facultyCount, accIndex, role);
-                    } while(choice != 4);
+                    } while(choice != 5);
                     break;
                 }
             }
@@ -1214,10 +1214,19 @@ void searchActivityLinear(Activity* a, int count, const string& query,
 void buildAnnouncementTable(Announcement* a, int count, string table[][5], int& rows){
     rows = 0;
     for(int i = 0; i < count; i++){
-        if(a[i].status != "Approved" && !a[i].isPinned && !a[i].isUrgent) continue;
+        if(a[i].status != "Approved" && !a[i].isPinned && !a[i].isUrgent)
+            continue;
+
         string flag = "";
-        if(a[i].isUrgent) flag = "❗ ";
-        if(a[i].isPinned) flag = "📌 ";
+        if(a[i].isUrgent)
+            flag = "❗ ";
+
+        if(a[i].isPinned)
+        flag = "📌 ";
+
+        if(!a[i].isUrgent && !a[i].isPinned)
+            flag = "📢 ";
+
         table[rows][0] = to_string(a[i].id);
         table[rows][1] = flag + a[i].title;
         table[rows][2] = a[i].category;
@@ -1265,10 +1274,15 @@ Announcement** buildPinnedFirst(Announcement* a, int count, int& outCount){
 
 void displayOneAnnouncement(Announcement& a){
     string badge = "";
-    if(a.isUrgent)               badge = " 🚨";
-    else if(a.isPinned)          badge = " 📌";
-    else if(a.status=="Pending") badge = " ⏳";
-    else if(a.status=="Rejected")badge = " ❌";
+
+    if(a.isUrgent)
+        badge = " 🚨";
+    else if(a.isPinned)
+        badge = " 📌";
+    else if(a.status=="Pending")
+        badge = " ⏳";
+    else if(a.status=="Rejected")
+        badge = " ❌";
 
     cout << "\n----------------------------------------------------------\n";
     cout << badge << " ID: " << a.id << " | " << a.status << "\n\n";
@@ -1371,18 +1385,15 @@ void displayAllAct(Activity* a, int count){
     for(int i = 0; i < count; i++){
         string flag = (a[i].status == "Scheduled") ? "📆 " :
                       (a[i].status == "Ongoing")   ? "🔁" : "";
-        cout << left << setw(6)  << a[i].id << setw(24) << (flag + a[i].name).substr(0, 21)
+        cout << left << setw(6)  << a[i].id << setw(22) << (flag + a[i].name).substr(0, 21)
                      << setw(12) << a[i].date << setw(8)  << a[i].time << a[i].location << "\n";
     }
 
     cout << string(59,'=') << "\n";
 }
 
-void displayBulletinBoard(Announcement* ann, int annCount,
-                          Activity* act, int actCount, int role){
-    //cout << "\n\n" << string(59, '=') << "\n";
+void displayBulletinBoard(Announcement* ann, int annCount, Activity* act, int actCount, int role){
     cout << "\n\n" <<"                >>> 📋 BULLETIN BOARD 📋 <<< \n";
-   // cout << string(59, '=') << "\n";
 
     //_Announcement
     cout << "\n📢 ANNOUNCEMENTS\n";
@@ -1417,7 +1428,7 @@ void displayBulletinBoard(Announcement* ann, int annCount,
         cout << "  No activities to show.\n";
     } else {
         for(int r = 0; r < actRows; r++){
-            cout << left << setw(34) << actTable[r][1].substr(0, 29) << setw(14) << actTable[r][2] << actTable[r][4] << "\n";
+            cout << left << setw(32) << actTable[r][1].substr(0, 29) << setw(14) << actTable[r][2] << actTable[r][4] << "\n";
         }
     }
     cout << "\n" << string(59,'=') << "\n";
@@ -1428,11 +1439,13 @@ void displayBulletinBoard(Announcement* ann, int annCount,
 
 void officerMenu(){
     cout << "\n--- MENU ---\n";
+
     cout << "\n[1] 👥 Member Management";
     cout << "\n[2] 📢 Announcement Management";
     cout << "\n[3] 📅 Activity Management";
     cout << "\n[4] 📩 View Feedbacks & Concerns";
-    cout << "\n[5] 🚪 Log Out\n";
+    cout << "\n[5] ⚙️ Account Management";
+    cout << "\n[6] 🚪 Log Out\n";
 }
 
 void displayCounterUpdates(int studentCount, int pendingCount, int annCount, int actCount){
@@ -1458,7 +1471,7 @@ int getUpcomingActCount(Activity* a, int count){
 }
 
 void officerSwitch(int choice, Student* students, int& studentCount, Announcement* ann, int& annCount, Activity* act, int& actCount,
-                  Officer* officers, int officerCount, Faculty* faculty, int accIndex, Feedback* fb, int& fbCount, int role){
+                  Officer* officers, int officerCount, Faculty* faculty, int facultyCount, int accIndex, Feedback* fb, int& fbCount, int role){
     switch(choice){
         case 1:
             displayHeader2();
@@ -1481,6 +1494,10 @@ void officerSwitch(int choice, Student* students, int& studentCount, Announcemen
             break;
 
         case 5:
+            accountManagement(OFFICER, accIndex, students, studentCount, officers, officerCount, faculty, facultyCount);
+            break;
+
+        case 6:
             break;
 
         default:
@@ -2086,7 +2103,7 @@ void deleteActivity(Activity* act, int& actCount){
 void viewFeedbacks(Feedback* fb, int& fbCount, int role, int accIndex, Officer* officers, Faculty* faculty, Student* students, int studentCount){
     cls();
 
-    (role == OFFICER) ? displayHeader3() : displayHeader2();
+    (role == OFFICER) ? displayHeader2() : displayHeader3();
     loadFeedbacks(fb, fbCount);
 
     string myName = (role == OFFICER) ? officers[accIndex].name
@@ -2181,7 +2198,8 @@ void facultyMenu(){
     cout << "\n[1] 📢 Announcement Management";
     cout << "\n[2] 👥 View Officers and Members";
     cout << "\n[3] 📩 View Feedbacks & Concerns";
-    cout << "\n[4] 🚪 Log Out\n";
+    cout << "\n[4] ⚙️ Account Management";
+    cout << "\n[5] 🚪 Log Out\n";;
 }
 
 void facultySwitch(int choice, Announcement* ann, int& annCount, Student* students, int studentCount,
@@ -2199,10 +2217,14 @@ void facultySwitch(int choice, Announcement* ann, int& annCount, Student* studen
         case 3: displayHeader2();
                 viewFeedbacks(fb,fbCount,role,accIndex,officers,faculty,students,studentCount);
             break;
-                break;
 
         case 4:
+            accountManagement(FACULTY, accIndex, students, studentCount, officers, officerCount,faculty,  facultyCount);
             break;
+
+        case 5:
+            break;
+
         default:
             cout << "\n[!] Invalid choice. Try again.\n";
     }
@@ -2381,7 +2403,7 @@ void studentDashboard(Student* students, int studentCount, int accIndex, Announc
                 break;
 
             case 2:
-                studentViewActivities(act, actCount);
+                viewActivities(act,actCount);
                 break;
 
             case 3:
@@ -2397,7 +2419,7 @@ void studentDashboard(Student* students, int studentCount, int accIndex, Announc
                 break;
 
             case 6:
-                accountManagement(students, studentCount, accIndex);
+                accountManagement(STUDENT, accIndex,students, studentCount,officers, officerCount, faculty, facultyCount);
                 break;
 
             case 7:
@@ -2473,34 +2495,7 @@ void viewAnnouncements(Announcement* ann, int& annCount){
         }
     }
     pauseScreen();
-}
-
-void studentViewActivities(Activity* act, int& actCount){
-    cls(); displayHeader();
-    loadActivities(act, actCount);
-
-    if(actCount == 0){ cout << "\n[!] No activities available.\n"; pauseScreen(); return; }
-
-    displayAllAct(act, actCount);
-
-    char viewDetail;
-    cout << "\nView full details? (Y/N): ";
-    cin >> viewDetail; cin.ignore();
-    if(viewDetail == 'Y' || viewDetail == 'y'){
-        int aid;
-        enterPrompt("\n🆔 Enter Activity ID: ", aid);
-        int idx = searchActivityByID(act, actCount, aid);
-        if(idx == -1) {
-            cout << "\n[!] Activity not found.\n"; }
-        else {
-            pauseScreen();
-            system("cls");
-            displayHeader();
-            cout << "\n                    📅 ACTIVITIES LIST 📅\n\n";
-            displayOneActivity(act[idx]);
-        }
-    }
-    pauseScreen();
+    cls();
 }
 
 // ── View Faculty — sort by ID or Name instead of specific view ──
@@ -2518,7 +2513,7 @@ void studentViewFaculty(Faculty* faculty, int& facultyCount){
     cout << left << setw(22) << "ID" << "Name\n";
     cout << string(59, '-') << "\n";
     for(int i = 0; i < facultyCount; i++){
-        Faculty* fp = faculty + i;  // pointer arithmetic
+        Faculty* fp = faculty + i;
         cout << left << setw(22) << fp->ID << fp->name << "\n";
     }
 
@@ -2527,7 +2522,7 @@ void studentViewFaculty(Faculty* faculty, int& facultyCount){
     cout << "\n[1] Sort [2] Return to Menu\n";
     enterPrompt("Choose: ",choice);
 
-    if(choice == 'Y' || choice == 'y'){
+    if(choice == 1){
         cout << "\nSort by: [1] ID  [2] Name\n";
 
         int method;
@@ -2541,23 +2536,27 @@ void studentViewFaculty(Faculty* faculty, int& facultyCount){
         for(int i = 0; i < facultyCount - 1; i++){
             for(int j = 0; j < facultyCount - 1 - i; j++){
                 bool doSwap = (method == 1) ? faculty[j].ID   > faculty[j+1].ID : faculty[j].name > faculty[j+1].name;
-                if(doSwap){ Faculty tmp = faculty[j]; faculty[j] = faculty[j+1]; faculty[j+1] = tmp; }
+                if(doSwap){
+                    Faculty tmp = faculty[j];
+                    faculty[j] = faculty[j+1];
+                    faculty[j+1] = tmp;
+                }
             }
         }
 
         cls();
         displayHeader();
-
         cout << "\n                      🧑‍🏫 FACULTY LIST\n\n";
         cout << string(59, '-') << "\n";
-        cout << left << setw(35) << "ID" << "Name\n";
+        cout << left << setw(22) << "ID" << "Name\n";
         cout << string(59, '-') << "\n";
         for(int i = 0; i < facultyCount; i++){
-            cout << left << setw(35) << faculty[i].ID << faculty[i].name << "\n";
+            Faculty* fp = faculty + i;
+            cout << left << setw(22) << fp->ID << fp->name << "\n";
         }
-        pauseScreen();
     }
     pauseScreen();
+    cls();
 }
 
 void viewOfficers(Officer* officers, int officerCount){
@@ -2797,8 +2796,8 @@ void viewMyFeedbacks(Feedback* fb, int fbCount, int accIndex, Student* students,
     pauseScreen();
 }
 
-// ── Account Management ──
-void accountManagement(Student* students, int& studentCount, int accIndex){
+//_account_management
+void accountManagement(int role, int accIndex, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount){
     int choice = 0;
     do {
         cls(); displayHeader();
@@ -2810,80 +2809,160 @@ void accountManagement(Student* students, int& studentCount, int accIndex){
         enterPrompt("\nEnter choice: ", choice);
 
         switch(choice){
-            case 1: cls(); displayHeader(); viewMyInfo(students, accIndex);   break;
-            case 2: cls(); displayHeader();
-                    editMyInfo(students, studentCount, accIndex);
-                    break;
-            case 3: cls(); displayHeader();
-                    changePasscode(students, studentCount, accIndex);
-                    break;
-            case 4: break;
-            default: cout << "\n[!] Invalid choice.\n";
+            case 1:
+                cls();
+                displayHeader();
+                viewMyInfo(role,accIndex,students,officers,faculty);
+                break;
+
+            case 2:
+                cls();
+                displayHeader();
+                editMyInfo(role,accIndex,students,studentCount,officers,officerCount,faculty,facultyCount);
+                break;
+
+            case 3:
+                cls();
+                displayHeader();
+                changePasscode(role, accIndex, students, studentCount, officers, officerCount,faculty,  facultyCount);
+                break;
+
+            case 4:
+                break;
+
+            default:
+                cout << "\n[!] Invalid choice.\n";
         }
     } while(choice != 4);
 }
 
-void viewMyInfo(Student* students, int accIndex){
-    Student* sp = &students[accIndex];  // pointer
+void viewMyInfo(int role, int accIndex, Student* students, Officer* officers, Faculty* faculty){
     cout << "\n  ⚙️ MY INFORMATION\n";
     cout << "----------------------------------------------------------\n";
-    cout << "  ID         : " << sp->ID        << "\n";
-    cout << "  Name       : " << sp->name      << "\n";
-    cout << "  Program    : " << sp->program   << "\n";
-    cout << "  Year Level : " << sp->yearLevel << "\n";
+
+    if(role == STUDENT){
+        Student* sp = &students[accIndex];  // pointer
+        cout << "  ID         : " << sp->ID        << "\n";
+        cout << "  Name       : " << sp->name      << "\n";
+        cout << "  Program    : " << sp->program   << "\n";
+        cout << "  Year Level : " << sp->yearLevel << "\n";
+    } else if(role == OFFICER){
+        Officer* op = &officers[accIndex];  // pointer
+        cout << "  ID         : " << op->ID        << "\n";
+        cout << "  Name       : " << op->name      << "\n";
+        cout << "  Program    : " << op->program   << "\n";
+        cout << "  Year Level : " << op->yearLevel << "\n";
+        cout << "  Position   : " << op->position  << "\n";
+    } else {
+        Faculty* fp = &faculty[accIndex];   // pointer
+        cout << "  ID         : " << fp->ID   << "\n";
+        cout << "  Name       : " << fp->name << "\n";
+    }
+
     cout << "----------------------------------------------------------\n";
     pauseScreen();
 }
 
-// ── Edit Information (student edits their own details directly) ──
-void editMyInfo(Student* students, int& studentCount, int accIndex){
+void editMyInfo(int role, int accIndex, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount){
     cout << "\n✏️ EDIT MY INFORMATION\n";
     cout << "----------------------------------------------------------\n";
-    cout << "  Current ID         : " << students[accIndex].ID        << "\n";
-    cout << "  Current Name       : " << students[accIndex].name      << "\n";
-    cout << "  Current Program    : " << students[accIndex].program   << "\n";
-    cout << "  Current Year Level : " << students[accIndex].yearLevel << "\n";
-    cout << "----------------------------------------------------------\n";
 
-    cout << "\n[1] ID\n[2] Name\n[3] Program\n[4] Year Level\n";
+    if(role == STUDENT){
+        Student* sp = &students[accIndex];
+        cout << "  Current ID         : " << sp->ID        << "\n";
+        cout << "  Current Name       : " << sp->name      << "\n";
+        cout << "  Current Program    : " << sp->program   << "\n";
+        cout << "  Current Year Level : " << sp->yearLevel << "\n";
+        cout << "----------------------------------------------------------\n";
+        cout << "\n[1] ID\n[2] Name\n[3] Program\n[4] Year Level\n";
+    } else if(role == OFFICER){
+        Officer* op = &officers[accIndex];
+        cout << "  Current ID         : " << op->ID        << "\n";
+        cout << "  Current Name       : " << op->name      << "\n";
+        cout << "  Current Program    : " << op->program   << "\n";
+        cout << "  Current Year Level : " << op->yearLevel << "\n";
+        cout << "  Current Position   : " << op->position  << "\n";
+        cout << "----------------------------------------------------------\n";
+        cout << "\n[1] ID\n[2] Name\n[3] Program\n[4] Year Level\n[5] Position\n";
+    } else {
+        Faculty* fp = &faculty[accIndex];
+        cout << "  Current ID   : " << fp->ID   << "\n";
+        cout << "  Current Name : " << fp->name << "\n";
+        cout << "----------------------------------------------------------\n";
+        cout << "\n[1] ID\n[2] Name\n";
+    }
+
     int field;
     enterPrompt("\nSelect field to edit: ", field);
 
-    switch(field){
-        case 1:
-            enterPrompt("🆔 New ID          : ", students[accIndex].ID);
-            break;
-        case 2:
-            enterPrompt("👤 New Name        : ", students[accIndex].name);
-            break;
-        case 3:
-            enterPrompt("📚 New Program     : ", students[accIndex].program);
-            while(students[accIndex].program != "BSIT" && students[accIndex].program != "bsit" &&
-                  students[accIndex].program != "DIT"  && students[accIndex].program != "dit"){
-                cout << "\n[!] Must be BSIT or DIT only.\n";
+    if(role == STUDENT){
+        switch(field){
+            case 1: enterPrompt("🆔 New ID          : ", students[accIndex].ID);   break;
+            case 2: enterPrompt("👤 New Name        : ", students[accIndex].name); break;
+            case 3:
                 enterPrompt("📚 New Program     : ", students[accIndex].program);
-            }
-            break;
-        case 4:
-            enterPrompt("⭐ New Year Level  : ", students[accIndex].yearLevel);
-            while(students[accIndex].yearLevel < 1 || students[accIndex].yearLevel > 4){
-                cout << "\n[!] Valid year levels are 1 to 4 only.\n";
+                while(students[accIndex].program != "BSIT" && students[accIndex].program != "bsit" &&
+                      students[accIndex].program != "DIT"  && students[accIndex].program != "dit"){
+                    cout << "\n[!] Must be BSIT or DIT only.\n";
+                    enterPrompt("📚 New Program     : ", students[accIndex].program);
+                }
+                break;
+            case 4:
                 enterPrompt("⭐ New Year Level  : ", students[accIndex].yearLevel);
-            }
-            break;
-        default:
-            cout << "\n[!] Invalid choice.\n"; pauseScreen(); return;
+                while(students[accIndex].yearLevel < 1 || students[accIndex].yearLevel > 4){
+                    cout << "\n[!] Valid year levels are 1 to 4 only.\n";
+                    enterPrompt("⭐ New Year Level  : ", students[accIndex].yearLevel);
+                }
+                break;
+            default: cout << "\n[!] Invalid choice.\n"; pauseScreen(); return;
+        }
+        saveStudentsCSV(students, studentCount);
+
+    } else if(role == OFFICER){
+        switch(field){
+            case 1: enterPrompt("🆔 New ID          : ", officers[accIndex].ID);   break;
+            case 2: enterPrompt("👤 New Name        : ", officers[accIndex].name); break;
+            case 3:
+                enterPrompt("💻 New Program     : ", officers[accIndex].program);
+                while(officers[accIndex].program != "BSIT" && officers[accIndex].program != "bsit" &&
+                      officers[accIndex].program != "DIT"  && officers[accIndex].program != "dit"){
+                    cout << "\n[!] Must be BSIT or DIT only.\n";
+                    enterPrompt("💻 New Program     : ", officers[accIndex].program);
+                }
+                break;
+            case 4:
+                enterPrompt("📈 New Year Level  : ", officers[accIndex].yearLevel);
+                while(officers[accIndex].yearLevel < 1 || officers[accIndex].yearLevel > 4){
+                    cout << "\n[!] Valid year levels are 1 to 4 only.\n";
+                    enterPrompt("📈 New Year Level  : ", officers[accIndex].yearLevel);
+                }
+                break;
+            case 5: enterPrompt("🎖️ New Position    : ", officers[accIndex].position); break;
+            default: cout << "\n[!] Invalid choice.\n"; pauseScreen(); return;
+        }
+        saveOfficersCSV(officers, officerCount);
+
+    } else {
+        switch(field){
+            case 1: enterPrompt("🆔 New ID  : ", faculty[accIndex].ID);   break;
+            case 2: enterPrompt("👤 New Name: ", faculty[accIndex].name); break;
+            default: cout << "\n[!] Invalid choice.\n"; pauseScreen(); return;
+        }
+        saveFacultyCSV(faculty, facultyCount);
     }
 
-    saveStudentsCSV(students, studentCount);
     cout << "\n[✔ ] Information updated successfully.\n";
     pauseScreen();
 }
 
-void changePasscode(Student* students, int& studentCount, int accIndex){
+void changePasscode(int role, int accIndex, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount){
+    string* storedPass = (role == STUDENT) ? &students[accIndex].passcode :
+                         (role == OFFICER) ? &officers[accIndex].passcode  :
+                                             &faculty[accIndex].passcode;
+
     string currentPass;
     enterPrompt("🔑 Enter current passcode: ", currentPass);
-    if(students[accIndex].passcode != currentPass){
+    if(*storedPass != currentPass){
         cout << "\n[!] Incorrect passcode.\n"; pauseScreen(); return;
     }
 
@@ -2901,8 +2980,12 @@ void changePasscode(Student* students, int& studentCount, int accIndex){
         enterPrompt("🔄 Confirm new passcode : ", confirm);
     }
 
-    students[accIndex].passcode = newPass;
-    saveStudentsCSV(students, studentCount);
+    *storedPass = newPass;  // pointer write — updates the correct array
+
+    if(role == STUDENT)       saveStudentsCSV(students, studentCount);
+    else if(role == OFFICER)  saveOfficersCSV(officers, officerCount);
+    else                      saveFacultyCSV(faculty,   facultyCount);
+
     cout << "\n[✔ ] Passcode changed successfully.\n";
     pauseScreen();
 }
