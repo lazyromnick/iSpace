@@ -87,6 +87,7 @@ enum Role {
 void displayHeader();
 void displayHeader2();
 void displayHeader3();
+void displayHeader4();
 void displayStudentHeader(const string& name);
 void homeScreen(const string& name);
 
@@ -416,7 +417,17 @@ void displayHeader3(){
     cout << "|" << right << setw(59) << "|\n";
     cout << "|" << right << setw(48) << "⚙️ FACULTY DASHBOARD 📊 " << right << setw(17) << "|\n";
     cout << "|" << right << setw(58) << "|";
-    cout << "\n===========================================================";
+    cout << "\n===========================================================\n";
+}
+
+void displayHeader4(){
+    cls();
+    cout << "===========================================================";
+    cout << "\n|" << right << setw(39) << " __✨ iSpace ✨__" << right << setw(22) << "|\n";
+    cout << "|" << right << setw(59) << "|\n";
+    cout << "|" << right << setw(48) << "⚙️ STUDENT DASHBOARD 📊 " << right << setw(17) << "|\n";
+    cout << "|" << right << setw(58) << "|";
+    cout << "\n===========================================================\n";
 }
 
 void homeScreen(const string& name){
@@ -2055,7 +2066,7 @@ void addActivity(Activity* act, int& actCount){
 void viewActivities(Activity* act, int& actCount){
     int choice = 0;
     do {
-        cls(); displayHeader2();
+        cls(); displayHeader();
         loadActivities(act, actCount);
         displayAllAct(act, actCount);
 
@@ -2441,7 +2452,7 @@ void studentDashboard(int homeChoice, Student* students, int studentCount, int a
 
     if(homeChoice == 1){
         do{
-            displayHeader2();
+            displayHeader4();
             studentMenu();
             enterPrompt("\nEnter choice: ", choice);
             cls();
