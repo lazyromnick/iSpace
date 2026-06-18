@@ -398,6 +398,7 @@ int main(){
                 }
             }
         }
+        landingPage(isLoggedIn);
     } while(isLoggedIn);
 
     return 0;
