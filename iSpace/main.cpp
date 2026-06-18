@@ -1490,7 +1490,7 @@ void displayBulletinBoard(Announcement* ann, int annCount, Activity* act, int ac
     //_Announcement
     cout << "\n📢 ANNOUNCEMENTS\n";
     cout << string(59, '-') << "\n";
-    cout << left << setw(32) << " Title" << setw(14) << "Category" << "Date\n";
+    cout << left << setw(30) << " Title" << setw(14) << "Category" << "Date\n";
     cout << string(59, '-') << "\n";
 
      // Use 2D array + buildPinnedFirst (dynamic) for display
@@ -1509,7 +1509,7 @@ void displayBulletinBoard(Announcement* ann, int annCount, Activity* act, int ac
     // ── Activities ──
     cout << "\n\n📅 UPCOMING ACTIVITIES\n";
     cout << string(59, '-') << "\n";
-    cout << left << setw(32) << " Title" << setw(14) << "Date" << "Location\n";
+    cout << left << setw(30) << " Title" << setw(14) << "Date" << "Location\n";
     cout << string(59, '-') << "\n";
 
     string actTable[MAX_ACTIVITY][6];
@@ -2106,9 +2106,13 @@ void viewActivities(Activity* act, int& actCount){
         if(choice >= 1 && choice <= 3){
             sortActivities(act, actCount, choice);
             saveAllActivities(act, actCount);
+        } else if(choice == 4){
+            pauseScreen();
+        } else {
+            cout << "\n[!] Invalid choice.\n";
+            pauseScreen();
         }
     } while(choice != 4);
-    pauseScreen();
 }
 
 void updateActivity(Activity* act, int actCount){
@@ -2560,6 +2564,8 @@ void studentMenu(){
 }
 
 void viewAnnouncements(Announcement* ann, int& annCount){
+    char viewDetail;
+    do{
     cls();
     displayHeader();
     loadAnnouncements(ann, annCount);
@@ -2581,21 +2587,20 @@ void viewAnnouncements(Announcement* ann, int& annCount){
 
     cout <<"\n" << right << setw(44) << "📢 ANNOUNCEMENTS 📢" << "\n\n";
    // cout << string(59, '-') << "\n";
-    cout << left << setw(5) << "ID" << setw(31) << "Title" << setw(14) << "Category" << "Date\n";
+    cout << left << setw(5) << "ID" << setw(31) << "Title" << setw(16) << "Category" << "Date\n";
     cout << string(59, '-') << "\n";
     for(int i = 0; i < outCount; i++){
-        string flag = sorted[i]->isUrgent ? "🚨 " :
-                      sorted[i]->isPinned ? "📌 " : "   ";
-        cout << left << setw(5)  << sorted[i]->id << setw(33) << (flag + sorted[i]->title).substr(0, 31) << setw(11) << sorted[i]->category
+        string flag = sorted[i]->isUrgent ? "🚨 " : sorted[i]->isPinned ? "📌 " : "📢 ";
+        cout << left << setw(5) << sorted[i]->id << setw(33) << (flag + sorted[i]->title).substr(0, 31) << setw(13) << sorted[i]->category
                      << sorted[i]->date << "\n";
 
     }
     cout << string(59, '-') << "\n";
     delete[] sorted;
 
-    char viewDetail;
     cout << "\nView full details? (Y/N): ";
-    cin >> viewDetail; cin.ignore();
+    cin >> viewDetail;
+    cin.ignore();
     if(viewDetail == 'Y' || viewDetail == 'y'){
         int aid;
         enterPrompt("\n🆔 Enter Announcement ID: ", aid);
@@ -2609,10 +2614,17 @@ void viewAnnouncements(Announcement* ann, int& annCount){
             cout <<"\n" << right << setw(44) << "📢 ANNOUNCEMENTS 📢" << "\n";
             cout << "\n📝FULL DETAILS\n";
             displayOneAnnouncement(ann[idx]);
+            pauseScreen();
+            cls();
         }
+    } else if(viewDetail == 'N' || viewDetail == 'n'){
+        pauseScreen();
+        cls();
+    } else {
+        cout << "\n[!] Invalid choice.\n";
+        pauseScreen();
     }
-    pauseScreen();
-    cls();
+    } while(viewDetail != 'N' && viewDetail != 'n');
 }
 
 // ── View Faculty — sort by ID or Name instead of specific view ──
@@ -2625,6 +2637,10 @@ void studentViewFaculty(Faculty* faculty, int& facultyCount){
         return;
     }
 
+    int choice = 0;
+
+    do{
+
     cout << "\n                      🧑‍🏫 FACULTY LIST\n\n";
     cout << string(59, '-') << "\n";
     cout << left << setw(22) << "ID" << "Name\n";
@@ -2633,8 +2649,6 @@ void studentViewFaculty(Faculty* faculty, int& facultyCount){
         Faculty* fp = faculty + i;
         cout << left << setw(22) << fp->ID << fp->name << "\n";
     }
-
-    int choice = 0;
 
     cout << "\n[1] Sort [2] Return to Menu\n";
     enterPrompt("Choose: ",choice);
@@ -2671,14 +2685,27 @@ void studentViewFaculty(Faculty* faculty, int& facultyCount){
             Faculty* fp = faculty + i;
             cout << left << setw(22) << fp->ID << fp->name << "\n";
         }
+    } else if(choice == 2){
+         pauseScreen();
+    } else {
+        cout << "\n[!] Invalid choice.\n";
+        pauseScreen();
     }
-    pauseScreen();
+    }while(choice != 2);
 }
 
 void viewOfficers(Officer* officers, int officerCount){
-    cls(); displayHeader();
-    if(officerCount == 0){ cout << "\n[!] No officer records available.\n"; pauseScreen(); return; }
+    cls();
+    displayHeader();
+    char viewDetail;
 
+    if(officerCount == 0){
+        cout << "\n[!] No officer records available.\n";
+        pauseScreen();
+        return;
+    }
+
+    do{
     sortOfficers(officers, officerCount, 2); // sort by name
 
     cout << "\n                     🎓OFFICERS LIST\n\n";
@@ -2692,7 +2719,6 @@ void viewOfficers(Officer* officers, int officerCount){
 
     cout << string(59, '-') << "\n";
 
-    char viewDetail;
     cout << "\nView a specific officer? (Y/N): ";
     cin >> viewDetail;
     cin.ignore();
@@ -2700,8 +2726,11 @@ void viewOfficers(Officer* officers, int officerCount){
     if(viewDetail == 'Y' || viewDetail == 'y'){
         string oname;
         enterPrompt("\n🆔 Enter Officer Name: ", oname);
+
         int idx = searchOfficerByName(officers, officerCount, oname);
-        if(idx == -1) cout << "\n[!] Officer not found.\n";
+
+        if(idx == -1)
+            cout << "\n[!] Officer not found.\n";
         else {
             cout << "\n📋RESULT";
             cout << "\n----------------------------------------------------------\n";
@@ -2712,8 +2741,14 @@ void viewOfficers(Officer* officers, int officerCount){
             cout << "  Position  : " << officers[idx].position  << "\n";
             cout << "----------------------------------------------------------\n";
         }
+    } else if(viewDetail == 'N' || viewDetail == 'n'){
+        pauseScreen();
+    } else {
+        cout << "\n[!] Invalid choice.\n";
+        pauseScreen();
+        cls();
     }
-    pauseScreen();
+    }while(viewDetail != 'N' && viewDetail != 'n');
 }
 
 // ── Feedbacks & Concerns ──
@@ -2743,9 +2778,12 @@ void feedbacksAndConcerns(Feedback* fb, int& fbCount, int accIndex, Student* stu
                 break;
 
             case 3:
+                pauseScreen();
                 break;
 
-            default: cout << "\n[!] Invalid choice.\n";
+            default:
+                cout << "\n[!] Invalid choice.\n";
+                pauseScreen();
         }
     } while(choice != 3);
 }
@@ -2782,7 +2820,7 @@ void submitFeedback(Feedback* fb, int& fbCount, int accIndex, Student* students,
         enterPrompt("\nChoose: ", recChoice);
 
         if(recChoice == 1){
-            cout << "\n";
+            cout << "\nFaculty List:\n";
             for(int i = 0; i < facultyCount; i++)
                 cout << "  " << faculty[i].name << "\n";
 
@@ -2797,12 +2835,12 @@ void submitFeedback(Feedback* fb, int& fbCount, int accIndex, Student* students,
             }
 
         } else if(recChoice == 2){
-            cout << "\n";
+            cout << "\nOfficers List:\n";
             for(int i = 0; i < officerCount; i++)
                 cout << "  " << officers[i].name << "\n";
 
             string oname;
-            enterPrompt("🆔 Officer Name: ", oname);
+            enterPrompt("\n🆔 Officer Name: ", oname);
             int idx = searchOfficerByName(officers, officerCount, oname);
             if(idx == -1){
                 cout << "\n[!] Officer not found. Try again.\n";
@@ -2870,6 +2908,10 @@ void viewMyFeedbacks(Feedback* fb, int fbCount, int accIndex, Student* students,
         pauseScreen(); return;
     }
 
+    char viewDetail;
+
+    do{
+    cls();
     cout << "\n📩 MY FEEDBACKS\n";
     cout << string(59, '-') << "\n";
     cout << left << setw(6) << "ID" << setw(12) << "Category"
@@ -2886,7 +2928,6 @@ void viewMyFeedbacks(Feedback* fb, int fbCount, int accIndex, Student* students,
                      << f->status << "\n";
     }
 
-    char viewDetail;
     cout << "\nView full details? (Y/N): ";
     cin >> viewDetail; cin.ignore();
     if(viewDetail == 'Y' || viewDetail == 'y'){
@@ -2908,8 +2949,15 @@ void viewMyFeedbacks(Feedback* fb, int fbCount, int accIndex, Student* students,
             }
         }
         if(!found) cout << "\n[!] Feedback not found.\n";
+    } else if(viewDetail == 'N' || viewDetail == 'n'){
+        pauseScreen();
+    } else {
+        cout << "\n[!] Invalid choice.\n";
+        pauseScreen();
     }
-    pauseScreen();
+
+
+    }while(viewDetail != 'N' && viewDetail != 'n');
 }
 
 //_account_management
@@ -2948,6 +2996,7 @@ void accountManagement(int role, int accIndex, Student* students, int& studentCo
 
             default:
                 cout << "\n[!] Invalid choice.\n";
+                pauseScreen();
         }
     } while(choice != 4);
 }
@@ -3010,6 +3059,10 @@ void editMyInfo(int role, int accIndex, Student* students, int& studentCount, Of
 
     int field;
     enterPrompt("\nSelect field to edit: ", field);
+    while(field > 4 && field < 1){
+        cout << "\n[!] Invalid choice.\n";
+        enterPrompt("\nSelect field to edit: ", field);
+    }
 
     if(role == STUDENT){
         switch(field){
@@ -3030,7 +3083,8 @@ void editMyInfo(int role, int accIndex, Student* students, int& studentCount, Of
                     enterPrompt("⭐ New Year Level  : ", students[accIndex].yearLevel);
                 }
                 break;
-            default: cout << "\n[!] Invalid choice.\n"; pauseScreen(); return;
+            default:
+                cout << "\n[!] Invalid choice.\n"; pauseScreen(); return;
         }
         saveStudentsCSV(students, studentCount);
 
