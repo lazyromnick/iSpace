@@ -8,7 +8,7 @@
 
 using namespace std;
 
-//_structs
+//_structs - 7
 struct Student {
     string ID;
     string name;
@@ -65,33 +65,35 @@ struct Feedback {
     string date;
     string status;
 };
-// 6 structures
 
-const int MAX_STUDENT = 500;
-const int MAX_OFFICER = 50;
+//_constants
+const int MAX_STUDENT = 200;
+const int MAX_OFFICER = 30;
 const int MAX_FACULTY = 20;
-const int MAX_ANNOUNCE = 200;
-const int MAX_ACTIVITY = 200;
+const int MAX_ANNOUNCE = 100;
+const int MAX_ACTIVITY = 100;
 const int MAX_FEEDBACK = 200;
 const int MAX_PENDING = 200;
 
+//_enumeration
 enum Role {
     STUDENT = 1,
     OFFICER,
     FACULTY
 };
 
-//_FUNCTIONS DECLARATION w/total of 103
+//_FUNCTIONS DECLARATION - 100+
 
-//_header = 6
+//_header = 7
 void displayHeader();
 void displayHeader2();
 void displayHeader3();
 void displayHeader4();
 void displayStudentHeader(const string& name);
 void homeScreen(const string& name);
+void displayCounterUpdates(int studentCount, int pendingCount, int annCount, int actCount);
 
-//_auth = 8
+//_authentication = 8
 void auth(Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount, int& role, int& accIndex, bool& isLoggedIn);
 void askRole(int& role);
 void registerAccountHandler(int role, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount, bool& isLoggedIn);
@@ -101,40 +103,33 @@ string createPasscode();
 void login(int role, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty,  int facultyCount, int& accIndex, bool& isLoggedIn);
 bool idpassNotFound(bool& var, int& attempt, const string& displayMessage);
 
-//_file_handling = 18
-//_to load infos
+//_file handling = 18 
 void loadStudents(Student* s, int& count);
 void loadOfficers(Officer* o, int& count);
 void loadFaculty(Faculty* f, int& count);
-//_for save infos
 void saveStudentsCSV(Student* s, int count);
 void saveOfficersCSV(Officer* o, int count);
 void saveFacultyCSV(Faculty* f, int count);
 void appendToCSV(const string& file, int role, Student* s, int si, Officer* o, int oi, Faculty* f, int fi);
 void savePendingStudent(Student& s);
-//to load pendings
 void loadPendingStudents(Student* pending, int& count);
-//_to update
 void updatePendingCSV(Student* pending, int count);
 int  getPendingRequestCount();
-//_to load announcements
 void loadAnnouncements(Announcement* a, int& count);
-//_to save all announcements
 void saveAllAnnouncements(Announcement* a, int count);
-//_to load and save act, and FB
 void loadActivities(Activity* a, int& count);
 void saveAllActivities(Activity* a, int count);
 void loadFeedbacks(Feedback* fb, int& count);
 void saveAllFeedbacks(Feedback* fb, int count);
 int getNextID(int* ids, int count);
 
-//_sorting (Bubble Sort) = 4
+//_sorting = 4
 void sortStudents(Student* s, int count, int method);
 void sortOfficers(Officer* o, int count, int method);
 void sortActivities(Activity* a, int count, int method);
 void sortAnnouncements(Announcement* a, int count);
 
-//_searching = 7
+//_search = 7
 int searchByID(Student* s, int count, const string& id);  // Binary
 int searchByName(Student* s, int count, const string& name);  // Sequential
 int searchOfficerByName(Officer* o, int count, const string& name);
@@ -143,59 +138,62 @@ int searchActivityByID(Activity* a, int count, int id);  // Binary
 int searchAnnouncementByID(Announcement* a, int count, int id);
 void searchActivityLinear(Activity* a, int count, const string& query, int* results, int& rCount);
 
-//_bulletin board - 2D Array = 4
+//_bulletin = 5
+//_2D Arrays
 void buildAnnouncementTable(Announcement* a, int count, string table[][5], int& rows);
 void buildActivityTable(Activity* a, int count, string table[][6], int& rows);
 int getApprovedAnnCount(Announcement* a, int count);
 int getUpcomingActCount(Activity* a, int count);
 
 //_template function = 1
+//_called in submitFeedback(), line 2803
 template<typename T>
-T getMaxID(T* arr, int count);  // returns max id field
+T getMaxID(T* arr, int count);  //_returns max id field
 
-//_dynamic memory allocation | pointer to poiter = 1
+//_pointer to pointer
 Announcement** buildPinnedFirst(Announcement* a, int count, int& outCount);
 
-//_sorting - bubble sort = 2
+//_sorting (bubble sort) = 2
 void sortStudents(Student* s, int count, int method);
 void sortOfficers(Officer* o, int count, int method);
 
-//_officer module = 2
+//_OFFICER MODULE functions
 void officerMenu();
+// officer module handler - handles the main officer switch
 void officerSwitch(int choice, Student* students, int& studentCount, Announcement* ann, int& annCount, Activity* act, int& actCount,
-                  Officer* officers, int officerCount, Faculty* faculty, int facultyCount, int accIndex, Feedback* fb, int& fbCount, int role);// officer module handler - handles the main officer switch
-//--member management functoins = 4
+                  Officer* officers, int officerCount, Faculty* faculty, int facultyCount, int accIndex, Feedback* fb, int& fbCount, int role);
+//_Member Management functoins = 4
 void memberManagement(Student* students, int& studentCount);
 void approveStudentRequests(Student* students, int& studentCount);
 void viewMembers(Student* students, int studentCount);
 void removeMember(Student* students, int& studentCount);
-//--announcement manfaement functions = 5
+//_Announcement Management functions = 7
 void announcementManagement(Announcement* ann, int& annCount, const string& officerName);
 void proposeAnnouncement(Announcement* ann, int& annCount, const string& officerName);
 void editAnnouncement(Announcement* ann, int annCount);
 void removeAnnouncement(Announcement* ann, int& annCount);
 void pinUrgentAnnouncement(Announcement* ann, int annCount);
-//--announcement display helpers = 2
+//_announcement display headers 
 void displayOneAnnouncement(Announcement& a);
 void displayAllAnn(Announcement* a, int count, const string& filter);
-//--activuty management functions = 5
+//_Activity Management functions = 8
 void activityManagement(Activity* act, int& actCount);
 void addActivity(Activity* act, int& actCount);
 void viewActivities(Activity* act, int& actCount);
 void updateActivity(Activity* act, int actCount);
 void deleteActivity(Activity* act, int& actCount);
-//--activity display helpers = 3
+//__activity display helpers
 void displayOneActivity(Activity& a);
 void displayAllAct(Activity* a, int count);
 void displayBulletinBoard(Announcement* ann, int annCount, Activity* act, int actCount, int role);
-//--feedbacks and cocnerns functions = 4
+//_Feedbacks and Cocnerns functions = 4
 void viewFeedbacks(Feedback* fb, int& fbCount, int role, int accIndex, Officer* officers,
                    Faculty* faculty, Student* students, int studentCount);
 void displayCounterUpdates(int studentCount, int pendingCount, int annCount, int actCount);
 int getApprovedAnnCount(Announcement* a, int count);
 int getUpcomingActCount(Activity* a, int count);
 
-//_faculty module = 5
+//_FACULTY MODULE functions = 5
 void facultyMenu();
 void facultySwitch(int choice, Announcement* ann, int& annCount, Activity* act, int actCount, Student* students, int studentCount, Officer* officers, int officerCount,
                    Feedback* fb, int& fbCount, Faculty* faculty, int facultyCount, int accIndex, int role);  // faculty module handler - handles the main faculty switch
@@ -203,25 +201,26 @@ void facultyAnnouncementMgmt(Announcement* ann, int& annCount, const string& fac
 void reviewPendingAnn(Announcement* ann, int& annCount);
 void viewOfficersAndMembers(Student* students, int studentCount, Officer* officers, int officerCount);
 
-//_student module = 5
+//_STUDENT MODULE functions = 5
 void studentDashboard(int homeChoice, Student* students, int studentCount, int accIndex, Announcement* ann, int& annCount, Activity* act, int& actCount, Officer* officers,
                       int officerCount, Faculty* faculty, int facultyCount, Feedback* fb, int& fbCount);  // student module handler - handles the main student switch
 void studentMenu();
 void viewAnnouncements(Announcement* ann, int& annCount);
 void studentViewFaculty(Faculty* faculty, int& facultyCount);
 void viewOfficers(Officer* officers, int officerCount);
-//--feedbacks and concers = 3
+
+//_Feedbacks and Concers = 3
 void feedbacksAndConcerns(Feedback* fb, int& fbCount, int accIndex, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty, int facultyCount);
 void submitFeedback(Feedback* fb, int& fbCount, int accIndex, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty, int facultyCount);
 void viewMyFeedbacks(Feedback* fb, int fbCount, int accIndex, Student* students, int studentCount);
 
-//_account management = 4
+//_Account Management = 4
 void accountManagement(int role, int accIndex, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount);
 void viewMyInfo(int role, int accIndex, Student* students, Officer* officers, Faculty* faculty);
 void editMyInfo(int role, int accIndex, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount);
 void changePasscode(int role, int accIndex, Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount);
 
-//_helpers = 10
+//_Helper functions = 10
 void pauseScreen();
 void cls();
 void enterPrompt(const string& prompt, string& val);
@@ -236,6 +235,7 @@ void landingPage(bool& isLoggedIn);
 
 //_MAIN FUNCTION
 int main(){
+    //_struct objects
     Student students[MAX_STUDENT];
     Officer officers[MAX_OFFICER];
     Faculty faculty[MAX_FACULTY];
@@ -243,19 +243,23 @@ int main(){
     Activity act[MAX_ACTIVITY];
     Feedback fb[MAX_FEEDBACK];
 
+    //_counter variables
     int studentCount = 0;
     int officerCount = 0;
     int facultyCount = 0;
     int annCount = 0;  // announcement count
     int actCount = 0;  // activity ount
     int fbCount = 0;  // feedback count
+
+    //_auth variables
     int role = 0;
-    int accIndex = 0;  // returns user's index upon login
-    bool isLoggedIn = false;
-    bool firstRun = true;
+    int accIndex = 0;  //_returns user's index upon login
+    bool isLoggedIn = false;  //_control main loop 
+    bool firstRun = true;  //_checks first login
 
     srand(time(0));
 
+    //_load all files, check existence
     loadStudents(students, studentCount);
     loadOfficers(officers, officerCount);
     loadFaculty(faculty, facultyCount);
@@ -267,9 +271,7 @@ int main(){
 
     do {
         isLoggedIn = false;
-        role = 0;
-        accIndex = 0;
-
+        
         if(firstRun){
             auth(students, studentCount, officers, officerCount, faculty, facultyCount, role, accIndex, isLoggedIn);
             firstRun = false;
@@ -279,7 +281,7 @@ int main(){
         }
 
         if(isLoggedIn){
-            // reload all data
+            //_reload all files, every loop
             loadStudents(students, studentCount);
             loadOfficers(officers, officerCount);
             loadFaculty(faculty, facultyCount);
@@ -301,25 +303,26 @@ int main(){
 
                         enterPrompt("\nEnter choice: ", homeChoice);
 
+                        //_student dashboard handler, handles switch and loops
                         studentDashboard(homeChoice, students, studentCount, accIndex, ann, annCount, act,
                                          actCount, officers, officerCount, faculty,  facultyCount, fb, fbCount);
-                    }while(homeChoice != 2);
+                    } while(homeChoice != 2);
                     break;
 
-                case OFFICER: {
+                    case OFFICER: {
                     cls();
-                    int pendingReq = getPendingRequestCount();
-                    int approvedAnn = getApprovedAnnCount(ann, annCount);
-                    int upcomingAct = getUpcomingActCount(act, actCount);
 
                     do {
+                        //_reload all files every loop
                         loadStudents(students, studentCount);
                         loadAnnouncements(ann, annCount);
                         loadActivities(act, actCount);
                         loadFeedbacks(fb, fbCount);
-                        pendingReq = getPendingRequestCount();
-                        approvedAnn = getApprovedAnnCount(ann, annCount);
-                        upcomingAct = getUpcomingActCount(act, actCount);
+                        
+                        //_store counters, displayed in displayCounterUpdates
+                        int pendingReq = getPendingRequestCount();
+                        int approvedAnn = getApprovedAnnCount(ann, annCount);
+                        int upcomingAct = getUpcomingActCount(act, actCount);
 
                         homeScreen(officers[accIndex].name);
                         displayCounterUpdates(studentCount, pendingReq, approvedAnn, upcomingAct);
@@ -334,17 +337,21 @@ int main(){
                                 displayHeader2();
                                 officerMenu();
                                 enterPrompt("\nEnter choice: ", choice);
-
+                                
+                                //_officer dashboard handler, submenus
                                 officerSwitch(choice, students, studentCount, ann, annCount, act, actCount, officers,
                                               officerCount, faculty, facultyCount, accIndex, fb, fbCount,role);
-                            }while(choice != 6);
+                            } while(choice != 6);
+
                         } else if(homeChoice == 2){
                             cout << "\nLogging out. Please wait...\n";
                             Sleep(400);
                             cls();
+
                         } else {
                             cout << "\n[!] Invalid choice.\n";
                         }
+
                     } while(homeChoice != 2);
                     break;
                 }
@@ -352,6 +359,7 @@ int main(){
                 case FACULTY: {
                     cls();
                     do {
+                        //_reload announcements, activities, and feedbacks files
                         loadAnnouncements(ann, annCount);
                         loadActivities(act, actCount);
                         loadFeedbacks(fb, fbCount);
@@ -372,13 +380,16 @@ int main(){
                                 enterPrompt("\nEnter choice: ", choice);
 
                                 cls();
+                                //_handles the faculty menu and submenus
                                 facultySwitch(choice, ann, annCount, act, actCount, students, studentCount, officers,
                                               officerCount, fb, fbCount, faculty, facultyCount, accIndex, role);
-                            }while(choice != 6);
+                            } while(choice != 6);
+
                         } else if(homeChoice == 2){
                             cout << "\nLogging out. Please wait...\n";
                             Sleep(400);
                             cls();
+
                         } else {
                             cout << "\n[!] Invalid choice.\n";
                         }
@@ -386,8 +397,6 @@ int main(){
                     break;
                 }
             }
-
-            landingPage(isLoggedIn);
         }
     } while(isLoggedIn);
 
@@ -395,7 +404,8 @@ int main(){
 }
 
 
-//_headers
+//_FUNCTION DEFINITION
+//_Headers
 void displayHeader(){
     cls();
     SetConsoleOutputCP(CP_UTF8);
@@ -444,8 +454,9 @@ void homeScreen(const string& name){
 
 void displayStudentHeader(const string& name){
     size_t spacePos = name.find(' ');
-    string firstName = (spacePos != string::npos) ? name.substr(0, spacePos) : name;  // if search for space isn't failed, firstName is the string of characters before the first space
-
+    // if search for space isn't failed, firstName is the string of characters before the first space
+    string firstName = (spacePos != string::npos) ? name.substr(0, spacePos) : name;  
+    
     string line1 = "Good day, " + firstName + "! 👋";
     string line2 = "Here's what's happening in iBITS today!";
     string line3 = getCurrentDate();
@@ -464,9 +475,12 @@ string getCurrentDate(){
     return string(buffer);
 }
 
-void auth(Student* students, int& studentCount, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount,
-          int& role, int& accIndex, bool& isLoggedIn){
 
+//_Authentication
+void auth(Student* students, int& studentCount, Officer* officers, int& officerCount, 
+          Faculty* faculty,  int& facultyCount, int& role, int& accIndex, bool& isLoggedIn){
+
+    //_open files, read values
     ifstream sf("students.csv");
     ifstream of("officers.csv");
     ifstream ff("faculty.csv");
@@ -484,10 +498,13 @@ void auth(Student* students, int& studentCount, Officer* officers, int& officerC
         cin >> hasAccount;
         cin.ignore();
 
+        //_if user already have an account, go to login
         if(hasAccount == 'Y' || hasAccount == 'y'){
             askRole(role);
             login(role, students, studentCount, officers, officerCount,
                   faculty, facultyCount, accIndex, isLoggedIn);
+
+        //_if user has no account yet, register
         } else if(hasAccount == 'N' || hasAccount == 'n') {
             askRole(role);
             registerAccountHandler(role, students, studentCount, officers, officerCount,
@@ -496,10 +513,12 @@ void auth(Student* students, int& studentCount, Officer* officers, int& officerC
                 login(role, students, studentCount, officers, officerCount,
                       faculty, facultyCount, accIndex, isLoggedIn);
             }
+
         } else {
             cout << "\n[!] Invalid choice.\n";
         }
     } else {
+        //_if no file existing, register an account
         cout << "\n\n" << "[!] File doesn't exist yet. Register your account.\n\n";
         pauseScreen();
         askRole(role);
@@ -515,9 +534,11 @@ void auth(Student* students, int& studentCount, Officer* officers, int& officerC
 void askRole(int& role){
     cls();
     displayHeader();
+
     cout << "\n" << right << setw(36) << " ---------------";
     cout << "\n" << right << setw(42) << "🚀>>> Roles <<<🚀\n";
     cout << right << setw(37) << " ---------------\n";
+
     SetConsoleOutputCP(CP_UTF8);
     cout << "\n[1-👩‍🚀] Student \n[2-🧑‍🎓]️Officer \n[3-🧑‍🏫] Faculty";
     enterPrompt("\n\nEnter role: ", role);
@@ -543,19 +564,24 @@ void registerAccountHandler(int role, Student* students, int& studentCount, Offi
     }
 }
 
+//_student registration, need to be approved by officers
 void studentRegistration(){
     cls();
     displayHeader();
+
     SetConsoleOutputCP(CP_UTF8);
     cout << "\n" << right << setw(54) << "📋 >>> Student Registration <<< 📋\n";
-    cout << "           Fill in your details to request an account.\n";
+    cout << "               Fill in your details to request an account.\n";
     cout << "\n-----------------------------------------------------------\n";
 
     Student s;
+
     cout << "\nID Format: 0000-00000-LQ-0";
     enterPrompt("\n🆔 Enter Student ID: ", s.ID);
+
     cout << "\nName Format: First_Name M.I Last_Name";
     enterPrompt("\n👤 Enter Name: ", s.name);
+
     cout << "\nProgram Format: BSIT | DIT";
     enterPrompt("\n📚 Enter Program: ", s.program);
     while(s.program != "BSIT" && s.program != "bsit" &&
@@ -563,6 +589,7 @@ void studentRegistration(){
         cout << "\n[!] Program must be BSIT or DIT only.\n";
         enterPrompt("\n📚 Enter Program: ", s.program);
     }
+
     enterPrompt("\n⭐ Enter Year Level: ", s.yearLevel);
     while(s.yearLevel < 1 || s.yearLevel > 4){
         cout << "\n[!] Valid year levels are 1 to 4 only.\n\n";
@@ -578,6 +605,7 @@ void studentRegistration(){
     pauseScreen();
 }
 
+//_create account for officers and faculty only
 void createAccount(int role, Officer* officers, int& officerCount, Faculty* faculty,  int& facultyCount){
     cls();
     displayHeader();
@@ -653,28 +681,35 @@ string createPasscode(){
         cout << "\n[!] Must be 8 or more characters.\n";
         enterPrompt("\n🔑 Enter passcode: ", passcode);
     }
+
     string confirm = "";
     enterPrompt("🔄 Confirm passcode: ", confirm);
     while(confirm != passcode){
         cout << "\n[!] Passcodes do not match. Try again.\n";
         enterPrompt("\n🔄 Confirm passcode: ", confirm);
     }
+
     cout << "\n[🔒] Passcode created.\n";
     return passcode;
-
-    //pauseScreen();
 }
 
-void login(int role, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty,  int facultyCount,
-           int& accIndex, bool& isLoggedIn){
+void login(int role, Student* students, int studentCount, Officer* officers, 
+    int officerCount, Faculty* faculty, int facultyCount, int& accIndex, bool& isLoggedIn){
     displayHeader();
-   // pauseScreen();
     cls();
     displayHeader();
 
     cout << "\n============== >>> Login to your account <<< ==============\n";
 
-    string roleLabel = (role == STUDENT) ? "Student" : (role == OFFICER) ? "Officer" : "Faculty";
+    string roleLabel = "";
+    
+    if(role == STUDENT){
+        roleLabel = "Student";
+    } else if(role == OFFICER){
+        roleLabel = "Officer"; 
+    } else {
+        roleLabel = "Faculty";
+    }
     cout << "\n                   ==> Role: " << roleLabel << " <==\n\n";
 
     string id = "", pass = "";
@@ -693,26 +728,33 @@ void login(int role, Student* students, int studentCount, Officer* officers, int
 
     while(!idFound){
         enterPrompt("🪪 Enter ID: ", id);
+
         for(int j = 0; j < maxCount; j++){
             if(role == STUDENT && students[j].ID == id){
-                idFound = true; accIndex = j;
+                idFound = true; 
+                accIndex = j;
                 break;
             }
             if(role == OFFICER && officers[j].ID == id){
-                idFound = true; accIndex = j;
+                idFound = true; 
+                accIndex = j;
                 break;
             }
             if(role == FACULTY && faculty[j].ID  == id){
-                idFound = true; accIndex = j;
+                idFound = true; 
+                accIndex = j;
                 break;
             }
         }
 
+        //_if attempt becomes 3, ask if user already have an account
         if(idpassNotFound(idFound, attempt, "[!] ID not found. Try again.\n")){
+            //_if student,no create account, tell to ask officers
             if(role == STUDENT){
                 cout << "\n-----------------------------------------------------------\n";
                 cout << "[!] ID not found. If you registered, wait for Officer approval.\n";
                 cout << "-----------------------------------------------------------\n";
+            //_if officers, faculty go to create account
             } else {
                 createAccount(role, officers, officerCount, faculty, facultyCount);
                 cout << "\nRedirecting to login. Please wait...\n";
@@ -735,6 +777,7 @@ void login(int role, Student* students, int studentCount, Officer* officers, int
         if(storedPass == pass)
             passFound = true;
 
+        //_if password is incorrect for 3 attempts, create new password
         if(idpassNotFound(passFound, attempt, "[!] Wrong passcode.\n")){
             // reset passcode
             string newPass = createPasscode();
@@ -785,12 +828,15 @@ bool idpassNotFound(bool& var, int& attempt, const string& displayMessage){
     return false;
 }
 
+//_File Handling
+//_load students.csv
 void loadStudents(Student* s, int& count){
     ifstream file("students.csv");
     count = 0;
 
-    if(!file.is_open())
+    if(!file.is_open()){
         return;
+    }
 
     string line;
     if(getline(file, line)){
@@ -810,12 +856,14 @@ void loadStudents(Student* s, int& count){
     file.close();
 }
 
+//_load officers.csv
 void loadOfficers(Officer* o, int& count){
     ifstream file("officers.csv");
     count = 0;
 
-    if(!file.is_open())
+    if(!file.is_open()){
         return;
+    }
 
     string line;
     if(getline(file, line)){
@@ -836,12 +884,14 @@ void loadOfficers(Officer* o, int& count){
     file.close();
 }
 
+//_load faculty.csv
 void loadFaculty(Faculty* f, int& count){
     ifstream file("faculty.csv");
     count = 0;
 
-    if(!file.is_open())
+    if(!file.is_open()){
         return;
+    }
 
     string line;
     if(getline(file, line)){
@@ -857,11 +907,15 @@ void loadFaculty(Faculty* f, int& count){
     file.close();
 }
 
+//_ofstream - mode: trunc
+//_reason: save functions are used in updating files when edit, remove, sort are done
+//_save students info to students.csv
 void saveStudentsCSV(Student* s, int count){
     ofstream file("students.csv", ios::trunc);
 
-    if(!file.is_open())
+    if(!file.is_open()){
         return;
+    }
 
     file << "ID,Name,Program,Year Level,Passcode\n";
 
@@ -871,6 +925,7 @@ void saveStudentsCSV(Student* s, int count){
     file.close();
 }
 
+//_ofstream, save officers info to officers.csv
 void saveOfficersCSV(Officer* o, int count){
     ofstream file("officers.csv", ios::trunc);
 
@@ -885,6 +940,7 @@ void saveOfficersCSV(Officer* o, int count){
     file.close();
 }
 
+//_ofstream, save faculty info to faculty.csv
 void saveFacultyCSV(Faculty* f, int count){
     ofstream file("faculty.csv", ios::trunc);
 
@@ -899,6 +955,8 @@ void saveFacultyCSV(Faculty* f, int count){
     file.close();
 }
 
+//_ofstream, mode: append
+//_use to save infos from authentication
 void appendToCSV(const string& file, int role, Student* s,  int si, Officer* o,  int oi, Faculty* f,  int fi){
     ifstream check(file);
     bool empty = (check.peek() == ifstream::traits_type::eof());
@@ -931,6 +989,7 @@ void appendToCSV(const string& file, int role, Student* s,  int si, Officer* o, 
     out.close();
 }
 
+//_save student pending requests to pending_students.csv
 void savePendingStudent(Student& s){
     ifstream check("pending_students.csv");
     bool empty = (check.peek() == ifstream::traits_type::eof());
@@ -948,12 +1007,14 @@ void savePendingStudent(Student& s){
     out.close();
 }
 
+//_load pending_students.csv
 void loadPendingStudents(Student* pending, int& count){
     ifstream file("pending_students.csv");
     count = 0;
 
-    if(!file.is_open())
+    if(!file.is_open()){
         return;
+    }
 
     string line;
     if(getline(file, line)){
@@ -973,6 +1034,7 @@ void loadPendingStudents(Student* pending, int& count){
     file.close();
 }
 
+//_update pending_students.csv, remove student in file if approved or rejected
 void updatePendingCSV(Student* pending, int count){
     ofstream file("pending_students.csv", ios::trunc);
 
@@ -988,20 +1050,22 @@ void updatePendingCSV(Student* pending, int count){
 }
 
 int getPendingRequestCount(){
-    Student temp[MAX_PENDING];
+    Student temp[MAX_PENDING];  //_dynamic memory, stores all pending students request
     int count = 0;
 
-    loadPendingStudents(temp, count);
+    loadPendingStudents(temp, count);  //_load file, get the count
 
     return count;
 }
 
+//_load all announcements
 void loadAnnouncements(Announcement* a, int& count){
     ifstream file("announcements.txt");
     count = 0;
 
-    if(!file.is_open())
+    if(!file.is_open()){
         return;
+    }
 
     string line;
     while(getline(file, line) && count < MAX_ANNOUNCE){
@@ -1031,6 +1095,8 @@ void loadAnnouncements(Announcement* a, int& count){
     file.close();
 }
 
+//_save announcements, mode:trunc
+//_loads all from array, rewrite
 void saveAllAnnouncements(Announcement* a, int count){
     ofstream file("announcements.txt", ios::trunc);
 
@@ -1055,6 +1121,7 @@ void saveAllAnnouncements(Announcement* a, int count){
     file.close();
 }
 
+//_load all activities saved in activities.txt
 void loadActivities(Activity* a, int& count){
     ifstream file("activities.txt");
     count = 0;
@@ -1082,6 +1149,7 @@ void loadActivities(Activity* a, int& count){
     file.close();
 }
 
+//_save all activities, mode: trunc
 void saveAllActivities(Activity* a, int count){
     ofstream file("activities.txt", ios::trunc);
 
@@ -1097,6 +1165,7 @@ void saveAllActivities(Activity* a, int count){
     file.close();
 }
 
+//_load all feedbacks
 void loadFeedbacks(Feedback* fb, int& count){
     ifstream file("feedback.txt");
     count = 0;
@@ -1126,6 +1195,7 @@ void loadFeedbacks(Feedback* fb, int& count){
     file.close();
 }
 
+//_load all feedbacks stores in the array, wipe all data in file, rewrite
 void saveAllFeedbacks(Feedback* fb, int count){
     ofstream file("feedback.txt", ios::trunc);
 
@@ -1147,7 +1217,10 @@ void saveAllFeedbacks(Feedback* fb, int count){
     file.close();
 }
 
-// generic next-ID using template
+//_END OF FILE HANDLING
+
+//_function template
+//_returns largest ID
 template<typename T>
 T getMaxID(T* arr, int count){
     if(count == 0)
@@ -1158,7 +1231,7 @@ T getMaxID(T* arr, int count){
     for(int i = 1; i < count; i++)
         if(arr[i] > maxVal) maxVal = arr[i];
 
-    return maxVal;
+    return maxVal; 
 }
 
 int getNextID(int* ids, int count){
@@ -1173,10 +1246,10 @@ int getNextID(int* ids, int count){
     return *maxPtr + 1;
 }
 
-// dito continuation
-
+//_SORTING ALGORITHM - Bubble Sort
+//_sort students
 void sortStudents(Student* s, int count, int method){
-    // 1=ID 2=Name 3=Program 4=YearLevel
+    //_1=ID 2=Name 3=Program 4=YearLevel
     for(int i = 0; i < count - 1; i++){
         for(int j = 0; j < count - 1 - i; j++){
             bool doSwap = false;
@@ -1199,71 +1272,84 @@ void sortStudents(Student* s, int count, int method){
     }
 }
 
+//_sort officers
 void sortOfficers(Officer* o, int count, int method){
     // 1=ID 2=Name 3=Program 4=YearLevel
     for(int i = 0; i < count - 1; i++){
         for(int j = 0; j < count - 1 - i; j++){
             bool doSwap = false;
-            if(method == 1)      doSwap = o[j].ID        > o[j+1].ID;
-            else if(method == 2) doSwap = o[j].name      > o[j+1].name;
-            else if(method == 3) doSwap = o[j].program   > o[j+1].program;
-            else                 doSwap = o[j].yearLevel  > o[j+1].yearLevel;
-            if(doSwap){ Officer tmp = o[j]; o[j] = o[j+1]; o[j+1] = tmp; }
-        }
-    }
-}
 
-void sortActivities(Activity* a, int count, int method){
-    for(int i = 0; i < count - 1; i++){
-        for(int j = 0; j < count - 1 - i; j++){
-            bool doSwap = false;
-            if(method == 1)      doSwap = a[j].date > a[j+1].date;
-            else if(method == 2) doSwap = a[j].name > a[j+1].name;
-            else                 doSwap = a[j].id   > a[j+1].id;
-            if(doSwap){ Activity tmp = a[j]; a[j] = a[j+1]; a[j+1] = tmp; }
-        }
-    }
-}
+            if(method == 1)
+                doSwap = o[j].ID > o[j+1].ID;
+            else if(method == 2) 
+                doSwap = o[j].name > o[j+1].name;
+            else if(method == 3) 
+                doSwap = o[j].program > o[j+1].program;
+            else                 
+                doSwap = o[j].yearLevel > o[j+1].yearLevel;
 
-void sortAnnouncements(Announcement* a, int count){
-    // priority: Urgent=0, Pinned=1, Approved=2, Pending=3, Rejected=4
-    auto priority = [](const Announcement& x) -> int {
-        if(x.isUrgent)               return 0;
-        if(x.isPinned)               return 1;
-        if(x.status == "Approved")   return 2;
-        if(x.status == "Pending")    return 3;
-        return 4;
-    };
-    for(int i = 0; i < count - 1; i++){
-        for(int j = 0; j < count - 1 - i; j++){
-            if(priority(a[j]) > priority(a[j+1])){
-                Announcement tmp = a[j]; a[j] = a[j+1]; a[j+1] = tmp;
+            if(doSwap){ 
+                Officer tmp = o[j]; 
+                o[j] = o[j+1];
+                o[j+1] = tmp; 
             }
         }
     }
 }
 
+//_sort activities
+void sortActivities(Activity* a, int count, int method){
+    for(int i = 0; i < count - 1; i++){
+        for(int j = 0; j < count - 1 - i; j++){
+            bool doSwap = false;
 
-//  SEARCHING
-// Binary search by ID (array must be sorted by ID)
-int searchByID(Student* s, int count, const string& id){
-    // sort a copy mentally — here we do linear since IDs are strings
-    // Binary search on sorted-by-ID array
-    sortStudents(s, count, 1); // sort first
-    int lo = 0, hi = count - 1;
-    while(lo <= hi){
-        int mid = (lo + hi) / 2;
-        if(s[mid].ID == id)      return mid;
-        else if(s[mid].ID < id) lo = mid + 1;
-        else                    hi = mid - 1;
+            if(method == 1)      
+                doSwap = a[j].date > a[j+1].date;
+            else if(method == 2) 
+                doSwap = a[j].name > a[j+1].name;
+            else                 
+                doSwap = a[j].id   > a[j+1].id;
+
+            if(doSwap){ 
+                Activity tmp = a[j]; 
+                a[j] = a[j+1]; 
+                a[j+1] = tmp; 
+            }
+        }
     }
-    return -1;
 }
 
+//_sort announcements
+void sortAnnouncements(Announcement* a, int count){
+    // priority: Urgent=0, Pinned=1, Approved=2, Pending=3, Rejected=4
+
+    //_lambda, returns status
+    auto priority = [](const Announcement& x) -> int {
+        if(x.isUrgent) return 0;
+        if(x.isPinned) return 1;
+        if(x.status == "Approved") return 2;
+        if(x.status == "Pending") return 3;
+        return 4;
+    };
+
+    for(int i = 0; i < count - 1; i++){
+        for(int j = 0; j < count - 1 - i; j++){
+            if(priority(a[j]) > priority(a[j+1])){
+                Announcement tmp = a[j]; 
+                a[j] = a[j+1]; 
+                a[j+1] = tmp;
+            }
+        }
+    }
+}
+
+//_SEARCHING ALGORITHM
 // Sequential search by name (partial match)
 int searchByName(Student* s, int count, const string& name){
     for(int i = 0; i < count; i++)
-        if(s[i].name.find(name) != string::npos) return i;
+        if(s[i].name.find(name) != string::npos) 
+            return i;
+
     return -1;
 }
 
@@ -1279,37 +1365,47 @@ int searchFacultyByName(Faculty* f, int count, const string& name){
     return -1;
 }
 
-// Binary search on activity by ID (requires sorted by ID)
+//_binary search on activity by ID, sorted by ID first
 int searchActivityByID(Activity* a, int count, int id){
     sortActivities(a, count, 3); // sort by ID
     int lo = 0, hi = count - 1;
+
     while(lo <= hi){
         int mid = (lo + hi) / 2;
-        if(a[mid].id == id)      return mid;
-        else if(a[mid].id < id) lo = mid + 1;
-        else                    hi = mid - 1;
+        if(a[mid].id == id)      
+            return mid;
+        else if(a[mid].id < id) 
+            lo = mid + 1;
+        else                    
+            hi = mid - 1;
     }
+
     return -1;
 }
 
 int searchAnnouncementByID(Announcement* a, int count, int id){
     for(int i = 0; i < count; i++)
-        if(a[i].id == id) return i;
+        if(a[i].id == id) 
+        return i;
+
     return -1;
 }
 
-// Linear search — activity by name or date (partial)
-void searchActivityLinear(Activity* a, int count, const string& query,
-                          int* results, int& rCount){
+//_linear search — activity by name or date (partial)
+void searchActivityLinear(Activity* a, int count, const string& query, int* results, int& rCount){
+    
     rCount = 0;
+
     for(int i = 0; i < count; i++){
-        if(a[i].name.find(query) != string::npos ||
-           a[i].date.find(query) != string::npos){
+        if(a[i].name.find(query) != string::npos || a[i].date.find(query) != string::npos){
             results[rCount++] = i;
         }
     }
 }
 
+//_DISPLAY ANNOUNCEMENTS AND ACTIVITIES
+//_creates a 2D Array that stores the values from the struct
+//_used in display bulletin board
 void buildAnnouncementTable(Announcement* a, int count, string table[][5], int& rows){
     rows = 0;
     for(int i = 0; i < count; i++){
@@ -1332,16 +1428,21 @@ void buildAnnouncementTable(Announcement* a, int count, string table[][5], int& 
         table[rows][3] = a[i].date;
         table[rows][4] = a[i].status;
         rows++;
-        if(rows >= MAX_ANNOUNCE) break;
+
+        if(rows >= MAX_ANNOUNCE) 
+            break;
     }
 }
 
 void buildActivityTable(Activity* a, int count, string table[][6], int& rows){
     rows = 0;
+
     for(int i = 0; i < count; i++){
         string flag = "";
+
         if(a[i].status == "Ongoing")   flag = "🔁 ";
         if(a[i].status == "Scheduled") flag = "📆 ";
+
         table[rows][0] = to_string(a[i].id);
         table[rows][1] = flag + a[i].name;
         table[rows][2] = a[i].date;
@@ -1349,21 +1450,27 @@ void buildActivityTable(Activity* a, int count, string table[][6], int& rows){
         table[rows][4] = a[i].location;
         table[rows][5] = a[i].status;
         rows++;
-        if(rows >= MAX_ACTIVITY) break;
+
+        if(rows >= MAX_ACTIVITY)
+            break;
     }
 }
 
+//_pointer to pointer, dynamic memory, returns ptrs arrange from urgent to approved
+//_used in displaying all announcements
 Announcement** buildPinnedFirst(Announcement* a, int count, int& outCount){
     Announcement** ptrs = new Announcement*[count];
     outCount = 0;
 
-    // pass 1: urgent
+    //_pass 1: urgent
     for(int i = 0; i < count; i++)
-        if(a[i].isUrgent) ptrs[outCount++] = &a[i];
-    // pass 2: pinned (not urgent)
+        if(a[i].isUrgent) 
+            ptrs[outCount++] = &a[i];
+    //_pass 2: pinned (not urgent)
     for(int i = 0; i < count; i++)
-        if(a[i].isPinned && !a[i].isUrgent) ptrs[outCount++] = &a[i];
-    // pass 3: rest (approved)
+        if(a[i].isPinned && !a[i].isUrgent) 
+            ptrs[outCount++] = &a[i];
+    //_pass 3: rest (approved)
     for(int i = 0; i < count; i++)
         if(!a[i].isUrgent && !a[i].isPinned && a[i].status == "Approved")
             ptrs[outCount++] = &a[i];
@@ -1371,6 +1478,7 @@ Announcement** buildPinnedFirst(Announcement* a, int count, int& outCount){
     return ptrs;
 }
 
+//_displaying announcement specific deatil
 void displayOneAnnouncement(Announcement& a){
     string badge = "";
 
@@ -1402,6 +1510,7 @@ void displayOneAnnouncement(Announcement& a){
     cout << "----------------------------------------------------------\n";
 }
 
+//_display all announcement, naka-table
 void displayAllAnn(Announcement* a, int count, const string& filter){
     if(filter == "Approved" || filter == "")
         cout << "\n                 📢 ANNOUNCEMENTS BOARD 📢\n";
@@ -1444,12 +1553,16 @@ void displayAllAnn(Announcement* a, int count, const string& filter){
         }
         delete[] sorted;
     }
-    if(filter == "Pending"  || filter == "") show("Pending");
-    if(filter == "Rejected" || filter == "") show("Rejected");
+    if(filter == "Pending"  || filter == "") 
+        show("Pending");
+    if(filter == "Rejected" || filter == "") 
+        show("Rejected");
 
-    if(!anyShown) cout << "\n[!] No announcements to show.\n";
+    if(!anyShown) 
+        cout << "\n[!] No announcements to show.\n";
 }
 
+//_display one activity, specific, detailed
 void displayOneActivity(Activity& a){
     string flag = "";
     if(a.status == "Ongoing")   flag = " [ONGOING]";
@@ -1459,7 +1572,7 @@ void displayOneActivity(Activity& a){
     cout << "  ID          : " << a.id     << flag   << "\n";
     cout << "  Name        : " << a.name            << "\n";
     cout << "----------------------------------------------------------\n";
-    cout << "  Description : ";
+    cout << "  Description : ";  // cut the string, move to the next line if length is > 40
     stringstream ss(a.description); string word; size_t len = 0;
     while(ss >> word){
         if(len + word.length() > 40){ cout << "\n                "; len = 0; }
@@ -1474,6 +1587,7 @@ void displayOneActivity(Activity& a){
     cout << "----------------------------------------------------------\n";
 }
 
+//_naka-table na activities
 void displayAllAct(Activity* a, int count){
    // cout << "\n" << string(59,'=') << "\n";
     cout << "\n                    📅 ACTIVITIES LIST 📅\n\n";
@@ -1491,6 +1605,7 @@ void displayAllAct(Activity* a, int count){
     cout << string(59,'=') << "\n";
 }
 
+//_bulletin, used in student and officer's dashboard
 void displayBulletinBoard(Announcement* ann, int annCount, Activity* act, int actCount, int role){
     cout << "\n\n" <<"                >>> 📋 BULLETIN BOARD 📋 <<< \n";
 
@@ -1533,9 +1648,7 @@ void displayBulletinBoard(Announcement* ann, int annCount, Activity* act, int ac
     cout << "\n" << string(59,'=') << "\n";
 }
 
-
-/**  OFFICER MODULE **/
-
+//_OFFICER MODULE
 void officerMenu(){
     cout << "\n[1] 👥 Member Management";
     cout << "\n[2] 📢 Announcement Management";
@@ -1557,6 +1670,7 @@ int getApprovedAnnCount(Announcement* a, int count){
     int c = 0;
     for(int i = 0; i < count; i++)
         if(a[i].status == "Approved" || a[i].isPinned || a[i].isUrgent) c++;
+    
     return c;
 }
 
@@ -1564,9 +1678,11 @@ int getUpcomingActCount(Activity* a, int count){
     int c = 0;
     for(int i = 0; i < count; i++)
         if(a[i].status == "Scheduled" || a[i].status == "Ongoing") c++;
+    
     return c;
 }
 
+//_officer's dashboard handler
 void officerSwitch(int choice, Student* students, int& studentCount, Announcement* ann, int& annCount, Activity* act, int& actCount,
                   Officer* officers, int officerCount, Faculty* faculty, int facultyCount, int accIndex, Feedback* fb, int& fbCount, int role){
     switch(choice){
@@ -1602,11 +1718,13 @@ void officerSwitch(int choice, Student* students, int& studentCount, Announcemen
     }
 }
 
-// ── Member Management ──
+//_Member Management
+//_submenu handler, called in officerSwitch
 void memberManagement(Student* students, int& studentCount){
     int choice = 0;
     do {
-        cls(); displayHeader2();
+        cls(); 
+        displayHeader2();
         int pendingCount = getPendingRequestCount();
 
         cout << "\n" << right << setw(42) << "-----------------------";
@@ -1625,26 +1743,36 @@ void memberManagement(Student* students, int& studentCount){
 
         switch(choice){
             case 1:
-                cls(); displayHeader2();
+                cls(); 
+                displayHeader2();
                 approveStudentRequests(students, studentCount);
                 break;
+
             case 2:
-                cls(); displayHeader2();
+                cls(); 
+                displayHeader2();
                 if(studentCount <= 0){ cout << "\n[!] No student records yet.\n"; pauseScreen(); break; }
                 viewMembers(students, studentCount);
                 break;
+
             case 3:
-                cls(); displayHeader2();
+                cls(); 
+                displayHeader2();
                 if(studentCount <= 0){ cout << "\n[!] No student records yet.\n"; pauseScreen(); break; }
                 removeMember(students, studentCount);
                 break;
-            case 4: break;
-            default: cout << "\n[!] Invalid choice.\n";
+
+            case 4: 
+                break;
+
+            default: 
+                cout << "\n[!] Invalid choice.\n";
         }
     } while(choice != 4);
     cls();
 }
 
+//_approve student account registration, updates files
 void approveStudentRequests(Student* students, int& studentCount){
     Student pending[MAX_PENDING];
     int pendingCount = 0;
@@ -1652,14 +1780,16 @@ void approveStudentRequests(Student* students, int& studentCount){
 
     if(pendingCount == 0){
         cout << "\n[✔ ] No pending account requests.\n";
-        pauseScreen(); return;
+        pauseScreen(); 
+        return;
     }
 
     cout << "\n" << right << setw(47) << "📥 Account Approval Requests 📥\n";
     cout << "\n  " << pendingCount << " pending request(s).\n";
 
     for(int p = 0; p < pendingCount; p++){
-        cls(); displayHeader2();
+        cls(); 
+        displayHeader2();
         cout << "\n📋 Request " << (p + 1) << " of " << pendingCount << "\n";
         cout << "\n----------------------------------------------------------\n";
         cout << "  ID         : " << pending[p].ID        << "\n";
@@ -1676,14 +1806,22 @@ void approveStudentRequests(Student* students, int& studentCount){
             students[studentCount] = pending[p];
             appendToCSV("students.csv", STUDENT, students, studentCount, nullptr, 0, nullptr, 0);
             studentCount++;
-            for(int i = p; i < pendingCount - 1; i++) pending[i] = pending[i+1];
-            pendingCount--; p--;
+            
+            for(int i = p; i < pendingCount - 1; i++) 
+                pending[i] = pending[i+1];
+                pendingCount--; 
+                p--;
+
             updatePendingCSV(pending, pendingCount);
             cout << "\n[✔ ] Account approved. Student can now log in.\n";
             Sleep(1200);
+
         } else if(decision == 2){
-            for(int i = p; i < pendingCount - 1; i++) pending[i] = pending[i+1];
-            pendingCount--; p--;
+            for(int i = p; i < pendingCount - 1; i++) 
+                pending[i] = pending[i+1];
+                pendingCount--; 
+                p--;
+
             updatePendingCSV(pending, pendingCount);
             cout << "\n[✔ ] Request rejected and removed.\n";
             Sleep(1200);
@@ -1721,6 +1859,7 @@ void viewMembers(Student* students, int studentCount){
 
         if(choice == 1){
             int method;
+
             cout << "\nSort by: [1] ID  [2] Name  [3] Program  [4] Year Level \n         [5] Return to Menu\n";
             enterPrompt("\nChoose method: ", method);
             while(method < 1 || method > 5){
@@ -1790,16 +1929,19 @@ void removeMember(Student* students, int& studentCount){
     pauseScreen();
 }
 
-//_announcement management
+//_Announcement Management
 void announcementManagement(Announcement* ann, int& annCount, const string& officerName){
     loadAnnouncements(ann, annCount);
     int choice = 0;
 
     do {
-        cls(); displayHeader2();
+        cls(); 
+        displayHeader2();
         int pendingCount = 0;
+
         for(int i = 0; i < annCount; i++)
-            if(ann[i].status == "Pending") pendingCount++;
+            if(ann[i].status == "Pending") 
+                pendingCount++;
 
         cout << "\n" << right << setw(49) << "📢 Announcement Management 📢\n";
 
@@ -1817,69 +1959,98 @@ void announcementManagement(Announcement* ann, int& annCount, const string& offi
         enterPrompt("\nEnter choice: ", choice);
 
         switch(choice){
-            case 1: cls(); displayHeader2(); proposeAnnouncement(ann, annCount, officerName); break;
+            case 1: 
+                cls(); 
+                displayHeader2(); 
+                proposeAnnouncement(ann, annCount, officerName); 
+                break;
             case 2:
-                cls(); displayHeader2();
+                cls(); 
+                displayHeader2();
                 loadAnnouncements(ann, annCount);
                 displayAllAnn(ann, annCount, "Approved");
                 pauseScreen();
                 break;
             case 3:
-                cls(); displayHeader2();
+                cls(); 
+                displayHeader2();
                 loadAnnouncements(ann, annCount);
                 displayAllAnn(ann, annCount, "Pending");
                 pauseScreen();
                 break;
             case 4:
-                cls(); displayHeader2();
+                cls(); 
+                displayHeader2();
                 loadAnnouncements(ann, annCount);
                 displayAllAnn(ann, annCount, "Rejected");
                 pauseScreen();
                 break;
             case 5:
-                cls(); displayHeader2();
-                if(annCount <= 0){ cout << "\n[!] No announcements yet.\n"; pauseScreen(); break; }
+                cls(); 
+                displayHeader2();
+                if(annCount <= 0){ 
+                    cout << "\n[!] No announcements yet.\n"; 
+                    pauseScreen(); 
+                    break; 
+                }
                 editAnnouncement(ann, annCount);
                 break;
             case 6:
-                cls(); displayHeader2();
-                if(annCount <= 0){ cout << "\n[!] No announcements yet.\n"; pauseScreen(); break; }
+                cls(); 
+                displayHeader2();
+                if(annCount <= 0){ 
+                    cout << "\n[!] No announcements yet.\n"; 
+                    pauseScreen(); 
+                    break; 
+                }
                 removeAnnouncement(ann, annCount);
                 break;
             case 7:
-                cls(); displayHeader2();
-                if(annCount <= 0){ cout << "\n[!] No announcements yet.\n"; pauseScreen(); break; }
+                cls(); 
+                displayHeader2();
+                if(annCount <= 0){ 
+                    cout << "\n[!] No announcements yet.\n"; 
+                    pauseScreen(); 
+                    break; 
+                }
                 pinUrgentAnnouncement(ann, annCount);
                 break;
-            case 8: break;
-            default: cout << "\n[!] Invalid choice.\n"; pauseScreen();
+            case 8: 
+                break;
+            default:
+                cout << "\n[!] Invalid choice.\n"; 
+                pauseScreen();
         }
     } while(choice != 8);
     cls();
 }
 
-void proposeAnnouncement(Announcement* ann, int& annCount,
-                         const string& officerName){
+void proposeAnnouncement(Announcement* ann, int& annCount, const string& officerName){
     SetConsoleOutputCP(CP_UTF8);
     cout << "\n" << right << setw(47) << "📢 Propose Announcement 📢\n";
 
     if(annCount >= MAX_ANNOUNCE){
-        cout << "\n[!] Announcement list is full.\n"; pauseScreen(); return;
+        cout << "\n[!] Announcement list is full.\n"; 
+        pauseScreen(); 
+        return;
     }
 
     // get all IDs for getMaxID template usage
     int* ids = new int[annCount];
-    for(int i = 0; i < annCount; i++) ids[i] = ann[i].id;
+
+    for(int i = 0; i < annCount; i++) 
+        ids[i] = ann[i].id;
+
     int nextID = getMaxID(ids, annCount) + 1;
     delete[] ids;
 
     Announcement n;
-    n.id              = nextID;
-    n.postedBy        = officerName;
-    n.date            = getCurrentDate();
+    n.id = nextID;
+    n.postedBy = officerName;
+    n.date = getCurrentDate();
     n.rejectionReason = "";
-    n.isPinned        = false;
-    n.isUrgent        = false;
+    n.isPinned = false;
+    n.isUrgent = false;
 
     enterPrompt("\n📋 Title : ", n.title);
     enterPrompt("📝 Content : ", n.content);
@@ -1887,6 +2058,7 @@ void proposeAnnouncement(Announcement* ann, int& annCount,
 
     cout << "\n📌 Set Status:\n[1] Normal (pending)\n[2] Urgent (posted immediately)\n";
     int statusChoice;
+     
     enterPrompt("\nChoose: ", statusChoice);
     while(statusChoice != 1 && statusChoice != 2){
         cout << "\n[!] Invalid choice.\n";
@@ -1910,6 +2082,7 @@ void proposeAnnouncement(Announcement* ann, int& annCount,
 void editAnnouncement(Announcement* ann, int annCount){
     // guard — if nothing to edit, return immediately without asking for ID
     bool hasPendingOrRejected = false;
+
     for(int i = 0; i < annCount; i++){
         if(ann[i].status == "Pending" || ann[i].status == "Rejected"){
             hasPendingOrRejected = true; break;
@@ -1931,12 +2104,12 @@ void editAnnouncement(Announcement* ann, int annCount){
     if(found == -1 ||
       (ann[found].status != "Pending" && ann[found].status != "Rejected")){
         cout << "\n[!] ID not found or announcement is already approved.\n";
-        pauseScreen(); return;
+        pauseScreen(); 
+        return;
     }
     pauseScreen();
     cls();
     displayHeader2();
-    //
 
     //cout << "\n✏️ EDIT ANNOUNCEMENT\n"
     cout << "\nEdit:\n[1] Title\n[2] Content\n[3] Category\n";
