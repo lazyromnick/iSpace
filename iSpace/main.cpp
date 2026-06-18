@@ -67,8 +67,8 @@ struct Feedback {
 };
 // 6 structures
 
-const int MAX_STUDENT = 200;
-const int MAX_OFFICER = 30;
+const int MAX_STUDENT = 500;
+const int MAX_OFFICER = 50;
 const int MAX_FACULTY = 20;
 const int MAX_ANNOUNCE = 200;
 const int MAX_ACTIVITY = 200;
@@ -81,9 +81,9 @@ enum Role {
     FACULTY
 };
 
-//_FUNCTIONS DECLARATION w/total of 106
+//_FUNCTIONS DECLARATION w/total of 103
 
-//_header = 4
+//_header = 6
 void displayHeader();
 void displayHeader2();
 void displayHeader3();
@@ -102,26 +102,33 @@ void login(int role, Student* students, int studentCount, Officer* officers, int
 bool idpassNotFound(bool& var, int& attempt, const string& displayMessage);
 
 //_file_handling = 18
+//_to load infos
 void loadStudents(Student* s, int& count);
 void loadOfficers(Officer* o, int& count);
 void loadFaculty(Faculty* f, int& count);
+//_for save infos
 void saveStudentsCSV(Student* s, int count);
 void saveOfficersCSV(Officer* o, int count);
 void saveFacultyCSV(Faculty* f, int count);
 void appendToCSV(const string& file, int role, Student* s, int si, Officer* o, int oi, Faculty* f, int fi);
 void savePendingStudent(Student& s);
+//to load pendings
 void loadPendingStudents(Student* pending, int& count);
+//_to update
 void updatePendingCSV(Student* pending, int count);
 int  getPendingRequestCount();
+//_to load announcements
 void loadAnnouncements(Announcement* a, int& count);
+//_to save all announcements
 void saveAllAnnouncements(Announcement* a, int count);
+//_to load and save act, and FB
 void loadActivities(Activity* a, int& count);
 void saveAllActivities(Activity* a, int count);
 void loadFeedbacks(Feedback* fb, int& count);
 void saveAllFeedbacks(Feedback* fb, int count);
 int getNextID(int* ids, int count);
 
-//_sorting (Bubble Sort) = 5
+//_sorting (Bubble Sort) = 4
 void sortStudents(Student* s, int count, int method);
 void sortOfficers(Officer* o, int count, int method);
 void sortActivities(Activity* a, int count, int method);
@@ -136,7 +143,7 @@ int searchActivityByID(Activity* a, int count, int id);  // Binary
 int searchAnnouncementByID(Announcement* a, int count, int id);
 void searchActivityLinear(Activity* a, int count, const string& query, int* results, int& rCount);
 
-//_bulletin board - 2D Array = 5
+//_bulletin board - 2D Array = 4
 void buildAnnouncementTable(Announcement* a, int count, string table[][5], int& rows);
 void buildActivityTable(Activity* a, int count, string table[][6], int& rows);
 int getApprovedAnnCount(Announcement* a, int count);
@@ -188,7 +195,7 @@ void displayCounterUpdates(int studentCount, int pendingCount, int annCount, int
 int getApprovedAnnCount(Announcement* a, int count);
 int getUpcomingActCount(Activity* a, int count);
 
-//_faculty module = 6
+//_faculty module = 5
 void facultyMenu();
 void facultySwitch(int choice, Announcement* ann, int& annCount, Activity* act, int actCount, Student* students, int studentCount, Officer* officers, int officerCount,
                    Feedback* fb, int& fbCount, Faculty* faculty, int facultyCount, int accIndex, int role);  // faculty module handler - handles the main faculty switch
@@ -196,7 +203,7 @@ void facultyAnnouncementMgmt(Announcement* ann, int& annCount, const string& fac
 void reviewPendingAnn(Announcement* ann, int& annCount);
 void viewOfficersAndMembers(Student* students, int studentCount, Officer* officers, int officerCount);
 
-//_student module = 6
+//_student module = 5
 void studentDashboard(int homeChoice, Student* students, int studentCount, int accIndex, Announcement* ann, int& annCount, Activity* act, int& actCount, Officer* officers,
                       int officerCount, Faculty* faculty, int facultyCount, Feedback* fb, int& fbCount);  // student module handler - handles the main student switch
 void studentMenu();
