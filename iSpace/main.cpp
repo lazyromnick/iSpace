@@ -67,8 +67,8 @@ struct Feedback {
 };
 
 //_constants
-const int MAX_STUDENT = 200;
-const int MAX_OFFICER = 30;
+const int MAX_STUDENT = 500;
+const int MAX_OFFICER = 50;
 const int MAX_FACULTY = 20;
 const int MAX_ANNOUNCE = 100;
 const int MAX_ACTIVITY = 100;
@@ -82,9 +82,9 @@ enum Role {
     FACULTY
 };
 
-//_FUNCTIONS DECLARATION - 100+
+//_FUNCTIONS DECLARATION - 106
 
-//_header = 7
+//_header = 8
 void displayHeader();
 void displayHeader2();
 void displayHeader3();
@@ -103,7 +103,7 @@ string createPasscode();
 void login(int role, Student* students, int studentCount, Officer* officers, int officerCount, Faculty* faculty,  int facultyCount, int& accIndex, bool& isLoggedIn);
 bool idpassNotFound(bool& var, int& attempt, const string& displayMessage);
 
-//_file handling = 18
+//_file handling = 19 - 7 files
 void loadStudents(Student* s, int& count);
 void loadOfficers(Officer* o, int& count);
 void loadFaculty(Faculty* f, int& count);
@@ -138,7 +138,7 @@ int searchActivityByID(Activity* a, int count, int id);  // Binary
 int searchAnnouncementByID(Announcement* a, int count, int id);
 void searchActivityLinear(Activity* a, int count, const string& query, int* results, int& rCount);
 
-//_bulletin = 5
+//_bulletin = 4
 //_2D Arrays
 void buildAnnouncementTable(Announcement* a, int count, string table[][5], int& rows);
 void buildActivityTable(Activity* a, int count, string table[][6], int& rows);
@@ -908,11 +908,11 @@ void loadFaculty(Faculty* f, int& count){
     file.close();
 }
 
-//_ofstream - mode: trunc
+//_ofstream - mode: out
 //_reason: save functions are used in updating files when edit, remove, sort are done
 //_save students info to students.csv
 void saveStudentsCSV(Student* s, int count){
-    ofstream file("students.csv", ios::trunc);
+    ofstream file("students.csv");
 
     if(!file.is_open()){
         return;
@@ -928,7 +928,7 @@ void saveStudentsCSV(Student* s, int count){
 
 //_ofstream, save officers info to officers.csv
 void saveOfficersCSV(Officer* o, int count){
-    ofstream file("officers.csv", ios::trunc);
+    ofstream file("officers.csv");
 
     if(!file.is_open())
         return;
@@ -943,7 +943,7 @@ void saveOfficersCSV(Officer* o, int count){
 
 //_ofstream, save faculty info to faculty.csv
 void saveFacultyCSV(Faculty* f, int count){
-    ofstream file("faculty.csv", ios::trunc);
+    ofstream file("faculty.csv");
 
     if(!file.is_open())
         return;
@@ -1037,7 +1037,7 @@ void loadPendingStudents(Student* pending, int& count){
 
 //_update pending_students.csv, remove student in file if approved or rejected
 void updatePendingCSV(Student* pending, int count){
-    ofstream file("pending_students.csv", ios::trunc);
+    ofstream file("pending_students.csv");
 
     if(!file.is_open())
         return;
@@ -1099,7 +1099,7 @@ void loadAnnouncements(Announcement* a, int& count){
 //_save announcements, mode:trunc
 //_loads all from array, rewrite
 void saveAllAnnouncements(Announcement* a, int count){
-    ofstream file("announcements.txt", ios::trunc);
+    ofstream file("announcements.txt");
 
     if(!file.is_open()){
         cout << "\n[!] Could not open announcements.txt\n";
@@ -1152,7 +1152,7 @@ void loadActivities(Activity* a, int& count){
 
 //_save all activities, mode: trunc
 void saveAllActivities(Activity* a, int count){
-    ofstream file("activities.txt", ios::trunc);
+    ofstream file("activities.txt");
 
     if(!file.is_open()){
         cout << "\n[!] Could not open activities.txt\n";
@@ -1198,7 +1198,7 @@ void loadFeedbacks(Feedback* fb, int& count){
 
 //_load all feedbacks stores in the array, wipe all data in file, rewrite
 void saveAllFeedbacks(Feedback* fb, int count){
-    ofstream file("feedback.txt", ios::trunc);
+    ofstream file("feedback.txt");
 
     if(!file.is_open()){
         cout << "\n[!] Could not open feedback.txt\n";
@@ -1346,6 +1346,23 @@ void sortAnnouncements(Announcement* a, int count){
 
 //_SEARCHING ALGORITHM
 // Sequential search by name (partial match)
+int searchByID(Student* s, int count, const string& id){
+    sortStudents(s,count,1);
+
+    int lo = 0, hi = count - 1;
+    while(lo <= hi){
+        int mid = (lo + hi) / 2;
+        if(s[mid].ID == id)
+            return mid;
+        else if(s[mid].ID < id)
+            lo = mid + 2;
+        else
+            hi = mid - 1;
+    }
+
+    return -1;
+}
+
 int searchByName(Student* s, int count, const string& name){
     for(int i = 0; i < count; i++)
         if(s[i].name.find(name) != string::npos)
